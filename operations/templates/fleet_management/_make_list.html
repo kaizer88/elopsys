@@ -1,0 +1,36 @@
+{% load el_pagination_tags %}
+<table id="makes" class="table table-hover ">
+  <tr>
+    <th>Make Name</th>
+    <th>Add Model</th>
+  </tr>
+
+  {% paginate vehicle_makes %}
+  {% for make in vehicle_makes %}
+
+  <tr> 
+    <td>
+      <a href="{% url 'fleetmanagement:edit_vehicle_make' make.id %}" 
+         data-toggle="" 
+         data-toggle="tooltip" 
+         data-placement="right" 
+         title="Edit Vehicle Make">
+         <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+        {{ make.make_name }}
+      </a>
+    </td>
+    <td>
+      <a href="{% url 'fleetmanagement:add_model_vehicle_make' make.id %}" title="Add Vehicle Model"><i class="fa fa-plus"></i></a>
+    </td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='7' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

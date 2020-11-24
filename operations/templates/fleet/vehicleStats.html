@@ -1,0 +1,111 @@
+{% load staticfiles %}
+{% load humanize %}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+
+	<div class="row">
+				 
+  			  				  
+		<table class=" table table-hover " >							
+			<tr>
+				<th>{{ vehicle.get_current_driver }}</th>
+				<th>{{filter_form.vehicle}}</th>
+				<th>{{filter_form.driver}}</th>								
+				<th><input class="btn btn-warning" id="search" name="search" type="submit" value="Search"/>
+				<a class="btn btn-warning" href="{% url 'fleet:vehiclesList' %}" type="submit">Close</a></th>
+			      </tr>
+			    </table>
+  	</div>
+	  </div>
+	  <div class="row">
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Service Cost</h3><hr/>
+	  			<h2>{{ vehicle.get_total_service_cost|floatformat:2|intcomma }}</h2>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Tyres Cost</h3><hr/>
+	  			<h2>{{ vehicle.get_total_tyres_cost|floatformat:2|intcomma }}</h2>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Repairs Cost</h3><hr/>
+	  			<h2>{{ vehicle.get_total_maintenance|floatformat:2|intcomma }}</h2>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+	  		<div class="thumb-nail-inner img-rounded">
+	  			<h3>Total Maintenance</h3><hr/>
+	  			<h2>{{ vehicle.get_total_maintenance_cost|floatformat:2|intcomma }}</h2>
+	  		</div>
+	  		</div>
+	</div><br/>
+	<div class="row">
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>No. Of Claims</h3><hr/>
+	  			<h1>{{ vehicle.get_count_claims }}</h1>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Claims Pending</h3><hr/>
+	  			<h1>{{ vehicle.get_count_claims_pending }}</h1>
+	  		</div>		  			
+			</div>						
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Claims Excess</h3><hr/>
+	  			<h2>{{ vehicle.get_total_excess|floatformat:2|intcomma }}</h2>
+	  		</div>		  			
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Total Claims Paid</h3><hr/>
+	  			<h2>{{ vehicle.get_total_claims|floatformat:2|intcomma }}</h2>
+	  		</div>
+			</div>
+	</div><br/>
+	<div class="row">
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Incidences</h3><hr/>
+	  			<h1>{{ vehicle.get_count_incidences }}</h1>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Traffic Fines</h3><hr/>
+	  			<h1>{{ vehicle.get_count_fines }}</h1>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Fines Pending</h3><hr/>
+	  			<h1>{{ vehicle.get_count_fines_pending }}</h1>
+	  		</div>
+			</div>
+		<div class="col-sm-3 text-align-center height-thumb-nail ">
+			<div class="thumb-nail-inner img-rounded">
+				<h3>Total Fines</h3><hr/>
+	  			<h2>{{ vehicle.get_total_fines|floatformat:2|intcomma }}</h2>
+	  		</div>
+			</div>
+	</div><br/>		

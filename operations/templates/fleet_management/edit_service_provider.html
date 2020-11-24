@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+
+<script src="{% static 'js/dropdown.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+      {% if service_provider %}
+        <b>Edit Service Provider: {{ service_provider.name | title}}</b>
+      {% else %}
+        <b>Add Service Provider:</b>
+      {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate>
+      {% csrf_token %}
+      
+      <div id="edit_service_provider_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>
+       
+        <div class="row">
+          <div class="col-lg-6">
+            <div>{% bootstrap_field service_provider_form.name %}</div>
+            <div>{% bootstrap_field contact_form.first_name %}</div>
+            <div>{% bootstrap_field contact_form.last_name %}</div>
+            <div>{% bootstrap_field contact_form.tel_number %}</div>
+            <div>{% bootstrap_field contact_form.cell_number %}</div>
+            <div>{% bootstrap_field contact_form.email %}</div>
+          </div>
+          <div class="col-lg-6">
+            <div>{% bootstrap_field address_form.country %}</div>
+            <div>{% bootstrap_field address_form.province %}</div>             
+            <div>{% bootstrap_field address_form.city %}</div>
+            <div>{% bootstrap_field address_form.address_line_1 %}</div>
+            <div>{% bootstrap_field address_form.address_line_2 %}</div>
+            <div>{% bootstrap_field address_form.suburb %}</div>
+            <div>{% bootstrap_field address_form.postal_code %}</div>
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          <button type="submit" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          <a href="{% url 'fleetmanagement:view_service_providers' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

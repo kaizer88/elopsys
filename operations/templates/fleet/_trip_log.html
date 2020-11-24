@@ -1,0 +1,28 @@
+	   {% load humanize %}
+
+
+	    <h4>Trip Log</h4>  
+	    <div class="table-responsive" style="height: 300px;">
+	    <table class="table table-hover">							
+		<tr>								
+		  <th>Log Date</th>															
+		  <th>Location</th>								
+		  <th>Road Speed</th>
+		  <th>Speed</th>
+		  <th>Odometer</th>
+		  <th>status</th>
+		</tr>								
+		{% for log in trip_log %}
+		<tr>									
+		  <td>{{ log.log_date }}</td>
+		  <td>{{ log.location }} </td>															
+		  <td>{{ log.road_speed|floatformat:0|intcomma }}</td>
+		  <td>{{ log.speed|floatformat:0|intcomma }}</td>
+		  <td>{{ log.odometer|floatformat:2|intcomma }}</td>
+		  <td>{{ log.status }}</td>								
+		</tr>										
+		{% endfor %}						
+	      </table>
+	     </div>
+
+	     

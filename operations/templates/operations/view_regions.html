@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Regions</b>
+  </div>
+  <div class="panel-body">
+    <div class="tab-content">
+      <div id="traffic_fines" class="tab-pane fade in active">
+        {% include 'operations/_list_regions.html' %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

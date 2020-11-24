@@ -1,0 +1,16 @@
+{% load bootstrap4 %}
+<br>
+{% if purchase_detail_form %}
+{% for f in purchase_detail_form %}
+<div class='col-lg-6'>{% bootstrap_field f %}</div>
+{% endfor%}
+{% for f in finance_detail_form %}
+<div class='col-lg-6'>{% bootstrap_field f %}</div>
+{% endfor%}
+{% else %}
+<table class='table' width='100%'>
+  <tr>
+    <td>Save changes to proceed</td>
+  </tr>
+</table>
+{% endif %}

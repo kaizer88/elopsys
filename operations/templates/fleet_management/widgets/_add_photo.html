@@ -1,0 +1,7 @@
+{% load bootstrap4 %} 
+{% if photo_file_form %}
+<div>{% bootstrap_field photo_file_form.image %}</div>
+<div>{% bootstrap_field photo_file_form.description %}</div>
+<br>
+<a href="#" class="btn btn-primary vehicle_photo_upload" data-vehicle="{{ vehicle.id }}">Upload</a>
+{% endif %}

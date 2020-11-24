@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+<!-- <script src="{% static 'js/vehicles.js' %}"></script>
+<script src="{% static 'js/dropdown.js' %}"></script> -->
+<script src="{% static 'js/incident_view.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    {% if incident %}
+      <b>Edit Incident: </b>
+    {% else %}
+      <b>Add Incident:</b>
+    {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div id="edit_incident_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>
+
+          <div class='col-lg-6'>
+            {% bootstrap_field incident_form.vehicle %}
+            {% bootstrap_field incident_form.incident_date %}
+            {% bootstrap_field incident_form.description %}
+          </div>
+          <div class='col-lg-6'>
+            {% bootstrap_field incident_form.driver %}          
+            {% bootstrap_field incident_form.cost %}
+            {% bootstrap_field incident_form.reference_number %}
+            {% bootstrap_field incident_form.incident_type %} 
+            {% bootstrap_field incident_file_form.document %}
+            {% bootstrap_field incident_document_form.document_type %}
+       
+          </div>
+        </div>
+      </div>
+        <div class="btn-group-horizontal col-lg-12">
+
+          <div class='pull-right'>       
+          <a href="{% url 'fleetmanagement:view_incidents' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+        </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<div class="panel panel-primary transparency">
+  <div class="panel-body">
+</div>
+  {% include 'fleet_management/widgets/_incident_file_list_view.html' with vehicle_driver=vehicle.current_vehicle_driver %}
+</div>
+{% endblock %}

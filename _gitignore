@@ -1,0 +1,10 @@
+*#
+*~
+~*
+*local_settings.py
+*pyc
+venv
+statics_collected
+logs
+media
+config/pisa_util.py

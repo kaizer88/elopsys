@@ -1,0 +1,47 @@
+{% load el_pagination_tags %}
+<table id="incidents" class="table table-hover ">
+  <tr>{% if incidents %}
+    <th>Edit</th>{% endif %}
+    <th>Registration Number</th>
+    <th>Driver</th>
+    <th>Vehicle Make And Model</th>
+    <th>Division</th>   
+    <th>Incident Type</th>
+    <th>Invoice Amount</th>
+    <th>Driver Co-Payment</th>
+    <th>Total</th>
+    <th>Incident Date</th>
+    
+  </tr>
+
+  {% paginate incidents %}
+  {% for incident in incidents %}
+
+  <tr>
+    <td><a href="{% url 'fleetmanagement:edit_incident' incident.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Incident"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a></td>
+    <td>{{ incident.vehicle.registration_number }}</td>
+    {% if incident.driver %}
+    <td><a href="{% url 'employees:edit_employee' incident.driver.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Driver Profile"><i class="fa fa-info-circle" aria-hidden="true"></i>
+      {{ incident.driver }}</a></td>
+    {% else %}
+    <td></td>
+    {% endif %}
+    <td>{{ incident.vehicle.vehicle_make.make_name }} {{ incident.vehicle.vehicle_model.model_name }}</td>
+    <td>{{ incident.vehicle.division |title }}</td>
+    <td>{{ incident.incident_type |title }}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>{{ incident.incident_date |date:"d M Y" }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

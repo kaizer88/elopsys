@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block content %}
+<form method="POST" action="">
+	{% csrf_token %}
+	{% include 'req.html' %}
+
+	
+		<input class="btn btn-warning" id="send" name="send" type="submit" value="Send Email"/>
+		<input class="btn btn-warning" id="download" name="download" type="submit" value="Download"/>
+		<input class="btn btn-warning" id="close" name="close" type="submit" value="Close"/>
+	</form>
+{% endblock %}

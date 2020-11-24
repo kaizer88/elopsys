@@ -1,0 +1,27 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Region Code</th>
+    <th>Region Name</th>   
+    <th></th>
+  </tr>
+
+  {% paginate regions %}
+  {% for region in regions %}
+
+  <tr>   
+    <td>{{ region.code }}</td>
+    <td>{{ region.name }}</td> 
+    <td></td>   
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,1080 @@
+    {% extends "dash.html" %}
+    {% load staticfiles%}
+    {% load humanize %}
+    {% load crispy_forms_tags %}
+    {% load bootstrap3 %}
+   
+
+    {% block javascript %}
+      
+        <script>
+            $(function() {
+                $(".auto-complete-vehicle").autocomplete({
+                    source: "{% url 'fleet:get_vehicle' %}",
+                    minLength: 2});
+
+                $(".auto-complete-driver").autocomplete({
+                    source: "{% url 'fleet:get_employee' %}",
+                    minLength: 2});
+
+                $("#id_fuel_card").autocomplete({
+                source: "{% url 'fleet:get_fuel_card' %}",
+                minLength: 2});
+
+                $("#id_driver").autocomplete({
+                source: "{% url 'fleet:get_employee' %}",
+                minLength: 2});
+
+                $('select').select2();
+
+                $('#id_save_modal_form').click(submit_modal);
+                    
+            });
+
+            submit_modal = function() {
+                // $(this).closest('form').submit();
+                theForm = $('#id_form_div').find('form');
+                $(theForm).append("<input type='hidden' name='save_modal' value='Save' />");
+                $(theForm).submit();
+
+            }
+
+        </script>
+        
+
+    {% endblock %}
+
+
+    {% block dash_content%}                 
+
+            <div style="margin-bottom: 3px;" id="myCarousel" class="carousel slide" data-ride="carousel">
+                  <!-- Indicators -->
+
+                  <!-- <ol class="carousel-indicators">        
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                          
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                        
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                    
+                    <li data-target="#myCarousel" data-slide-to="3"></li>
+                  
+                  </ol>  -->
+                
+                  <!-- Wrapper for slides -->
+                  <div class="carousel-inner" role="listbox">
+                    <div class="item active">
+                     <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ el_fleet }}</div>
+                                            <div>Emerald Life Fleet</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclesList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ el_leased }}</div>
+                                            <div>Emerald Life Leased</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclesList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-cog fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ service_due }}</div>
+                                            <div>Service Due</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:servicebookingsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Service Bookings List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-cog fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ service_over_due }}</div>
+                                            <div>Service Over Due</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:servicebookingsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Service Bookings List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                      </div>
+
+                      <div class="item">
+                        <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ out_of_smp_count }}</div>
+                                            <div>Out-Of Service &amp Maintenance Plan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclesList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ in_smp_count }}</div>
+                                            <div>In Service &amp Maintenance Plan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclesList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-exclamation-circle fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ minor_damages_count }}</div>
+                                            <div>Minor Damages</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclemaintenanceList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Maintenance List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-exclamation-triangle fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ major_damages_count }}</div>
+                                            <div>Major Damages</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehiclemaintenanceList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Maintenance List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                      
+                    </div>
+                    <div class="item">
+                      <div class="row">                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ vehicles_licencing_not_expired_count }}</div>
+                                            <div>Licence Disks Not Expired</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-recycle fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ vehicles_licencing_due_count }}</div>
+                                            <div>Expiring Licence Disks</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:licenceDiskRenewalList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Licencing List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-recycle fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ vehicles_licencing_expired_count }}</div>
+                                            <div>Expired Licence Disks</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:licenceDiskRenewalList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Licencing List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-purple">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-tasks fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ unclaimed_incidences_count }}</div>
+                                            <div>Unclaimed Incidences</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:incidencesList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Incidences List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                       
+                      </div>
+
+                      <div class="item">
+                        <div class="row">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-green">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ finalized }}</div>
+                                            <div>Finalized Insurance Claims</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehicleClaimsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Claims List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-red">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge">{{ unpaid_claims_count }}</div>
+                                            <div>Pending Insurance Claims</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehicleClaimsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Claims List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-yellow">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-money fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge" style="font-size: 30px; height: 55px">R{{ total_amount_excess|floatformat:2|intcomma }}</div>
+                                            <div>Total Amount Excess</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehicleClaimsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Claims List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="panel panel-purple">
+                                <div class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                            <i class="fa fa-money fa-5x" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-9 text-right">
+                                            <div class="huge" style="font-size: 30px; height: 55px">R{{ total_amount_claims|floatformat:2|intcomma }}</div>
+                                            <div>Total Amount Claims</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{% url 'fleet:vehicleClaimsList' %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Claims List">
+                                    <div class="panel-footer">
+                                        <span class="pull-left">View Details</span>
+                                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                         
+                        </div>
+                      </div>
+
+                      <!-- Left and right controls -->
+                      <a style="height: 140px;" class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                        <span style="top:80%;" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                      <a style="height: 140px" class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                        <span style="top:80%;" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </div>                      
+             <!-- /.panel -->
+                    
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Regional Vehicles Allocations
+                            <!-- <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        Actions
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">Action</a>
+                                        </li>
+                                        <li><a href="#">Another action</a>
+                                        </li>
+                                        <li><a href="#">Something else here</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div> -->
+                        </div>
+                        <!-- /.panel-heading -->
+                       <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Region</th>
+                                                    <th>Fleet Count</th>
+                                                    <th>Sales</th>
+                                                    <th>Marketing</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in regional_stats %}
+                                                    <tr>
+                                                        <td>{{ row.region }}</td>
+                                                        <td>{{ row.fleet_count }}</td>
+                                                        <td>{{ row.sales }}</td>
+                                                        <td>{{ row.marketing }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                </div>
+                                <!-- /.col-lg-4 (nested) -->
+                                <div class="col-lg-8 text-align-center">
+                                    <b>Regional Fleet Vehicles vs Leased Vehicles</b>
+                                    <div id="morris-bar-chart" style="height: 450px"></div>
+                                </div>
+                                <!-- /.col-lg-8 (nested) -->
+                            </div>
+                            <!-- /.row -->                      
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    
+                    <!-- /.panel -->
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i>
+                            {% if request.user.regional_staff %}
+                                {{ request.user.employee.branch.region }}
+                            {% endif %} 
+                            Maintenance Cost Analysis
+                            <!-- <div class="pull-right">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        Actions
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li><a href="#">Action</a>
+                                        </li>
+                                        <li><a href="#">Another action</a>
+                                        </li>
+                                        <li><a href="#">Something else here</a>
+                                        </li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div> -->
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="height: 380px;"  id="morris-area-chart"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>             
+                    
+                </div>
+                <!-- /.col-lg-8 -->
+                <div class="col-lg-4">                   
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i>
+                            {% if request.user.regional_staff %}
+                                {{ request.user.employee.branch.region }}
+                            {% endif %} 
+                            Fleet Insurance Claims
+                        </div>
+                        <div class="panel-body">
+                            <div id="morris-donut-chart"></div>
+                            <a href="{% url 'fleet:vehicleClaimsList' %}" class="btn btn-default btn-block" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Claims List">View Details</a>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->            
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+                  <div class="row col-hidden col-hidden-2">
+                        <div class="col-lg-12"> 
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> Fleet Summary
+                                </div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-align-center" colspan="4"></th>
+                                                    <th class="text-align-center" colspan="3">Damages</th>
+                                                    <th class="text-align-center" colspan="2">Traffic Fines</th>
+                                                    <th class="text-align-center" colspan="2">Maintenance</th>
+                                                    <th class="text-align-center" colspan="2">Insurance Claims</th>
+                                                </tr>
+                                                <tr>                                                    
+                                                    <th>Region</th>
+                                                    <th>Vehicles</th>
+                                                    <th>Available</th>
+                                                    <th>Incidences</th>
+                                                    <th>Minor</th>
+                                                    <th>Major</th>
+                                                    <th>Write Offs</th>
+                                                    <th>Count</th>
+                                                    <th>Average</th>
+                                                    <th>Total</th> 
+                                                    <th>Average</th>
+                                                    <th>Total</th>  
+                                                    <th>Average</th>                                                 
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in regional_stats %}
+                                                    <tr>
+                                                        <td>{{ row.region }}</td>
+                                                        <td>{{ row.fleet_count }}</td>
+                                                        <td>{{ row.available }}</td>
+                                                        <td>{{ row.incidences }}</td>
+                                                        <td>{{ row.minor_damaged }}</td>
+                                                        <td>{{ row.major_damaged }}</td>
+                                                        <td>{{ row.write_offs }}</td>
+                                                        <td>{{ row.traffic_fines }}</td>
+                                                        <td>{{ row.avg_fines|floatformat:2|intcomma }}</td>
+                                                        <td>{{ row.total_maintenance|floatformat:2|intcomma }}</td>
+                                                        <td>{{ row.avg_maintenance|floatformat:2|intcomma }}</td>
+                                                        <td>{{ row.total_claims|floatformat:2|intcomma }}</td>
+                                                        <td>{{ row.avg_claims|floatformat:2|intcomma }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="row">
+                        <div class="col-lg-12"> 
+                            <div class="panel chat-panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="fa fa-bar-chart-o fa-fw"></i> All Vehicles
+                                </div>
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table id="all_fleet_table" class="table table-hover ">                         
+                                            <tr>
+                                                <th colspan="3">Driver</th>
+                                                <th>Vehicle</th>                                
+                                                <th class="col-hidden">Make and Model</th>
+                                                <th class="col-hidden col-hidden-2">Model Year</th>
+                                                <th class="col-hidden col-hidden-2">Ownership Type</th>
+                                                <th class="col-hidden col-hidden-2">Color</th>
+                                                <th class="col-hidden col-hidden-2">Division</th>
+                                                <th class="col-hidden col-hidden-2">Region</th>
+                                                <th></th>
+                                            </tr>                               
+                                            {% for vehicle in vehicles %}
+
+                                                <tr>
+                                                <td class="driverIDCell hidden" data-id="{{ vehicle.get_current_driver.id }}">
+                                                    {{ vehicle.get_current_driver.id }}
+                                                </td>
+                                                    <td>{{ vehicle.get_current_driver }}</td>
+                                                    <td>
+                                                        {% if not vehicle.driver_has_licence %}
+                                                            <button name="lc_btn" id="id-lc-btn" class="btn btn-xs btnSelect" type="button"  data-toggle="modal" data-target="#licenceModal" data-toggle="tooltip" data-placement="right" title="Add Driving Licence">
+                                                            <i class="fa fa-address-card" aria-hidden="true"></i></button>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td><button class="btn btn-xs" type="button" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Driver Profile"><a href="{% url 'fleet:view_driverprofile' vehicle.get_current_driver.id %}"><i class="fa fa-info-circle" aria-hidden="true"></i></a></button></td>
+                                                    <td>{{ vehicle.vehicle }} </td>
+                                                    <td class="col-hidden">{{ vehicle.make_n_model }} </td>
+                                                    <td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+                                                    <td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+                                                    <td class="col-hidden col-hidden-2">{{ vehicle.color }}</td>
+                                                    <td class="col-hidden col-hidden-2">{{ vehicle.division }}</td>
+                                                    <td class="col-hidden col-hidden-2">{{ vehicle.current_driver.branch.region }}</td>                                                                 
+                                                    <td><button class="btn btn-xs" type="button" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Profile"><a href="{% url 'fleet:viewvehicle' vehicle.id %}"><i class="fa fa-car" aria-hidden="true"></i></a></button></td>
+                                                </tr>                                       
+                                            {% endfor %}                        
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                </div>
+                            </div>
+                        </div>
+                        {% if licence_form %}                        
+                            <!-- Modal -->
+                                <div id="licenceModal" class="modal fade" role="dialog">
+                                  <div class="modal-dialog">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Driving Licence Details</h4>
+                                      </div>
+                                      <div id="id_form_div" class="modal-body">
+                                        <p>{% crispy licence_form %}</p>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button id="id_save_modal_form" name="save_modal_form" type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+                                      </div>
+                                    </div>
+
+                                  </div>
+                                </div>                          
+                        {% endif %}         
+                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-clock-o fa-fw"></i>  
+                        {% if request.user.regional_staff %}
+                            {{ request.user.employee.branch.region }}
+                        {% endif %} 
+                        Tasks
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                {% if unsubmitted_inspections %}
+                     <div class="col-md-4">
+                     <div class="chat-panel panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ unsubmitted_inspections_count }}</div>
+                                    <div>Unsubmitted Inspections</div>
+                                </div>
+                            </div>                                  
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in unsubmitted_inspections %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{vehicle.licence_plate}}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:mileagelog' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Add Vehicles Inspection"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                       
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if unpaid_claims %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-purple">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ unpaid_claims_count }}</div>
+                                    <div>Unpaid Insurance Claims</div>
+                                </div>
+                            </div>                                       
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in unpaid_claims %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.driver }}
+                                    </td>
+                                    <td>
+                                        {{ vehicle.vehicle }}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:editVehicleClaim' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Finalize Insurance Claim"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if unclaimed_incidences %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ unclaimed_incidences_count }}</div>
+                                    <div>Unclaimed Vehicle Incidences</div>
+                                </div>
+                            </div>                                       
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in unclaimed_incidences %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.driver }}
+                                    </td>
+                                    <td>
+                                        {{ vehicle.vehicle }}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:viewvehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Profile"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}    
+                {% if vehicles_due_service %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-cog fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ service_due }}</div>
+                                    <div>Service Due</div>
+                                </div>
+                            </div>                                            
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in vehicles_due_service %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{vehicle.licence_plate}}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:bookservice' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Book Vehicles Service"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                         
+                                    </td>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if vehicles_over_due_service %}
+
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-cog fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ service_over_due }}</div>
+                                    <div>Service Over Due</div>
+                                </div>
+                            </div>                                          
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in vehicles_over_due_service %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{vehicle.licence_plate}}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:bookservice' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Book Vehicles Service"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if vehicles_licencing_due %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-yellow">
+                        <div class="panel-heading">
+                           <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-recycle fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ vehicles_licencing_due_count }}</div>
+                                    <div>Expiring Vehicle Licencing</div>
+                                </div>
+                            </div>                                
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in vehicles_licencing_due %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{vehicle.licence_plate}}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:renewlicencedisk' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Vehicles Licencing"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                       
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if vehicles_licencing_expired %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-recycle fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ vehicles_licencing_expired_count }}</div>
+                                    <div>Expired Vehicle Licencing</div>
+                                </div>
+                            </div>                                       
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in vehicles_licencing_expired %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{vehicle.licence_plate}}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:renewlicencedisk' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Vehicles Licencing"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                
+                {% if minor_damages %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ minor_damages_count }}</div>
+                                    <div>Vehicles Damaged Minor</div>
+                                </div>
+                            </div>                                       
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in minor_damages %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.current_driver }}
+                                    </td>
+                                    <td>
+                                        {{ vehicle.vehicle }}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:viewvehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles Profile"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}
+                {% if major_damages %}
+                    <div class="col-md-4">
+                     <div class="chat-panel panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-anchor fa-5x" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ major_damages_count }}</div>
+                                    <div>Vehicles Damaged Major</div>
+                                </div>
+                            </div>                                       
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                         <table class="table table-hover">
+                            {% for vehicle in major_damages %}
+                                <tr>
+                                    <td>
+                                        {{ vehicle.driver }}
+                                    </td>
+                                    <td>
+                                        {{ vehicle.vehicle }}
+                                    </td>
+                                    <td>
+                                         <a href="{% url 'fleet:viewvehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicles Profile"><i class="fa fa-check" aria-hidden="true"></i> </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                             
+                         </table>                                   
+                        </div>
+                        <!-- /.panel-body -->
+                        
+                    </div>
+                    <!-- /.panel .chat-panel -->
+                    </div>
+                {% endif %}     
+                
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->    
+        {% endblock %}

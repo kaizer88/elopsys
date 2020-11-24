@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+{% block javascript %}
+
+
+<script>
+	$(function() {
+		$(".auto-complete-vehicle").autocomplete({
+		source: "{% url 'fleet:get_vehicle' %}",
+		minLength: 2});
+
+		$(".auto-complete-driver").autocomplete({
+		source: "{% url 'fleet:get_employee' %}",
+		minLength: 2});
+
+		$(".auto-complete-region").autocomplete({
+		source: "{% url 'fleet:get_region' %}",
+		minLength: 2});
+	});
+
+</script>
+
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency">
+<form method="GET" action="">
+<h1>{{title}}</h1>
+<table class="table table-hover  table-fixed">              
+    <tr>
+      <th>{{filter_form.region}}</th>
+      <th>{{filter_form.vehicle}}</th>
+      <th>{{filter_form.driver}}</th>
+      <th><input class="btn btn-warning" id="filter_list" name="filter_list" type="submit" value="Search"/>
+          <a class="btn btn-warning" href="{% url 'fleet:rpt_driver_traffic_fines' %}" type="submit">Refresh</a>
+          <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th></th>
+          </tr>
+        </table>
+
+<table class="table table-hover table-striped ">
+<tr style="background-color: #808080;">								
+	<th>Vehicle</th>
+	<th>Driver</th>								
+	<th>Make and Model</th>
+	<th>Model Year</th>
+	<th>Region</th>
+	<th>Last Renewed On</th>
+	<th>Expired On</th>
+	<th>Status</th>
+	
+</tr>								
+{% for vehicle in licencing_list %}
+	<tr>
+		
+		<td>{{ vehicle.vehicle }} </td>
+		<td>{{ vehicle.get_current_driver }}</td>
+		<td>{{ vehicle.make_n_model }} </td>
+		<td>{{ vehicle.model_year }}</td>
+		<td>{{ vehicle.get_current_driver.branch.region }}</td>
+		<td>{{ vehicle.get_last_Licence_renewal_date }}</td>
+		<td>{{ vehicle.licence_disk_expiry }}</td>
+		<td>{{ vehicle.status }}</td>																	
+		
+	</tr>										
+{%  endfor %}						
+</table>
+</form>
+</div>
+{% endblock %}

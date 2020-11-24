@@ -1,0 +1,288 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import django.db.models.deletion
+from django.conf import settings
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('employees', '0002_auto_20170606_0850'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('fleet', '0002_auto_20170605_1143'),
+        ('offices', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='CardAllocation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('parckage', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('UC5GB', 'Unlimited Calls 5GB Data'), ('UC10GB ', 'Unlimited Calls 10GB Data')])),
+                ('fuel_cycle_limit', models.CharField(max_length=120, null=True, blank=True)),
+                ('allocation_date', models.DateField(null=True, blank=True)),
+                ('allocation_type', models.CharField(default=None, max_length=20, null=True, blank=True, choices=[('Allocate Sim And Fuel Card', 'Allocate Sim And Fuel Card'), ('Allocate Sim Card', 'Allocate Sim Card'), ('Allocate Fuel Card', 'Allocate Fuel Card'), ('Return Sim And Fuel Card', 'Return Sim And Fuel Card'), ('Return Sim Card', 'Return Sim Card'), ('Return Fuel Card', 'Return Feul Card')])),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('created_by', models.ForeignKey(related_name='user_cardallocation', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('employee', models.ForeignKey(related_name='employee_cardallocation', blank=True, to='employees.Employee', null=True)),
+                ('fuel_card', models.ForeignKey(related_name='fuelcard_cardallocation', blank=True, to='fleet.FuelCard', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='HistoricalCardAllocation',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('parckage', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('UC5GB', 'Unlimited Calls 5GB Data'), ('UC10GB ', 'Unlimited Calls 10GB Data')])),
+                ('fuel_cycle_limit', models.CharField(max_length=120, null=True, blank=True)),
+                ('allocation_date', models.DateField(null=True, blank=True)),
+                ('allocation_type', models.CharField(default=None, max_length=20, null=True, blank=True, choices=[('Allocate Sim And Fuel Card', 'Allocate Sim And Fuel Card'), ('Allocate Sim Card', 'Allocate Sim Card'), ('Allocate Fuel Card', 'Allocate Fuel Card'), ('Return Sim And Fuel Card', 'Return Sim And Fuel Card'), ('Return Sim Card', 'Return Sim Card'), ('Return Fuel Card', 'Return Feul Card')])),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('employee', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='employees.Employee', null=True)),
+                ('fuel_card', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='fleet.FuelCard', null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical card allocation',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalElectricityMeterNumber',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('meter_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('meter_type', models.CharField(default=None, max_length=20, null=True, blank=True, choices=[('prepaid', 'Prepaid Electricity Meter'), ('account', 'Metered Electricity Bill')])),
+                ('service_provider', models.CharField(max_length=120, null=True, blank=True)),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('branch', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.Branch', null=True)),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical electricity meter number',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalElectricityPurchase',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('purchase_date', models.DateField(null=True, blank=True)),
+                ('amount', models.FloatField(default=0, max_length=20, null=True, blank=True)),
+                ('token', models.CharField(max_length=120, null=True, blank=True)),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical electricity purchase',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalMobileNumber',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('phone_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('sim_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('service_provider', models.CharField(blank=True, max_length=120, null=True, choices=[('cell_c', 'Cell C'), ('mtn', 'MTN'), ('telcom_mobile', 'Telcom Mobile'), ('virgin_mobile', 'Virgin Mobile'), ('vodacom', 'Vodacom')])),
+                ('active', models.BooleanField(default=False)),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical mobile number',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalMobilePurchase',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('purchase_date', models.DateField(null=True, blank=True)),
+                ('mobile_option', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('airtime', 'Airtime Purchase'), ('data', 'Data Purchase')])),
+                ('service_provider', models.CharField(blank=True, max_length=120, null=True, choices=[('cell_c', 'Cell C'), ('mtn', 'MTN'), ('telcom_mobile', 'Telcom Mobile'), ('virgin_mobile', 'Virgin Mobile'), ('vodacom', 'Vodacom')])),
+                ('phone_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('units', models.CharField(max_length=120, null=True, blank=True)),
+                ('price', models.FloatField(default=0, max_length=20, null=True, blank=True)),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('branch', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.Branch', null=True)),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical mobile purchase',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalTelcomPABXContract',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('start_date', models.DateField(null=True, blank=True)),
+                ('expiry_date', models.DateField(null=True, blank=True)),
+                ('extensions', models.IntegerField()),
+                ('price', models.FloatField(default=0, max_length=20, null=True, blank=True)),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('branch', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.Branch', null=True)),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical telcom pabx contract',
+            },
+        ),
+        migrations.CreateModel(
+            name='HistoricalTelcomPABXContractRenewal',
+            fields=[
+                ('id', models.IntegerField(verbose_name='ID', db_index=True, auto_created=True, blank=True)),
+                ('date_expired', models.DateField(null=True, blank=True)),
+                ('start_date', models.DateField(null=True, blank=True)),
+                ('expiry_date', models.DateField(null=True, blank=True)),
+                ('extensions', models.IntegerField()),
+                ('price', models.FloatField(default=0, max_length=20, null=True, blank=True)),
+                ('accept', models.BooleanField(default=False)),
+                ('authorize', models.CharField(default='Pending', max_length=20, null=True, blank=True, choices=[('Pending', 'Pending'), ('Aproved', 'Authorize'), ('Declined', 'Decline')])),
+                ('history_id', models.AutoField(serialize=False, primary_key=True)),
+                ('history_date', models.DateTimeField()),
+                ('history_type', models.CharField(max_length=1, choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')])),
+                ('branch', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.Branch', null=True)),
+                ('created_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('history_user', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+            options={
+                'ordering': ('-history_date', '-history_id'),
+                'get_latest_by': 'history_date',
+                'verbose_name': 'historical telcom pabx contract renewal',
+            },
+        ),
+        migrations.CreateModel(
+            name='MobileNumber',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('phone_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('sim_number', models.CharField(max_length=120, null=True, blank=True)),
+                ('service_provider', models.CharField(blank=True, max_length=120, null=True, choices=[('cell_c', 'Cell C'), ('mtn', 'MTN'), ('telcom_mobile', 'Telcom Mobile'), ('virgin_mobile', 'Virgin Mobile'), ('vodacom', 'Vodacom')])),
+                ('active', models.BooleanField(default=False)),
+                ('created_by', models.ForeignKey(related_name='user_mobilenumber', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('modified_by', models.ForeignKey(related_name='user_modified_mobilenumber', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='electricitymeternumber',
+            name='created_by',
+            field=models.ForeignKey(related_name='user_electricitymeternumber', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='electricitymeternumber',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_electrictymeternumber', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='electricitypurchase',
+            name='created_by',
+            field=models.ForeignKey(related_name='user_electricitypurchase', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='electricitypurchase',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_electricitypurchase', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='mobilepurchase',
+            name='created_by',
+            field=models.ForeignKey(related_name='user_mobilepurchase', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='mobilepurchase',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_mobilepurchase', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='telcompabxcontract',
+            name='created_by',
+            field=models.ForeignKey(related_name='user_pabxcontract', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='telcompabxcontract',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_pabxcontract', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='telcompabxcontractrenewal',
+            name='created_by',
+            field=models.ForeignKey(related_name='user_pabxcontractrenewal', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='telcompabxcontractrenewal',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_pabxcontractrenewal', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='historicalelectricitypurchase',
+            name='meter_number',
+            field=models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.ElectricityMeterNumber', null=True),
+        ),
+        migrations.AddField(
+            model_name='historicalelectricitypurchase',
+            name='modified_by',
+            field=models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='historicalcardallocation',
+            name='mobile_number',
+            field=models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to='offices.MobileNumber', null=True),
+        ),
+        migrations.AddField(
+            model_name='historicalcardallocation',
+            name='modified_by',
+            field=models.ForeignKey(related_name='+', on_delete=django.db.models.deletion.DO_NOTHING, db_constraint=False, blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='cardallocation',
+            name='mobile_number',
+            field=models.ForeignKey(related_name='phone_cardallocation', blank=True, to='offices.MobileNumber', null=True),
+        ),
+        migrations.AddField(
+            model_name='cardallocation',
+            name='modified_by',
+            field=models.ForeignKey(related_name='user_modified_cardallocation', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+    ]

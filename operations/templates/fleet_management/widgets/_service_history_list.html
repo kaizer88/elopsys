@@ -1,0 +1,24 @@
+<table id="incident_documents_table" class="table table-hover">
+  <tr>
+    <th></th>
+    <th>Driver</th>
+    <th>Current Mileage</th>
+    <th>Booking Date</th>
+    <th>Service Date</th>
+    <th></th>
+  </tr>
+  {% for service in service_history %}
+  <tr>
+  	<td></td>
+    <td>{{ service.vehicle.driver }}</td>
+    <td>{{ service.current_mileage |title }}</td>
+    <td>{{ service.booking_date|default_if_none:"" |date:"d M Y" }}</td>
+    <td>{{ service.service_date|default_if_none:"" |date:"d M Y" }}</td>
+
+
+    <td></td>
+    {% empty %}
+    <tr><td class="info" colspan="20">No Documents Yet</td></tr>
+  </tr>
+    {% endfor %}
+</table>

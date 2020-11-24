@@ -1,0 +1,35 @@
+{% load el_pagination_tags %}
+<table id="assets" class="table table-hover ">
+  <tr>{% if assets %}
+    <th>Edit</th>{% endif %}
+    <th>Description</th>
+    <th>Make</th>
+    <th>Model</th> 
+    <th>Department</th>   
+    <th>Serial Number</th>
+    <th>Warranty Expiry</th> 
+  </tr>
+
+  {% paginate assets %}
+  {% for asset in assets %}
+
+  <tr>
+    <td><a href="{% url 'assets:edit_asset' asset.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Esset"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a></td>
+    <td>{{ asset.asset_description }}</td>
+    <td>{{ asset.make }}</td>
+    <td>{{ asset.model }}</td>
+    <td>{{ asset.asset_detail.department |title}}</td>
+    <td>{{ asset.serial_number }}</td>
+    <td>{{ asset.warranty_expiry |date:"d M Y" }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

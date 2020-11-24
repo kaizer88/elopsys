@@ -1,0 +1,38 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Card Number</th>
+    <th>Registration Number</th>
+    <th>Driver</th> 
+    <th>Status</th>
+    <th>Total Usage</th>
+  </tr>
+
+  {% paginate fuel_card_usage %}
+  {% for fcu in fuel_card_usage %}
+
+  <tr>    
+    <td>
+        <a href="{% url 'fleetmanagement:detail_fuel_card_usage' fcu.fuel_card__id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Fuel Card Usage For Card">
+        <i class="fa fa-binoculars" aria-hidden="true"></i>  {{ fcu.fuel_card__card_number }} </a>
+    </td>    
+    <td>{{ fcu.vehicle__registration_number|default_if_none:"No Assigned Vehicle" }}</td>
+    <td>{{ fcu.driver__first_name|default_if_none:""}} {{ fcu.driver__last_name|default_if_none:"No Assigned Driver" }}</td>
+    <td>{{ fcu.fuel_card__status|title }}</td>
+    <td>{{ fcu.sum_amount }}</td>
+  </tr>  
+  {% endfor %}
+  <tr>
+    <th colspan="4">Total Fuel Usage</th>
+    <th>{{total_usage}}</th>
+  </tr>
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

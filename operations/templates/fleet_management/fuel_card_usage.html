@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Fuel Usage</b>
+    
+  </div> 
+  <div class="panel-body">
+
+    <form id="fuel_card_usage_filter_form" method="GET">
+        {% csrf_token %}
+
+    <div class="row">     
+        <input name="filter" type="hidden">
+        
+        <div class='col-lg-4 pull-right'>
+          <div class='pull-right'>
+            <button type="submit" name="search" class="btn btn-primary" title="Search"><i class="fa fa-search"></i> Search</button>
+            <a href="{% url 'fleetmanagement:fuel_card_usage' %}"  class="btn btn-primary" title="Clear Search"><i class="fa fa-search-minus"></i> Clear</a>
+            <button type="submit" id="load_modal" class="btn btn-primary" title="Extract Fuel Card Usage"><i class="fa fa-download"></i> Extract</button>
+            {% if user.is_superuser %}
+            <a href="{% url 'fleetmanagement:fuel_card_uploads' %}" class="btn btn-primary" title="Import Fuel Card Usage"><i class="fa fa-upload"></i> Import</a>
+            <a href="{% url 'fleetmanagement:add_fuel_card_usage' %}" class="btn btn-primary" title="Add Fuel Card Usage"><i class="fa fa-plus"></i> Add Usage</a>
+            {% endif %}
+          </div>
+        </div>
+        
+      <div class='col-lg-8'>
+         <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.date_type layout='inline'%}
+        </div>   
+        <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.date_from layout='inline'%}
+        </div>
+        <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.date_to layout='inline'%}
+        </div> 
+        <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.card_number layout='inline'%}
+        </div>   
+        <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.driver layout='inline'%}
+        </div>
+        <div class='col-lg-4'>
+          {% bootstrap_field fuel_card_usage_form.vehicle layout='inline'%}
+        </div>
+
+        <!-- {% for field in fuel_card_usage_form %}
+          <div class='col-lg-4'>
+            {% bootstrap_field field layout='inline' %}
+          </div>
+          {% endfor %} -->
+      </div>
+    </div>
+    
+    <div class="tab-content">
+      <div id="fuel_card" class="tab-pane fade in active">
+        {% include 'fleet_management/_fuel_card_usage_list.html' %}
+
+      </div>
+    </div>
+
+    <div class="modal fade" id="extract_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel"><i class="fa fa-info-circle" aria-hidden="true"></i> Extract Fuel Card(s)</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <b> Are you sure you want to download the extract</b>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" name="extract" id="extract" class="btn btn-primary">Ok</button>
+            </div>
+          </div>
+        </div>
+    </div>
+  </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>{% if all_fines %}
+    <th>Edit</th>{% endif %}
+    <th>Registration Number</th>
+    <th>Driver Name</th>
+    <th>Vehicle Make and Model</th>
+    <th>Division</th>
+    <th>Cost</th>
+    <th>Status</th>
+    <th>Incident Date</th>
+  </tr>
+
+  {% paginate all_fines %}
+  {% for fine in all_fines %}
+
+  <tr>
+    <td><a href="{% url 'fleetmanagement:edit_traffic_fine' fine.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Traffic Fine"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a></td>
+    <td>{{ fine.vehicle.registration_number }}</td>
+    {% if fine.driver.id %}
+    <td><a name='vehicle_employee' href="{% url 'employees:edit_employee' fine.driver.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Driver Profile"><i class="fa fa-info-circle" aria-hidden="true"></i> {{ fine.driver.full_name }}</a></td>   
+    {% else %}
+    <td></td>
+    {% endif %}
+    <td>{{ fine.vehicle.make }} {{ fine.vehicle.model }}</td>
+    <td>{{ fine.vehicle.division|title }}</td>
+    <td>{{ fine.cost }}</td>
+    {% if fine.resolved %}
+    <td>Resolved</td>
+    {% else %}
+    <td>
+      <a onclick="vehicle.resolve_fine('{% url 'fleetmanagement:resolve_fine' fine.id  %}')" href="#" aria-hidden="true" data-toggle="modal" data-target="#resolve_fine_modal">Resolve</a>
+    </td>
+    {% endif %}
+    <td>{{ fine.incident_date |date:"d M Y" }}</td> 
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>
+{% include 'fleet_management/widgets/_fine_resolve.html' with form=traffic_fine_resolve_form %}

@@ -1,0 +1,41 @@
+{% load el_pagination_tags %}
+<table id="insurance_claims" class="table table-hover ">
+  <tr>{% if insurance_claims %}
+    <th>Edit</th>{% endif %}
+    <th>Insurance</th>
+    <th>Registration Number</th>
+    <th>Quote Reference Number</th> 
+    <th>Claim Reference Number</th>   
+    <th>Claim Type</th>
+    <th>Invoice Amount</th>
+    <th>Driver Co-Payment</th>
+    <th>Total</th>
+    <th>Incident Date</th>   
+  </tr>
+
+  {% paginate insurance_claims %}
+  {% for insurance_claim in insurance_claims %}
+
+  <tr>
+    <td><a href="{% url 'fleetmanagement:edit_insurance_claim' insurance_claim.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Insurance Claim"><i class="fas fa-pencil-alt" aria-hidden="true"></i></a></td>
+    <td>{{ insurance_claim.vendor }}</td>
+    <td>{{ insurance_claim.vehicle }}</td>
+    <td>{{ insurance_claim.quote_reference_number }}</td>
+    <td>{{ insurance_claim.insurance_reference_number }}</td>
+    <td>{{ insurance_claim.claim_type }}</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>{{ insurance_claim.incident_date |date:"d M Y" }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

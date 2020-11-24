@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li><a data-toggle="pill" href="#claims">Insurance Claims</a></li>
+				<li><a data-toggle="pill" href="#maintenance">Fleet Maintenance</a></li>
+				<li><a data-toggle="pill" href="#allocations">Fleet Allocations</a></li>				
+				<li><a data-toggle="pill" href="#fuel">Fuel Allocations</a></li>
+				<li><a data-toggle="pill" href="#licenceDisk">Licencing Renewals</a></li>
+				<li><a data-toggle="pill" href="#traffic">Traffic Fines</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="claims" class="tab-pane fade in active">					
+					<form method="GET" action="">	
+					 <p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_claims" name="filter_claims" type="submit" value="Search"/></div>
+					  </div></p>
+					  	<table class="table table-hover ">							
+							<tr>
+								<th>Vehicle</th>								
+								<th class="col-hidden col-hidden-2">Driver</th>
+								<th class="col-hidden">Submission Date</th>
+								<th>Claim No.</th>
+								<th class="col-hidden col-hidden-2">Claim Status</th>														
+								<th></th>
+							</tr>								
+							{% for transaction in claims %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td class="col-hidden col-hidden-2">{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.submission_date }} </td>
+									<td>{{ transaction.claim_number }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.claim_status }}</td>
+																											
+									<td>										
+										<a href="{% url 'fleet:editVehicleClaim' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i>Auth</a>
+									</td>
+								</tr>										
+							{%  endfor %}																				
+									
+						</table>
+						{% if claims.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if claims.has_previous %}
+						      <li><a href="?page={{ claims.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{ claims.number }} of {{ claims.paginator.num_pages }}<span class="sr-only">(current)</span></span></li> 
+						    {% if claims.has_next %}
+						      <li><a href="?page={{ claims.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>					
+				</div>
+
+
+<div id="maintenance" class="tab-pane fade">
+	<form method="GET" action="">
+		<p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_maintenance" name="filter_maintenance" type="submit" value="Search"/></div>
+					  </div></p>	
+<table class="table table-hover ">
+	<tr>
+		<th>Vehicle</th>								
+		<th class="col-hidden">Driver</th>
+		<th>Date</th>
+		<th>Type</th>
+		<th class="col-hidden col-hidden-2">Projected Cost</th>
+		<th class="col-hidden col-hidden-2">Actual Cost</th>
+		<th class="col-hidden col-hidden-2">Difference</th>								
+		<th></th>
+	</tr>								
+	{% for transaction in maintenance_list %}
+		<tr>
+			<td>{{ transaction.vehicle }} </td>									
+			<td class="col-hidden">{{ transaction.driver }}</td>
+			<td>{{ transaction.maint_date }} </td>
+			<td>{{ transaction.maint_type }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.projected_cost|floatformat:2|intcomma }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.actual_cost|floatformat:2|intcomma }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.difference|floatformat:2|intcomma }}</td>																		
+			<td>										
+				<a href="{% url 'fleet:editvehiclemaintenance' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Auth</a>
+			</td>
+		</tr>										
+	{%  endfor %}						
+</table>	  
+			
+
+{% if maintenance_list.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if maintenance_list.has_previous %}
+      <li><a href="?page={{ maintenance_list.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    <li class="active"><span>{{  maintenance_list.number }} of {{maintenance_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if maintenance_list.has_next %}
+      <li><a href="?page={{ maintenance_list.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</form>
+		</div>
+				<div id="allocations" class="tab-pane fade">							
+					<form method="GET" action="">			  	  
+						<p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter" name="filter" type="submit" value="Search"/></div>
+					  </div></p>		
+						<table class="table table-hover ">							     
+							<tr>
+								<th>Vehicle</th>								
+								<th>Driver</th>
+								<th class="col-hidden">Type</th>
+								<th>Date</th>
+								<th class="col-hidden col-hidden-2">Status</th>								
+								<th></th>
+							</tr>														
+							{% for transaction in allocations_list %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td>{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.transaction_type }} </td>
+									<td >{{ transaction.allocation_date }}</td>	
+									<td class="col-hidden col-hidden-2">{{ transaction.status }}</td>																						
+									<td>										
+										<a href="{% url 'fleet:editallocatevehicle' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i>Auth</a>
+									</td>
+								</tr>										
+							{%  endfor %}											
+						</table>
+						{% if allocations_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if allocations_list.has_previous %}
+						      <li><a href="?page={{ allocations_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  allocations_list.number }} of {{allocations_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if allocations_list.has_next %}
+						      <li><a href="?page={{ allocations_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+				<div id="traffic" class="tab-pane fade">
+				
+					<form method="GET" action="">
+					<p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_tf" name="filter_tf" type="submit" value="Search"/></div>
+					  </div></p>				  
+						<table class="table table-hover ">
+							<tr>
+								<th>Vehicle</th>								
+								<th class="col-hidden">Driver</th>
+								<th class="col-hidden">Notice Number</th>
+								<th>Offence date</th>
+								<th>Due date</th>
+								<th class="col-hidden col-hidden-2">Location</th>
+								<th class="col-hidden col-hidden-2">Amount</th>
+								<th></th>
+							</tr>								
+							{% for transaction in traffic_fines %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td class="col-hidden">{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.notice_number }} </td>
+									<td>{{ transaction.offence_date }}</td>
+									<td>{{ transaction.due_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.location }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.amount|floatformat:2|intcomma }}</td>																		
+									<td>										
+										<a href="{% url 'fleet:edittrafficfines' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>			
+						
+						{% if traffic_fines.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if traffic_fines.has_previous %}
+					      <li><a href="?page={{ traffic_fines.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					    <li class="active"><span>{{  traffic_fines.number }} of {{traffic_fines.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+					    {% if traffic_fines.has_next %}
+					      <li><a href="?page={{ traffic_fines.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}			
+					</form>
+				</div>
+
+				
+
+				<div id="fuel" class="tab-pane fade">
+					<form method="POST" action="">
+							{% csrf_token %}									
+																
+						</form>							
+						<form method="GET" action="">
+						<p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_fuel" name="filter_fuel" type="submit" value="Search"/>
+						<input class="btn btn-warning pull-right" id="reload_fuel" name="reload_fuel" type="submit" value="Reload Monthly Fuel"/></div>
+					  </div></p>				  
+						<table class="table table-hover">							
+							<tr>
+								<th>Date</th>
+								<th>Driver</th>
+								<th class="col-hidden">Vehicle</th>
+								<th class="col-hidden col-hidden-2">Type</th>							
+								<th class="col-hidden col-hidden-2">Balance BF</th>
+								<th>Allocation</th>
+								<th class="col-hidden col-hidden-2">New Balance</th>
+								
+							</tr>								
+							{% for allocation in fuel_allocations_list %}
+								<tr>
+									<td>{{ allocation.allocation_date }} </td>
+									<td>{{ allocation.driver }}</td>
+									<td class="col-hidden">{{ allocation.vehicle }} </td>									
+									<td class="col-hidden col-hidden-2">{{ allocation.transaction_type }}</td>
+									<td class="col-hidden col-hidden-2">{{ allocation.balance|floatformat:2|intcomma }}</td>
+									<td>{{ allocation.amount_allocated|floatformat:2|intcomma }}</td>
+									<td class="col-hidden col-hidden-2">{{ allocation.new_balance|floatformat:2|intcomma }}</td>																	
+									
+								</tr>										
+							{% endfor %}						
+						</table>
+						
+						{% if fuel_allocations_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if fuel_allocations_list.has_previous %}
+						      <li><a href="?page={{ fuel_allocations_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  fuel_allocations_list.number }} of {{fuel_allocations_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if fuel_allocations_list.has_next %}
+						      <li><a href="?page={{ fuel_allocations_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}	
+					</form>				
+				</div>
+
+				<div id="licenceDisk" class="tab-pane fade">
+					<form method="GET" action="">
+					<p><div class="row">
+						<div class="col-md-3">{{filter_form.vehicle}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_list" name="filter_list" type="submit" value="Search"/></div>
+					  </div></p>				  
+						
+						<table class="table table-hover ">
+							<tr>
+								<th>Licence Plate</th>								
+								<th class="col-hidden" >Driver</th>
+								<th class="col-hidden col-hidden-2">Expired On</th>
+								<th>Renewed On</th>								
+								<th class="col-hidden col-hidden-2">Expiring On</th>
+								<th class="col-hidden col-hidden-2">Amount</th>								
+								<th></th>
+							</tr>								
+							{% for transaction in licence_disk_list %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td class="col-hidden">{{ transaction.driver }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.expiry_date }} </td>
+									<td>{{ transaction.renewal_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.new_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.amount|floatformat:2|intcomma }}</td>
+																																		
+									<td>										
+										<a href="{% url 'fleet:editrenewlicencedisk' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if licence_disk_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if licence_disk_list.has_previous %}
+						      <li><a href="?page={{ licence_disk_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  licence_disk_list.number }} of {{licence_disk_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if licence_disk_list.has_next %}
+						      <li><a href="?page={{ licence_disk_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+			</div>
+		</div>
+{% endblock %}

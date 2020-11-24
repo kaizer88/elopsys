@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+  <script src="{% static 'js/fuel_cards.js' %}"></script>
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    {% if fuel_card %}
+    <b>Edit Fuel Card:</b>
+    {% else %}
+    <b>Add Fuel Card:</b>
+    {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div id="edit_fuel_card_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>
+          <div class='col-md-6'>
+            {% bootstrap_field fuel_card_form.card_number %}
+            {% bootstrap_field fuel_card_form.vehicle_assigned %}
+            {% bootstrap_field fuel_card_form.card_type %}
+            {% bootstrap_field fuel_card_form.vendor %}
+            {% bootstrap_field fuel_card_form.start_date %}
+            {% bootstrap_field fuel_card_form.status %}
+            <div class="cancelled" id="cancelled">
+                {% bootstrap_field fuel_card_form.cancelled_date %}
+                {% bootstrap_field fuel_card_form.date_ordered %}
+            </div>
+          </div>
+          <div class='col-md-6'>
+            {% bootstrap_field fuel_card_form.card_limit %}
+            {% bootstrap_field fuel_card_form.comment %}
+             <div class="cancelled">
+                {% bootstrap_field fuel_card_form.new_card_ordered %}
+                {% bootstrap_field fuel_card_form.delivery_destination %}
+            </div>
+            {% bootstrap_field fuel_card_file_form.document %}
+            {% bootstrap_field fuel_card_document_form.document_type %}
+            <div style="max-height: 230px; overflow: auto;">
+              <table id="fuel_card_documents_table" class="table table-hover">
+                <thead>
+                  <th>Created At</th>
+                  <th>Document</th>
+                </thead>
+                <tbody>
+                  {% for document in card_documents %}
+                  <tr>
+                    <td>{{document.created_at }}</td>
+                    <td>
+                      {% if document.document.document %}
+                      <a href="{{ document.document.document.url }}"
+                         data-toggle=""
+                         data-toggle="tooltip"
+                         data-placement="bottom"
+                         title="Description: {{document.document.description }}">
+                       {{ document.document.document_name }}</a>
+                      {% endif %}
+                    </td>
+                    {% empty %}
+                  <tr><td class="info" colspan="20">No Documents Added Yet</td></tr>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div><br>
+          </div>
+          </div>
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          <button type="submit" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          <a href="{% url 'fleetmanagement:fuel_cards' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

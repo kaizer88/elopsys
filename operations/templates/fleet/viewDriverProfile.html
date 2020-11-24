@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+  $("#id_fuel_card").autocomplete({
+  source: "{% url 'fleet:get_fuel_card' %}",
+  minLength: 2});
+
+  $("#id_driver").autocomplete({
+  source: "{% url 'fleet:get_employee' %}",
+  minLength: 2});
+
+  $('select').select2();
+
+ //  $('#from_vehicle').get('/get/from/', {from_vehicle: response.from_vehicle, 
+	// 					 from_driver: response.from_driver,
+	// 					 from_fuel_card: response.from_fuel_card,
+	// 					 from_balance: response.from_balance,
+	// 					 page: page}, function(json_response) {
+        
+	// });
+	// $('#from_driver').get('/get/from/', {from_vehicle: response.from_vehicle, 
+	// 					 from_driver: response.from_driver,
+	// 					 from_fuel_card: response.from_fuel_card,
+	// 					 from_balance: response.from_balance,
+	// 					 page: page}, function(json_response) {
+        
+	// });
+
+
+  });
+
+</script>
+
+
+{% endblock %}
+
+
+{% block content %}	
+<div class="panel panel-primary transparency">
+	<div class="panel-heading small-head">  
+  		<div style="margin-top: 5px;" class="pull-right"><a class="btn btn-default" href="{% url 'fleet:vehiclesList' %}" type="submit">Close</a></div>	
+	    <div><b><i class="fa fa-car" aria-hidden="true"></i> {{title}}</b></div>
+	    <div>{{ driver.first_name }} : {{ driver.branch.region }}, currently using {{ vehicle.vehicle }}</div>  
+  	</div>
+  	<div class="row panel-body">
+    	<form method="POST" action="" enctype="multipart/form-data" novalidate>
+      		{% csrf_token %}
+      
+      		<div class="col-md-4" style="margin-bottom: 15px;">				
+					<ul class="nav nav-pills">
+						<li><a data-toggle="pill" href="#driver">Driver Details</a></li>
+						<li><a data-toggle="pill" href="#fleet">Current Vehicle</a></li>
+						<li><a data-toggle="pill" href="#uploads">File Uploads</a></li>				
+					 </ul>
+					 <p>				
+	  			<div class="tab-content">
+	  				<div id="driver" class="tab-pane fade in active">
+	  					 <div class="table-responsive">
+	  					 {% if driving_licence %}
+	  					 	<table class="table table-hover table-striped table-bordered">
+								<tr>
+								  <td>Licence Number</td>
+								  <td>{{ driving_licence.licence_number }} </td>
+								</tr>
+								<tr>
+								  <td>Code</td>
+								  <td>{{ driving_licence.code }} </td>
+								</tr>
+								<tr>
+								  <td>Valid</td>
+								  <td> {{ driving_licence.date_of_issue }} <strong>-</strong> {{ driving_licence.expiry_date }}</td>
+								</tr>								
+								<tr>
+								  <td>Vehicle Restrictions</td>
+								  <td> {{ driving_licence.vehicle_restrictions }}</td>
+								</tr>
+								<tr>
+								  <td>Driver Restrictions</td>
+								  <td> {{ driving_licence.driver_restrictions }}</td>
+								</tr>											
+				      		</table>
+				      	{% endif %}			
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Maintenance</th>
+                                        <th style="width: 30%;">Value</th>                                                   
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>Service Cost</td>
+                                        <td>{{ total_service|floatformat:2|intcomma }}</td>                                                       
+                                    </tr>
+                                    <tr>
+                                        <td>Tyres Cost</td>
+                                        <td>{{ total_tyres|floatformat:2|intcomma }}</td>                                                       
+                                    </tr>
+                                    <tr>
+                                        <td>Repairs Cost</td>
+                                        <td>{{ total_repairs|floatformat:2|intcomma }}</td>                                                       
+                                    </tr> 
+                                    <tr>
+                                        <td>Total Maintenance Cost</td>
+                                        <td>{{ total_maintenance|floatformat:2|intcomma }}</td>                                                       
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Insurance Claims</th>
+                                        <th style="width: 30%;">Value</th>                                                   
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>No. Of Claims</td>
+                                        <td>{{ count_insurance_claims }}</td>                                                       
+                                    </tr>
+                                    <tr>
+                                        <td>Pending Claims</td>
+                                        <td>{{ count_pending_insurance_claims }}</td>                                                       
+                                    </tr>
+                                    <tr>
+                                        <td>Total Excess</td>
+                                        <td>{{ vehicle.get_total_excess|floatformat:2|intcomma }}</td>                                                       
+                                    </tr> 
+                                    <tr>
+                                        <td>Total Claimed</td>
+                                        <td>{{ total_insurance_claims|floatformat:2|intcomma }}</td>                                                       
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Traffic Fines</th>
+                                        <th style="width: 30%;">Value</th>                                                   
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                	<tr>
+                                        <td>Fines</td>
+                                        <td>{{ count_traffic_fines }}</td>                                                       
+                                    </tr> 
+                                    <tr>
+                                        <td>Serious Offences</td>
+                                        <td>{{ count_serious_offences }}</td>                                                       
+                                    </tr>
+                                    <tr>
+                                        <td>Court Appearances</td>
+                                        <td>{{ count_court_appearences }}</td>                                                       
+                                    </tr>                                    
+                                    <tr>
+                                        <td>Total Fines</td>
+                                        <td>{{ total_traffic_fines|floatformat:2|intcomma }}</td>                                                       
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+	  				</div>
+	    			<div id="fleet" class="tab-pane fade">
+	    				{% if sliders %}						
+	  					<div style ="/*background-color: black;*/">		
+							<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		  				<!-- Indicators -->
+
+							<ol class="carousel-indicators">		  
+							    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>							    	  
+							    <li data-target="#myCarousel" data-slide-to="1"></li>							    	
+							    <li data-target="#myCarousel" data-slide-to="2"></li>							    
+							    <li data-target="#myCarousel" data-slide-to="3"></li>							  
+							 </ol>	
+		
+		  				<!-- Wrapper for slides -->
+		  					<div class="carousel-inner" role="listbox">
+							    <div class="item active">
+							    	<img class="minimized" src="{{sliders.0}}"  alt="Fleet">
+									<div class="carousel-caption">
+									 	<h3>{{ vehicle.vehicle }}</h3>								          
+									</div>
+							    </div>
+
+							    <div class="item">
+									<img class="minimized" src="{{sliders.1}}"  alt="Fleet">
+								  	<div class="carousel-caption">
+								    	<h3>{{ vehicle.vehicle }}</h3>								           
+								  	</div>
+								</div>
+								<div class="item">
+								 	<img class="minimized" src="{{sliders.2}}" alt="Fleet">
+								    <div class="carousel-caption">
+								     	<h3>{{ vehicle.vehicle }}</h3>								         
+								    </div>
+								</div>
+								<div class="item">
+								    <img class="minimized" src="{{sliders.3}}" alt="Fleet">
+								    <div class="carousel-caption">
+										<h3>{{ vehicle.vehicle }}</h3>								         
+								    </div>
+								</div>
+			  				</div>
+
+			  				<!-- Left and right controls -->
+							  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+							    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+							    <span class="sr-only">Previous</span>
+							  </a>
+							  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+							    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+							    <span class="sr-only">Next</span>
+							  </a>
+							</div>
+		      			</div>
+						{% endif %}
+			      		<table class="table table-hover table-bordered table-striped">
+							<tr>
+							  <td>Make &amp Model</td>
+							  <td>{{ vehicle.make_n_model }} </td>
+							</tr>
+							<tr>
+							  <td>Model Year</td>
+							  <td>{{ vehicle.model_year }} </td>
+							</tr>
+							<tr>
+							  <td>VIN Number</td>
+							  <td> {{ vehicle.vin_number }}</td>
+							</tr>								
+							<tr>
+							  <td>Current Mileage</td>
+							  <td> {{ vehicle.get_current_mileage }} KM </td>
+							</tr>
+							<tr>
+							  <td>Next Service @</td>
+							  <td> {{ vehicle.get_next_service_mileage }} KM </td>
+							</tr>
+							<tr>
+							  <td>Current Status</td>
+							  <td>{{ vehicle.status }} </td>
+							</tr>				
+			      		</table>			
+		    		</div>
+
+		    <div id="uploads" class="tab-pane fade">					
+		      <b>File Uploads</b>
+		      <input style="display:none" id="save" type="submit" value="Save "/>
+		      <div class="clear_left new_upload">
+				<div class='btn btn-primary' onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">
+					Upload File
+				</div>
+				<div class="hidden_content" style="display:none">
+				  {%  bootstrap_form upload_file_form %}						                       
+				</div>
+			  </div><br/>	
+			<table class ="table table-hover ">
+			  <tr>
+			    <th>Uploaded Files</th>		
+			  </tr>
+			  {% for item in uploads %}
+			  <tr>
+			    <td><a href= "{{ item.file.url }}" target="top"> {{ item.file_name }}</a> </td>																
+			  </tr>
+			  {% endfor %}
+			</table>
+		    </div>
+		  </div>
+		</div>		
+		<div class="col-md-8 pill_body">			
+			<ul class="nav nav-pills">
+				<li class="active"><a class="btn btn-default" data-toggle="pill" href="#process">Process</a></li>
+				<li><a class="btn btn-default" data-toggle="pill" href="#comments">Comments</a></li>
+				<li>
+					{% if not addvehicle %}	
+				        <a class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				            Fleet Transactions
+				            <span class="caret"></span>
+				        </a>
+				        <ul class="dropdown-menu pull-right" role="menu">
+				        	<li class="dropdown-header">Driver Transactions</li>
+				        	<li><a href="{% url 'fleet:view_driverprofile' driver.id %}"><i class="fa fa-user-circle-o" aria-hidden="true"></i> View Driver Profile</a></li> 
+				           	<li class="dropdown-header">Fleet Transactions</li>          	
+				          	<li><a href="{% url 'fleet:viewvehicle' vehicle.id %}"><i class="fa fa-car" aria-hidden="true"></i> View Vehicle</a></li>          	
+				            <li><a href="{% url 'fleet:editvehicle' vehicle.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Edit Vehicle</a></li>      
+				            <li><a href="{% url 'fleet:allocatevehicle' vehicle.id %}"><i class="fa fa-users" aria-hidden="true"></i> Allocations</a></li>
+				            <li><a href="{% url 'fleet:allocatefuel' vehicle.id %}"><i class="fa fa-hand-lizard-o" aria-hidden="true"></i> Fuel Allocations</a></li>
+				            <li><a href="{% url 'fleet:mileagelog' vehicle.id %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Vehicle Inspection</a></li>
+				            <li><a href="{% url 'fleet:tripLogImports' vehicle.id %}"><i class="fa fa-tachometer" aria-hidden="true"></i> Trip Import</a></li>
+				            <li><a href="{% url 'fleet:vehicleincidences' vehicle.id %}"><i class="fa fa-tasks" aria-hidden="true"></i> Incidences</a></li> 
+				            <li><a href="{% url 'fleet:addVehicleClaim' vehicle.id %}"><i class="fa fa-anchor" aria-hidden="true"></i> Insurance</a></li>               
+				            <li><a href="{% url 'fleet:trafficfines' vehicle.id %}"><i class="fa fa-id-card-o" aria-hidden="true"></i> Traffic Fines</a></li>
+				            <li role="separator" class="divider"></li>
+				            <li class="dropdown-header">Fleet Maintenance</li>
+				            <li><a href="{% url 'fleet:bookservice' vehicle.id %}"><i class="fa fa-cog" aria-hidden="true"></i> Service Booking</a></li>
+				            <li><a href="{% url 'fleet:vehiclemaintenance' vehicle.id %}"><i class="fa fa-cogs" aria-hidden="true"></i> Maintenance</a></li>
+				            <li><a href="{% url 'fleet:renewlicencedisk' vehicle.id %}"><i class="fa fa-repeat" aria-hidden="true"></i> Licence Disk Renewals</a></li>
+				         </ul>
+					  {% endif %} 
+				</li>
+				<li class="col-sm-4"></li>
+				{% if filter_form %}
+					<li style="margin-left: 30px;">{{filter_form.driver}}</li>														
+					<li><input class="btn btn-default" id="search" name="search" type="submit" value="Search"/></li>
+				{% endif %}
+			</ul>
+
+		<div class="tab-content">
+			<div id="process" class="tab-pane fade in active">
+			   {% if not addvehicle %}	
+				<p></p>
+		        {% endif %}
+
+				  {% if edit_licence %}					
+				  	<p><div class="col-md-6">{% crispy form %}</div><div class="col-md-6"></div></p>
+				  {% else %}
+
+				    <div class="panel panel-default transparency">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Driver Historical Transactions                           
+                        </div>
+                        <!-- /.panel-heading -->
+                       <div class="panel-body">                            
+                                <div class="">                               
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#allocations">Allocations</a>
+                                        </li>
+                                        <li><a data-toggle="tab" href="#maintenance">Maintenance</a>
+                                        </li>
+                                        <li><a data-toggle="tab" href="#trafficfines">Traffic Fines</a>
+                                        </li>                                        
+                                        <li><a data-toggle="tab" href="#insurance">Insurance</a>
+                                        </li>
+                                        <li><a data-toggle="tab" href="#inspections">Inspections</a>
+                                        </li>
+                                        <li><a data-toggle="tab" href="#incidences">Incidences</a>
+                                        </li>
+                                    </ul>
+                                </div>                     
+
+						        <div class="tab-content">                          
+									<div id="allocations" class="tab-pane fade in active">
+									<p></p>
+										<p><b>Allocations History For {{driver.first_name}}</b></p>
+										<div class="table-responsive" style="height: 530px; overflow: auto;">
+											<table class="table table-hover table-striped ">								     
+												<tr>
+													<th>Date</th>								
+													<th>Vehicle</th>
+													<th class="col-hidden">Type</th>													
+													<th class="col-hidden col-hidden-2">Status</th>								
+													<th></th>
+												</tr>														
+												{% for transaction in allocations_list %}
+													<tr>	
+														<td >{{ transaction.allocation_date }}</td>								
+														<td>{{ transaction.vehicle }}</td>
+														<td class="col-hidden">{{ transaction.transaction_type }} </td>															
+														<td class="col-hidden col-hidden-2">{{ transaction.status }}</td>																						
+														<td>										
+															<a href="{% url 'fleet:editallocatevehicle' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+														</td>
+													</tr>										
+												{%  endfor %}											
+											</table>
+										</div>
+                                	</div>
+                                	<div id="maintenance" class="tab-pane fade">
+                                		<p></p>
+										<p><b>Maintenance History For {{driver.first_name}}</b></p>
+                                		<div class="table-responsive" style="height: 530px; overflow: auto;">
+                                			<table class="table table-hover table-striped ">	
+												<tr>
+													<th>Date</th>								
+													<th class="col-hidden">Vehicle</th>													
+													<th>Type</th>													
+													<th class="col-hidden col-hidden-2">Actual Cost</th>																			
+													<th></th>
+												</tr>								
+												{% for transaction in maintenance_list %}
+													<tr>
+														<td>{{ transaction.maint_date }} </td>								
+														<td class="col-hidden">{{ transaction.vehicle }}</td>														
+														<td>{{ transaction.maint_type }}</td>														
+														<td class="col-hidden col-hidden-2">{{ transaction.actual_cost|floatformat:2|intcomma }}</td>
+														<td>										
+															<a href="{% url 'fleet:editvehiclemaintenance' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Edit</a>
+														</td>
+													</tr>										
+												{%  endfor %}						
+											</table>
+                                		</div>
+                                	</div>
+                                	<div id="insurance" class="tab-pane fade">
+                                		<p></p>
+										<p><b>Insurance Claims History For {{driver.first_name}}</b></p>
+                                		<div class="table-responsive" style="height: 530px; overflow: auto;">
+                                			<table class="table table-hover table-striped ">							
+												<tr>								
+													<th>Vehicle</th>
+													<th class="col-hidden">Submission Date</th>
+													<th>Claim No.</th>
+													<th class="col-hidden col-hidden-2">Claim Status</th>
+													<th class="col-hidden col-hidden-2">Amount</th>														
+													<th></th>
+												</tr>								
+												{% for transaction in claims %}
+													<tr>									
+														<td class="col-hidden col-hidden-2">{{ transaction.vehicle }}</td>
+														<td class="col-hidden">{{ transaction.submission_date }} </td>
+														<td>{{ transaction.claim_number }}</td>
+														<td class="col-hidden col-hidden-2">{{ transaction.claim_status }}</td>
+														<td class="col-hidden col-hidden-2">{{ transaction.payout_amount|floatformat:2|intcomma }}</td>																	
+														<td>										
+															<a href="{% url 'fleet:editVehicleClaim' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i>Edit</a>
+														</td>
+													</tr>										
+												{%  endfor %}						
+											</table>
+                                		</div>
+                                	</div>
+                                	<div id="trafficfines" class="tab-pane fade">
+                                		<p></p>
+										<p><b>Traffic Fines History For {{driver.first_name}}</b></p>
+                                		<div class="table-responsive" style="height: 530px; overflow: auto;">
+                                			<table class="table table-hover table-striped ">	
+												<tr>							
+													<th class="col-hidden">Vehicle</th>
+													<th class="col-hidden">Notice Number</th>													
+													<th>Due date</th>
+													<th class="col-hidden col-hidden-2">Location</th>
+													<th class="col-hidden col-hidden-2">Amount</th>
+													<th></th>
+												</tr>								
+												{% for transaction in traffic_fines %}
+													<tr>								
+														<td class="col-hidden">{{ transaction.vehicle }}</td>
+														<td class="col-hidden">{{ transaction.notice_number }} </td>														
+														<td>{{ transaction.due_date }}</td>
+														<td class="col-hidden col-hidden-2">{{ transaction.location }}</td>
+														<td class="col-hidden col-hidden-2">{{ transaction.amount|floatformat:2|intcomma }}</td>																		
+														<td>										
+															<a href="{% url 'fleet:edittrafficfines' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+														</td>
+													</tr>										
+												{%  endfor %}						
+											</table>
+                                		</div>
+                                	</div>
+                                	<div id="inspections" class="tab-pane fade">
+                                		<p></p>
+										<p><b>Inspections History For {{driver.first_name}}</b></p>
+                                		<div class="table-responsive" style="height: 530px; overflow: auto;">
+                                			<table class="table table-hover table-striped ">	
+											  <tr>								
+											    <th class="col-hidden">Vehicle</th>
+											    <th>Date</th>											    
+											    <th>Current KM</th>
+											    <th class="col-hidden col-hidden-2">Mileage</th>
+											    <th class="col-hidden">Fuel Used</th>
+											    <th></th>								
+											  </tr>								
+											  {% for transaction in mileage_log %}
+											  <tr>									
+											    <td class="col-hidden">{{ transaction.vehicle }}</td>
+											    <td>{{ transaction.log_date }}</td>
+											    <td >{{ transaction.current_mileage|floatformat:1|intcomma }}</td>
+											    <td class="col-hidden col-hidden-2">{{ transaction.mileage|floatformat:1|intcomma }}</td>
+											    <td class="col-hidden">{{ transaction.fuel_used|floatformat:2|intcomma }}</td>										
+											    <td>										
+											      <a href="{% url 'fleet:editmileagelog' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Edit</a>
+											    </td>
+											  </tr>										
+											  {%  endfor %}						
+											</table>
+                                		</div>
+                                	</div>
+                                	<div id="incidences" class="tab-pane fade">
+                                		<p></p>
+										<p><b>Incidences History For {{driver.first_name}}</b></p>
+                                		<div class="table-responsive" style="height: 530px; overflow: auto;">
+                                			<table class="table table-hover">
+												<tr>
+													<th>Date</th>							
+													<th class="col-hidden">Vehicle</th>													
+													<th>Incident Type</th>
+													<th class="col-hidden col-hidden-2">Location</th>
+													<th class="col-hidden col-hidden-2">Damage Extent</th>														
+													<th></th>
+												</tr>								
+													{% for transaction in incidences_list %}
+														<tr>
+															<td>{{ transaction.incident_date }} </td>																			
+															<td class="col-hidden">{{ transaction.vehicle }}</td>															
+															<td>{{ transaction.incident_type }}</td>
+															<td class="col-hidden col-hidden-2">{{ transaction.location }}</td>
+															<td class="col-hidden col-hidden-2">{{ transaction.damage_extent }}</td>
+																																
+															<td>										
+																<a href="{% url 'fleet:editvehicleincidences' transaction.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Edit</a>
+															</td>
+														</tr>										
+													{%  endfor %}									
+											</table>
+										</div>
+									</div>
+                                </div>                                                  
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->		  
+				  	  				  
+					
+				  {% endif %}
+				  <span class="pull-right">
+				  	<a class="btn btn-primary" href="#comments" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true">Next 
+						<i class="fa fa-forward" aria-hidden="true"></i><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+				  <span class="pull-right">
+			</div>
+			<div id="comments" class="tab-pane fade">
+				<br/>
+			 <input style="display:none" id="save" type="submit" value="Save "/>
+		      <div class="clear_left new_upload">
+				<a  onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">Add Comment <span class="caret"></span></a>
+				<div class="hidden_content" style="display:none">
+				  {{ comment_form|crispy }}						                       
+				</div>
+			  </div>
+				
+				<span class="pull-right">
+					<a class="btn btn-primary" href="#process" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true"><i class="fa fa-fast-backward" aria-hidden="true"></i> Prev</a>
+					<button type="submit" name="save" class="btn btn-primary" id="submit-id-save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+				</span><br/>
+				{% include 'comments.html' %}				
+			</div>
+
+
+		</div>				
+		</div>
+
+	     </form>
+
+
+	    </div>
+	  </div>
+	  </p
+
+
+	  {% endblock %}

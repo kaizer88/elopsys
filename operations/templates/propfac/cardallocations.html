@@ -1,0 +1,56 @@
+
+{% load staticfiles%}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+	
+<b>Card Allocations List</b>	
+<table class="table table-hover">
+	<tr>
+		<th class="col-hidden">Date</th>
+		<th>Employee</th>
+		<th>Type</th>
+		<th class="col-hidden col-hidden-2">Phone N0</th>								
+		<th class="col-hidden col-hidden-2">Fuel Card</th>
+		<th></th>														
+		
+	</tr>								
+	{% for allocation in card_allocations %}
+		<tr>
+			<td class="col-hidden">{{ allocation.allocation_date }} </td>	
+			<td>{{ allocation.employee }} </td>	
+			<td>{{ allocation.allocation_type }} </td>									
+			<td class="col-hidden col-hidden-2">{{ allocation.mobile_number }}</td>
+			<td class="col-hidden col-hidden-2">{{ allocation.fuel_card }} </td>
+			<td><a href="{% url 'offices:edit_cardallocation' allocation.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></td>
+		</tr>										
+	{%  endfor %}						
+</table>
+{% if card_allocations.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if card_allocations.has_previous %}
+      <li><a href="?page={{ card_allocations.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+   <li class="active"><span>{{  card_allocations.number }} of {{card_allocations.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if card_allocations.has_next %}
+      <li><a href="?page={{ card_allocations.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}

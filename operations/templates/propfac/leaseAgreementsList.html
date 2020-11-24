@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#leases">Lease Agreements</a></li>
+				<li><a data-toggle="pill" href="#expiring">Expiring Leases</a></li>
+				<li><a data-toggle="pill" href="#expired">Expired Leases</a></li>
+				<li><a data-toggle="pill" href="#renewals">Lease Renewals</a></li>				
+				<li><a data-toggle="pill" href="#pending_closure">Pending Closure</a></li>
+				<li><a data-toggle="pill" href="#closed">Closed</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="leases" class="tab-pane fade in active">
+					<form method="GET" action="">	
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_leases" name="filter_fleet" type="submit" value="Search"/></div>
+						  </div></p>	  
+									
+						<table class="table table-hover ">							
+							<tr>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th class="col-hidden col-hidden-2">Leasee</th>								
+								<th>Leasor</th>
+								<th class="col-hidden">Contact Person</th>
+								<th class="col-hidden">Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Notice Term</th>
+								<th></th>
+							</tr>								
+							{% for lease in leases %}
+								<tr>
+									<td>{{ lease.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>
+									<td class="col-hidden col-hidden-2">{{ lease.current_leasee }} </td>
+									<td>{{ lease.leasor }} </td>
+									<td class="col-hidden">{{ lease.contact_person }}</td>
+									<td class="col-hidden">{{ lease.lease_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.notice_term }}</td>																	
+									<td><a href="{% url 'property:edit_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if leases.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if leases.has_previous %}
+						      <li><a href="?page={{ leases.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  leases.number }} of {{leases.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if leases.has_next %}
+						      <li><a href="?page={{ leases.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>										
+				</div>
+
+
+				<div id="expiring" class="tab-pane fade">
+					<br/>
+					  <form method="GET" action="">	
+					  <p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_expiring" name="filter_fleet" type="submit" value="Search"/></div>
+						  </div></p>	  
+									
+					<table class="table table-hover ">							
+							<tr>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th class="col-hidden col-hidden-2">Leasee</th>								
+								<th>Leasor</th>
+								<th class="col-hidden">Contact Person</th>
+								<th class="col-hidden">Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Notice Term</th>
+								<th></th>
+							</tr>								
+							{% for lease in expiring %}
+								<tr>
+									<td>{{ lease.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>
+									<td class="col-hidden col-hidden-2">{{ lease.current_leasee }} </td>
+									<td>{{ lease.leasor }} </td>
+									<td class="col-hidden">{{ lease.contact_person }}</td>
+									<td class="col-hidden">{{ lease.lease_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.notice_term }}</td>																	
+									<td><a href="{% url 'property:renew_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Renew</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+					{% if expiring.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if expiring.has_previous %}
+					      <li><a href="?page={{ expiring.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					     <li class="active"><span>{{  expiring.number }} of {{expiring.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+					    {% if expiring.has_next %}
+					      <li><a href="?page={{ expiring.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}
+					</form>
+				</div>
+
+
+				<div id="expired" class="tab-pane fade">					
+					<br/>
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_expired" name="filter_fleet" type="submit" value="Search"/></div>
+						  </div></p>				
+					<table class="table table-hover ">							
+							<tr>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th class="col-hidden col-hidden-2">Leasee</th>								
+								<th>Leasor</th>
+								<th class="col-hidden">Contact Person</th>
+								<th class="col-hidden">Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Notice Term</th>
+								<th></th>
+							</tr>								
+							{% for lease in expired %}
+								<tr>
+									<td>{{ lease.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>
+									<td class="col-hidden col-hidden-2">{{ lease.current_leasee }} </td>
+									<td>{{ lease.leasor }} </td>
+									<td class="col-hidden">{{ lease.contact_person }}</td>
+									<td class="col-hidden">{{ lease.lease_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.notice_term }}</td>																	
+									<td><a href="{% url 'property:renew_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Renew</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+					{% if expired.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if expired.has_previous %}
+					      <li><a href="?page={{ expired.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					     <li class="active"><span>{{  expired.number }} of {{expired.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+					    {% if expired.has_next %}
+					      <li><a href="?page={{ expired.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}
+					</form>				
+				</div>
+
+				<div id="renewals" class="tab-pane fade">				
+						<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_renewals" name="filter_fleet" type="submit" value="Search"/></div>
+						  </div></p>				
+					<table class="table table-hover ">							
+						<tr>
+							<th>Branch</th>
+							<th class="col-hidden col-hidden-2">Region</th>							
+							<th class="col-hidden">Expired</th>
+							<th>Renewal Date</th>
+							<th class="col-hidden col-hidden-2">Expiry Date</th>							
+							<th></th>
+						</tr>								
+						{% for lease in renewal %}
+							<tr>
+								<td>{{ lease.branch }}</td>
+								<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>								
+								<td class="col-hidden">{{ lease.expiry_date }}</td>
+								<td>{{ lease.renewal_date }}</td>
+								<td class="col-hidden col-hidden-2">{{ lease.new_expiry_date }}</td>
+																								
+								<td><a href="{% url 'property:edit_renew_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+							</tr>										
+						{% endfor %}						
+					</table>
+					{% if pending_closure.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if pending_closure.has_previous %}
+					      <li><a href="?page={{ pending_closure.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					     <li class="active"><span>{{  pending_closure.number }} of {{pending_closure.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+					    {% if pending_closure.has_next %}
+					      <li><a href="?page={{ pending_closure.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}
+					</form>				
+				</div>
+				
+
+				<div id="pending_closure" class="tab-pane fade">
+					<br/>
+						<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_pending_closure" name="filter_pending_closure" type="submit" value="Search"/></div>
+						  </div></p>			
+					<table class="table table-hover ">							
+							<tr>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th class="col-hidden col-hidden-2">Leasee</th>								
+								<th>Leasor</th>
+								<th class="col-hidden">Contact Person</th>
+								<th class="col-hidden">Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Notice Term</th>
+								<th></th>
+							</tr>								
+							{% for lease in pending_closure %}
+								<tr>
+									<td>{{ lease.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>
+									<td class="col-hidden col-hidden-2">{{ lease.current_leasee }} </td>
+									<td>{{ lease.leasor }} </td>
+									<td class="col-hidden">{{ lease.contact_person }}</td>
+									<td class="col-hidden">{{ lease.lease_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.notice_term }}</td>																	
+									<td><a href="{% url 'property:edit_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+					{% if pending_closure.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if pending_closure.has_previous %}
+					      <li><a href="?page={{ pending_closure.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					     <li class="active"><span>{{  pending_closure.number }} of {{pending_closure.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+					    {% if pending_closure.has_next %}
+					      <li><a href="?page={{ pending_closure.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}
+					</form>				
+				</div>
+
+				<div id="closed" class="tab-pane fade">
+					<br/>
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_closed" name="filter_closed" type="submit" value="Search"/></div>
+						  </div></p>					
+					<table class="table table-hover ">							
+							<tr>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th class="col-hidden col-hidden-2">Leasee</th>								
+								<th>Leasor</th>
+								<th class="col-hidden">Contact Person</th>
+								<th class="col-hidden">Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Notice Term</th>
+								<th></th>
+							</tr>								
+							{% for lease in closed %}
+								<tr>
+									<td>{{ lease.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.branch.region }} </td>
+									<td class="col-hidden col-hidden-2">{{ lease.current_leasee }} </td>
+									<td>{{ lease.leasor }} </td>
+									<td class="col-hidden">{{ lease.contact_person }}</td>
+									<td class="col-hidden">{{ lease.lease_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ lease.notice_term }}</td>																	
+									<td><a href="{% url 'property:edit_leaseagreement' lease.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+					{% if closed.has_other_pages %}
+					  <ul class="pagination pull-right">
+					    {% if closed.has_previous %}
+					      <li><a href="?page={{ closed.previous_page_number }}">&laquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&laquo;</span></li>
+					    {% endif %}
+					     <li class="active"><span>{{ closed.number }} of {{ closed.paginator.num_pages }}<span class="sr-only">(current)</span></span></li> 
+					    {% if closed.has_next %}
+					      <li><a href="?page={{ closed.next_page_number }}">&raquo;</a></li>
+					    {% else %}
+					      <li class="disabled"><span>&raquo;</span></li>
+					    {% endif %}
+					  </ul>
+					{% endif %}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

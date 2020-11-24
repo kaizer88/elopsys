@@ -1,0 +1,84 @@
+ {% load staticfiles %}
+ {% block javascript %}
+  
+    <script>
+      $(function() {
+        $(".auto-complete-vehicle").autocomplete({
+        source: "{% url 'fleet:get_vehicle' %}",
+          minLength: 2});
+
+        $(".auto-complete-driver").autocomplete({
+        source: "{% url 'fleet:get_employee' %}",
+          minLength: 2});
+
+        $('[data-submenu]').submenupicker();
+
+
+      });
+
+  </script>
+  
+
+{% endblock %}
+
+<h4>With button</h4>
+<div class="row">
+  <div class="col-sm-4 col-sm-offset-2 m-b">
+    <div class="dropdown">
+      <a class="dropdown-toggle" type="button" data-toggle="dropdown" data-submenu>
+        Reports <span class="caret"></span>
+      </a>
+
+      <ul class="dropdown-menu">
+  <li class="dropdown-header">Elopsys Reporting</li>
+  <li class="divider"></li>
+  <li class="dropdown-submenu">
+    <a tabindex="0">Fleet</a>
+    <ul class="dropdown-menu"> 
+      <li class="dropdown-header">Fleet Reports</li> 
+      <li class="divider"></li>   
+      <li class="dropdown-submenu">
+        <a tabindex="0">Vehicle</a>
+
+        <ul class="dropdown-menu">
+          <li class="dropdown-header">Vehicle Reports</li>
+          <li class="divider"></li>   
+          <li><a tabindex="0" href="{% url 'fleet:rpt_current_drivers' %}">Current Drivers Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_allocations' %}">Vehicle Allocations Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_fuel_allocations' %}">Vehicle Fuel Allocations Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_mileages' %}">Vehicle Mileage Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_mileage_aggregates' %}">Vehicle Mileage Agregates Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_service_due' %}">Vehicle Service Due Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_service_overdue' %}">Vehicle Service Overdue Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_licence_disks_due' %}">Vehicle Licencing Due Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_licence_disks_expired' %}">Vehicle Licencing Expired Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_traffic_fines' %}">Vehicle Traffic Fines Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_maintenance' %}">Vehicle Maintenance Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_insurance_claims' %}">Vehicle Insurance Claims Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_vehicle_incidences' %}">Vehicle Incidences Report</a></li>
+        </ul>
+      </li>      
+      <li class="dropdown-submenu">
+        <a tabindex="0">Driver</a>
+
+        <ul class="dropdown-menu">
+          <li class="dropdown-header">Driver Reports</li>
+          <li class="divider"></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_driver_vehicle_allocations' %}">Driver Vehicle Allocations Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_driver_fuel_allocations' %}">Driver Fuel Allocations Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_driver_mileages' %}">Driver Mileages Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_driver_traffic_fines' %}">Driver Traffic Fines Report</a></li>
+          <li><a tabindex="0" href="{% url 'fleet:rpt_driver_incidences' %}">Driver Incidences Report</a></li>         
+        </ul>
+      </li>
+    </ul>
+</li>
+<li><a tabindex="0">Assets</a></li>
+<li><a tabindex="0">Offices</a></li>
+<li><a tabindex="0">Inventory</a></li>
+</ul>
+
+    </div>
+  </div>
+  
+</div>

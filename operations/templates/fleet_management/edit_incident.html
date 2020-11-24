@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+<script src="{% static 'js/vehicles.js' %}"></script>
+<script src="{% static 'js/dropdown.js' %}"></script>
+<script src="{% static 'js/incident.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+<div class="row">
+  <div class="panel panel-primary transparency">
+    <div class="panel-heading">
+      {% if incident %}
+        <b>Edit Incident: </b>
+      {% else %}
+        <b>Add Incident:</b>
+      {% endif %}
+    </div>
+    
+    <div class="panel-body">
+      
+      <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div id="edit_incident_tab_content" class="tab-content">
+          <div class="tab-pane fade active in" id="details">
+            <br>
+
+            <div class='col-lg-6'>
+              {% bootstrap_field incident_form.vehicle %}
+              {% bootstrap_field incident_form.incident_date %}
+              {% bootstrap_field incident_form.description %}
+              <div class="col-lg-6">
+                {% bootstrap_field incident_form.cost %}
+                {% bootstrap_field incident_form.invoice_amount %}
+                {% bootstrap_field incident_form.driver_co_payment %}
+                {% bootstrap_field incident_form.share_amount %}
+              </div>
+              <div class="col-lg-6">
+                {% bootstrap_field incident_form.reference_number %}
+                {% bootstrap_field incident_form.invoice_number %}          
+                {% bootstrap_field incident_form.percentage %}
+                {% bootstrap_field incident_form.status %}
+              </div>
+            </div>
+            <div class='col-lg-6'>
+              {% bootstrap_field incident_form.driver %}
+              {% bootstrap_field incident_form.drivers_licence %}
+              {% bootstrap_field incident_form.expiry_date %}
+              {% bootstrap_field incident_form.incident_type %}             
+              
+              {% bootstrap_field incident_file_form.document %}
+              {% bootstrap_field incident_document_form.document_type %}
+              {% bootstrap_field incident_comment_form.comment %}
+         
+            </div>
+          </div>
+        </div>
+          <div class="btn-group-horizontal col-lg-12">
+
+            <div class='pull-right'>
+            {% if not request.user.is_regional_manager or not request.user.is_regional_user %}
+            {% if not incident and not incident.status == "captured" or not incident.status %}
+              <button type="submit" class="btn btn-primary" id="captured", name="captured">
+                <i class='fa fa-floppy-o'></i> Capture
+              </button>
+            {% else %}
+              {% if not incident.status == "paid" and not incident.status == "submitted for payment" %}
+                <button type="submit" class="btn btn-primary">
+                  <i class='fa fa-floppy-o'></i> Save
+                </button>
+              {% endif %}
+            {% endif %}
+            {% if not incident.status == "paid" and incident %}
+              {% if incident.status == "captured" or incident.status == "rejected" %}
+                <button type="submit" class="btn btn-primary" id="submit_for_payment" name="submit_for_payment">
+                  <i class='fa fa-check-circle'></i> Submit For Payment
+                </button>
+              {% endif %}
+              {% if incident.status == "submitted for payment" %}
+                <button type="submit" class="btn btn-primary" id="paid" name="paid">
+                  <i class='fa fa-check-square'></i> Paid
+                </button>
+              {% endif %}
+              {% if incident.status == "captured" or incident.status == "submitted for payment" or incident.status == "rejected" %}
+                <button type="submit" class="btn btn-primary" id="rejected", name="rejected">
+                  <i class='fa fa-times-circle'></i> Rejected
+                </button>
+              {% endif %}
+            {% endif %}
+            {% endif %}
+            <a href="{% url 'fleetmanagement:view_incidents' %}" class="btn btn-primary">
+              <i class='fa fa-undo'></i> Cancel
+            </a>
+          </div>
+          </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+<div class="row">
+  <div class="panel panel-primary transparency">
+    <div class="panel-heading">
+      <b>Uploaded Documents</b>
+    </div>
+    <div class="panel-body">
+      {% include 'fleet_management/widgets/_incident_file_list.html' with vehicle_driver=vehicle.current_vehicle_driver %}
+    </div>  
+  </div>
+</div>
+
+  <div class="panel panel-primary transparency">
+    <div class="panel-heading">
+      <b>Comments</b>
+    </div>
+    <div class="panel-body">
+      {% include 'fleet_management/widgets/_incident_comments_list.html' with vehicle_driver=vehicle.current_vehicle_driver  %}
+    </div>  
+  </div>
+{% endblock %}

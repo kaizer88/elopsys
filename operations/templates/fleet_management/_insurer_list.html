@@ -1,0 +1,44 @@
+{% load el_pagination_tags %}
+<table id="insurers" class="table table-hover ">
+  <tr>
+    <th>Insurer</th>
+    <th>Contact Person</th>
+    <th>Address</th>
+    <th>Telephone</th>   
+    <th>Cell</th>
+    <th>Email</th>   
+    <th>Insured Vehicles</th>
+    
+  </tr>
+
+  {% paginate insurers %}
+  {% for insurer in insurers %}
+
+  <tr> 
+    <td><a href="{% url 'fleetmanagement:edit_insurer' insurer.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit insurer"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ insurer.name }}</a></td>
+    <td>{% if insurer.contact_person.first_name %}{{insurer.contact_person.first_name | title }} {% endif %} 
+        {% if insurer.contact_person.first_name %}{{ insurer.contact_person.last_name | title }} {% endif %} </td>   
+    <td>
+      {% if insurer.address.address_line_1 %}{{insurer.address.address_line_1 | title}} {% endif %}  
+      {% if insurer.address.address_line_2 %}{{insurer.address.address_line_2 | title}} {% endif %}
+      {% if insurer.address.suburb %}{{insurer.address.suburb | title}} {% endif %}
+      {% if insurer.address.city %}{{insurer.address.city | title}} {% endif %}
+      {% if insurer.address.postal_code %}{{insurer.address.postal_code | title}} {% endif %}
+    </td>
+    {% if insurer.contact_person.tel_number %}<td>{{insurer.contact_person.tel_number | title}} {% endif %}</td>  
+    {% if insurer.contact_person.cell_number %}<td>{{insurer.contact_person.cell_number | title}} {% endif %}</td>
+    {% if insurer.contact_person.email %}<td>{{insurer.contact_person.email | title}}{% endif %} </td> 
+    {% if insurer.insured_vehicles %}<td>{{ insurer.insured_vehicles }} {% endif %}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='7' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

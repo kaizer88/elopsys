@@ -1,0 +1,69 @@
+{% load staticfiles%}
+{% block javascript %}
+{% load humanize %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+
+
+<form method="GET" action="">		  
+	<table class="table table-hover  table-fixed">							
+			<tr>
+				<th>{{filter_form.branch}}</th>									
+				<th>{{filter_form.start_date}}</th>
+				<th>{{filter_form.end_date}}</th>
+				<th><input class="btn btn-warning" id="filter_fleet" name="filter_fleet" type="submit" value="Search"/></th>
+			      </tr>
+			    </table>				
+	<table class="table table-hover ">							
+		<tr>
+			<th>Branch</th>
+			<th>Region</th>
+			<th>Leasee</th>								
+			<th>Leasor</th>
+			<th>Contact Person</th>
+			<th>Expiry Date</th>
+			<th>Notice Term</th>
+			<th>Transactions</th>
+		</tr>								
+		{% for branch in leases %}
+			<tr>
+				<td>{{ branch.branch }}</td>
+				<td>{{ branch.branch.region }} </td>
+				<td>{{ branch.current_leasee }} </td>
+				<td>{{ branch.leasor }} </td>
+				<td>{{ branch.contact_person }}</td>
+				<td>{{ branch.lease_expiry_date }}</td>
+				<td>{{ branch.notice_term }}</td>																	
+				<td><a href="{% url 'property:edit_leaseagreement' branch.id %}"><i class="fa fa-car" aria-hidden="true"></i>Edit</a></td>
+			</tr>										
+		{% endfor %}						
+	</table>
+	{% if leases.has_other_pages %}
+	  <ul class="pagination pull-right">
+	    {% if leases.has_previous %}
+	      <li><a href="?page={{ leases.previous_page_number }}">&laquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&laquo;</span></li>
+	    {% endif %}
+	     <li class="active"><span>{{  leases.number }} of {{leases.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+	    {% if leases.has_next %}
+	      <li><a href="?page={{ leases.next_page_number }}">&raquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&raquo;</span></li>
+	    {% endif %}
+	  </ul>
+	{% endif %}
+</form>										

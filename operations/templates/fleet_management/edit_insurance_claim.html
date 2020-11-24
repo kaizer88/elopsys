@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+  <script src="{% static 'js/insurance_claim.js' %}"></script>
+{% endblock %}
+{% block content%}
+
+<div class="panel panel-primary transparency">
+   <div class="panel-heading">
+      {% if insurance_claim %}
+        <b>Edit Insurance Claim:</b>
+      {% else %}
+        <b>Add Insurance Claim:</b>
+      {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    <ul class="nav nav-pills" id="myTab">
+      <li class="active">
+        <a href="#details" 
+           data-toggle="tab">
+            Vehicle Information&nbsp;
+        </a>
+      </li>
+      
+      <li class="">
+        <a href="#summary" 
+           data-toggle="tab">Insurance Claim Information</a>
+      </li>
+
+    </ul>
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="">   
+      <div id="edit_insurance_claim_tab_content" class="tab-content">
+              
+        <div class="tab-pane fade active in" id="details">
+          <br/>
+
+          <div class="col-lg-12">
+            <div class='panel-heading'>Vehicle Details</div><br>
+            <div class='col-lg-4'>
+              {% bootstrap_field insurance_claim_form.vendor %}
+              {% bootstrap_field insurance_claim_form.vehicle %}
+              {% bootstrap_field insurance_claim_form.incident_date %}
+              {% bootstrap_field insurance_claim_form.driver %}
+              {% bootstrap_field insurance_claim_form.drivers_licence %}
+              {% bootstrap_field insurance_claim_form.expiry_date %}
+              
+            </div>
+            <div class='col-lg-4'>
+            {% bootstrap_field insurance_claim_form.division %}
+              {% bootstrap_field insurance_claim_form.region %}
+              {% bootstrap_field insurance_claim_form.district %}
+              {% bootstrap_field insurance_claim_form.vin_number %} 
+              {% bootstrap_field insurance_claim_form.engine_number %}
+            </div>
+            <div class='col-lg-4'> 
+              {% bootstrap_field insurance_claim_form.ownership %}
+              {% bootstrap_field insurance_claim_form.colour %}
+              {% bootstrap_field insurance_claim_form.make %}
+              {% bootstrap_field insurance_claim_form.model %} 
+              {% bootstrap_field insurance_claim_form.year_model %} 
+               
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class='panel-heading'>Claim Details</div><br>
+            <div class='col-lg-4'>
+              {% bootstrap_field insurance_claim_form.claim_type %} 
+              {% bootstrap_field insurance_claim_form.reason_other %}
+              {% bootstrap_field insurance_claim_form.submission_date %}
+              {% bootstrap_field insurance_claim_form.quote_reference_number %}
+              {% bootstrap_field insurance_claim_form.quote_amount %}
+              {% bootstrap_field insurance_claim_form.invoice_number %}
+              {% bootstrap_field insurance_claim_form.invoice_amount %}
+            </div>
+            <div class='col-lg-4'>
+              {% bootstrap_field insurance_claim_form.damage_description %}
+              {% bootstrap_field insurance_claim_form.driver_co_payment %}
+              {% bootstrap_field insurance_claim_form.status %}
+              {% bootstrap_field insurance_claim_form.percentage %}
+              {% bootstrap_field insurance_claim_form.share_amount %}
+            </div>
+            <div class='col-lg-4'>
+              {% bootstrap_field insurance_claim_form.incident_description %}
+              {% bootstrap_field insurance_claim_file_form.document %}
+              {% bootstrap_field insurance_claim_document_form.document_type %}
+              {% bootstrap_field insurance_claim_comment_form.comment %}
+            </div>
+          </div>
+
+        </div>
+        
+        <div class="tab-pane fade" id="summary">
+          <br>
+         <div class="col-lg-12">
+          <div class='panel-heading'>Insurance Additional Details</div><br>
+            <div class='col-lg-6'>
+              {% bootstrap_field insurance_claim_form.insurance_reference_number %}
+              {% bootstrap_field insurance_claim_form.insurance_date_recieved %}
+              {% bootstrap_field insurance_claim_form.insurance_comment %}
+               
+            </div>
+            <div class='col-lg-6'>
+              {% bootstrap_field insurance_claim_form.claim_number %}
+              {% bootstrap_field insurance_claim_form.claim_date_recieved %}
+              {% bootstrap_field insurance_claim_form.claim_comment %}  
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+
+          <div class='pull-right'>
+          {% if not request.user.is_regional_user or not request.user.is_regional_manager %}
+          {% if not insurance_claim and not insurance_claim.status == "captured" or not insurance_claim.status %}
+            <button type="submit" class="btn btn-primary" id="captured", name="captured">
+              <i class='fa fa-floppy-o'></i> Capture
+            </button>
+          {% else %}
+            {% if not insurance_claim.status == "paid" and not insurance_claim.status == "submitted for payment"%}
+              <button type="submit" class="btn btn-primary">
+                <i class='fa fa-floppy-o'></i> Save
+              </button>
+            {% endif %}
+          {% endif %}
+          {% if not insurance_claim.status == "paid" and insurance_claim %}
+            {% if insurance_claim.status == "captured" or insurance_claim.status == "rejected" %}
+              <button type="submit" class="btn btn-primary" id="submit_for_payment" name="submit_for_payment">
+                <i class='fa fa-check-circle'></i> Submit For Payment
+              </button>
+            {% endif %}
+            {% if insurance_claim.status == "submitted for payment" %}
+              <button type="submit" class="btn btn-primary" id="paid" name="paid">
+                <i class='fa fa-check-square'></i> Paid
+              </button>
+            {% endif %}
+            {% if insurance_claim.status == "captured" or insurance_claim.status == "submitted for payment" or insurance_claim.status == "rejected" %}
+              <button type="submit" class="btn btn-primary" id="rejected", name="rejected">
+                <i class='fa fa-times-circle'></i> Rejected
+              </button>
+            {% endif %}
+          {% endif %}
+          {% endif %}
+          <a href="{% url 'fleetmanagement:view_insurance_claims' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+        </div>
+      
+    </form>
+  </div>
+
+</div>
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">Uploaded Documents</div>
+  {% include 'fleet_management/widgets/_insurance_claim_documents.html' %}
+</div>
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">Comments</div>
+  {% include 'fleet_management/widgets/_insurance_claim_comments.html' %}
+</div>
+
+{% endblock %}

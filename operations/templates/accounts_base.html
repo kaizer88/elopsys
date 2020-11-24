@@ -1,0 +1,37 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>elopsys</title>
+    {% include 'head_css.html' %}
+    <style>
+      {% block style %}{% endblock %}
+    </style>
+     {% include 'javascript.html' %}
+
+    {% block javascript %}
+    {% endblock %}
+  </head> 
+
+  <body class="bodybaground" style="background-image: url({% static 'img/gold_bg1.jpg' %}); background-repeat: no-repeat;
+       background-size: 100%, 100%;" >  
+  
+    <!-- Static navbar -->   
+    
+
+    <div class="container "> 
+     
+      {% block content %}
+      {% endblock %}
+     
+    </div> <!-- /container -->
+    <!-- Latest compiled and minified JavaScript 
+  </body>
+</html>

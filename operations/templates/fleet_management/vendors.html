@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Service Providers</b>
+  </div>
+  <div class="panel-body">
+    <form id="vendor_filter_form" method="POST">
+    {% csrf_token %}
+
+    {% include 'fleet_management/widgets/_vendor_filter.html' %}
+    
+       
+    <div class="tab-content">
+      <div id="" class="tab-pane fade in active">
+        {% include 'fleet_management/_vendor_list.html' %}
+      </div>      
+    </div>
+
+    <div class="modal fade" id="extract_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel"><i class="fa fa-info-circle" aria-hidden="true"></i> Extract Service Provider(s)</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <b> Are you sure you want to download the extract</b>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" name="extract" id="extract" class="btn btn-primary">Ok</button>
+            </div>
+          </div>
+        </div>
+    </div>
+  </form>
+  </div>
+</div>
+{% endblock %}

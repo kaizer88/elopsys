@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block javascript %}
+  <script src="{% static 'js/employees.js' %}"></script>
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Edit Driver: {{ employee.first_name }} {{ employee.surname }}</b>
+  </div>
+  
+  <div class="panel-body">
+    
+    <ul class="nav nav-pills" id="myTab">
+      <li class="active">
+        <a href="#employee" 
+           data-toggle="tab">
+            Employee Information{% if employee_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}
+        </a>
+      </li>
+      
+      <li class="">
+        <a href="#licence" 
+           data-toggle="tab">Driver Licence{% if driving_licence_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}</a>
+      </li>
+
+      <li class="">
+        <a href="#traffic" 
+           data-toggle="tab">Traffic Fines</a>
+      </li>
+
+      <li class="">
+        <a href="#incidents" 
+           data-toggle="tab">Incidences</a>
+      </li>
+
+      <li class="">
+        <a href="#insurance" 
+           data-toggle="tab">Insurance Claims</a>
+      </li>      
+    </ul>
+    <br>
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      <input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}">
+      <input type="hidden" name="tab" value="">
+      {% csrf_token %}
+
+
+      <div id="edit_vehicle_tab_content" class="tab-content">
+
+        
+        <div class="tab-pane fade in active" id="employee">
+          
+          <div id="edit_employee_tab_content" class="tab-content">
+            <div class="tab-pane fade active in" id="details">
+              <div class='col-lg-6'>{% bootstrap_field employee_form.first_name %}</div>
+              <div class='col-lg-6'>{% bootstrap_field employee_form.last_name %}</div>
+              <div class='col-lg-6'>{% bootstrap_field employee_form.employee_no %}</div>
+              <div class='col-lg-6'>{% bootstrap_field employee_form.commission_code %}</div>
+              <div class='col-lg-6'>{% bootstrap_field employee_form.id_number %}</div>
+              <div class='col-lg-6'>{% bootstrap_field employee_form.email %}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade in" id="licence">
+
+          {% for field in driving_licence_form %}
+          <div class='col-lg-6'>{% bootstrap_field field %}</div>
+          {% endfor %}          
+
+        </div>
+
+        <div class="tab-pane fade in" id="traffic">          
+          <div>
+            <table class="table table-hover">
+              <thead>
+                <th>Ref No</th>
+                <th>Vehicle</th>
+                <th>Date</th>
+                <th>Amount</th>
+              </thead>
+              {% for trf in traffic_incidents %}
+              <tbody>
+                <td>
+                  <a href="{% url 'fleetmanagement:edit_incident' trf.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View/Edit Traffic Incident">
+                    <i class="fa fa-binoculars" aria-hidden="true"></i>  {{ trf.reference_number }}</a>
+                </td>                             
+                <td>
+                  {{ trf.vehicle__registration_number }}
+                </td>                
+                <td>
+                  {{ trf.incident_date }}
+                </td>
+                <td>
+                  {{ trf.cost }}
+                </td>
+              </tbody>
+              {% endfor %}
+            </table>
+          </div>
+
+        </div>
+        <div class="tab-pane fade in" id="incidents">          
+          <div>
+            <table class="table table-hover">
+              <thead>
+                <th>Ref No</th>
+                <th>Vehicle</th>
+                <th>Date</th>
+                <th>Amount</th>
+              </thead>
+              {% for clms in other_incidents %}
+              <tbody>
+                <td>
+                  <a href="{% url 'fleetmanagement:view_incident' clms.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View/Edit Other Incident">
+                    <i class="fa fa-binoculars" aria-hidden="true"></i>  {{ clms.reference_number }}</a>
+                </td>                             
+                <td>
+                  {{ clms.vehicle__registration_number }}
+                </td>                
+                <td>
+                  {{ clms.incident_date }}
+                </td>
+                <td>
+                  {{ clms.cost }}
+                </td>                    
+              </tbody>
+              {% endfor %}
+            </table>
+          </div>
+
+        </div>
+        <div class="tab-pane fade in" id="insurance">          
+          <div>
+            <table class="table table-hover">
+              <thead>
+                <th>Ref No</th>
+                <th>Vehicle</th>
+                <th>Date</th>
+                <th>Amount</th>
+              </thead>
+              {% for insu in insurance_incidents %}
+              <tbody>
+                <td>
+                  <a href="{% url 'fleetmanagement:edit_insurance_claim' insu.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View/Edit Traffic Incident">
+                    <i class="fa fa-binoculars" aria-hidden="true"></i>  {{ insu.insurance_reference_number }}</a>
+                </td>                             
+                <td>
+                  {{ insu.vehicle__registration_number }}
+                </td>                
+                <td>
+                  {{ insu.incident_date }}
+                </td>
+                <td>
+                  {{ insu.quote_amount }}
+                </td>                    
+              </tbody>
+              {% endfor %}
+            </table>
+          </div>
+
+        </div>                
+      </div>
+
+      <br>
+      <div class='pull-right'>
+        {% if not request.user.is_regional_user or not request.user.is_regional_manager %}
+        <button type="submit" name="save" class="btn btn-primary">
+          <i class='fa fa-floppy-o'></i> Save
+        </button>
+        {%  endif %}
+        <button type="submit" name="cancel" class="btn btn-primary">
+          <i class='fa fa-undo'></i> Cancel
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+<div class="panel panel-primary transparency hidden" id='vehicle_history'>
+  <div class="panel-heading">Vehicle History</div>
+  {% include 'employees/widgets/_vehicle_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden" id='driving_licence_history'>
+  <div class="panel-heading">Driver Licence History</div>
+  {% include 'employees/widgets/_driving_licence_history.html' %}
+</div>
+
+{% endblock %}

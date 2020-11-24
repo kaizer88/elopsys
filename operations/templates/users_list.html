@@ -1,0 +1,45 @@
+{% extends "accounts_base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<br/>
+<div class='col-sm-8 col-sm-offset-2'>	
+<div class="panel panel-primary transparency">
+	<div class="panel-heading">
+	 	<b><a href="{% url 'home' %}" style="color: white"><i class="fa fa-home fa-fw" aria-hidden="true"></i>ELOPSYS</a> <span class="pull-right">{{title}}</span></b>
+	</div>
+
+	<div class="panel-body">
+		<div class='col-sm-6 col-sm-offset-3'>	
+	  		<img src="{% static 'img/emerald_banner.jpg' %}" width="100%">	
+		</div>.	
+		<form method="POST" action="" enctype="multipart/form-data" novalidate>
+		<table class="table table-hover ">							
+			<tr>
+				<th>User </th>								
+				<th class="col-hidden">Full Name</th>				
+				<th class="col-hidden col-hidden-2">Designation</th>
+				<th>Last Login</th>														
+				<th>Options</th>
+			</tr>								
+			{% for user in users %}
+				<tr>
+					<td>{{ user.username }} </td>									
+					<td class="col-hidden">{{ user.employee }}</td>
+					<td class="col-hidden col-hidden-2">{{ user.designation }}</td>
+					<td>{{ user.last_login }}</td>					
+																							
+					<td>										
+						<a href="{% url 'editUser' user.id %}"><i class="fa fa-check-square-o" aria-hidden="true"></i> Edit</a>
+					</td>
+				</tr>										
+			{%  endfor %}						
+		</table>					
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

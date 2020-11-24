@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+
+<script src="{% static 'js/dropdown.js' %}"></script>
+<script src="{% static 'js/service_provider.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+   <div class="panel-heading">
+      {% if vendor %}
+        <b>Edit Service Provider:</b>
+      {% else %}
+        <b>Add Service Provider:</b>
+      {% endif %}
+  </div>
+  
+  <div class="panel-body">   
+    <ul class="nav nav-pills" id="myTab">
+      <li class="active">
+        <a href="#service_provide_details" 
+           data-toggle="tab">Description&nbsp;
+        </a>
+      </li>
+      
+      <li class="">
+        <a href="#contacts" 
+           data-toggle="tab">Contact Details</a>
+      </li>
+
+      <li class="">
+        <a href="#address" 
+           data-toggle="tab">Address Details</a>
+      </li>
+
+      <li class="">
+        <a href="#bank_details" 
+           data-toggle="tab">Bank Details</a>
+      </li>
+
+    </ul>
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="">   
+      <div id="edit_insurance_claim_tab_content" class="tab-content">
+              
+        <div class="tab-pane fade active in" id="service_provide_details">
+          <br/>
+
+          <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div>{% bootstrap_field vendor_form.name %}</div>
+              <div>{% bootstrap_field vendor_form.vendor_type %}</div>                          
+            </div>
+            <div class='col-lg-6'>
+              {% if vendor and request.user.is_management %} 
+              <div>{% bootstrap_field vendor_form.account_type %}</div>
+              <div>{% bootstrap_field vendor_form.balance %}</div>
+              {% elif not vendor %}
+              <div>{% bootstrap_field vendor_form.account_type %}</div>
+              <div>{% bootstrap_field vendor_form.balance %}</div>
+              {% else %}
+              <div id="account_type">{% bootstrap_field vendor_form.account_type %}</div>
+              <div id="balance">{% bootstrap_field vendor_form.balance %}</div>
+              {% endif %}                           
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="contacts">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div>{% bootstrap_field contact_form.first_name %}</div>
+              <div>{% bootstrap_field contact_form.last_name %}</div>
+                           
+            </div>
+            <div class='col-lg-6'>            
+              <div>{% bootstrap_field contact_form.tel_number %}</div>
+              <div>{% bootstrap_field contact_form.cell_number %}</div>
+              <div>{% bootstrap_field contact_form.email %}</div> 
+            </div>
+
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="address">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div>{% bootstrap_field address_form.address_line_1 %}</div>
+              <div>{% bootstrap_field address_form.address_line_2 %}</div>
+              <div>{% bootstrap_field address_form.suburb %}</div>
+                           
+            </div>
+            <div class='col-lg-6'>            
+              <div>{% bootstrap_field address_form.city %}</div>
+              <div>{% bootstrap_field address_form.province %}</div>             
+              <div>{% bootstrap_field address_form.country %}</div>
+              <div>{% bootstrap_field address_form.postal_code %}</div>
+            </div>
+
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="bank_details">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div>{% bootstrap_field vendor_bank_details_form.bank_name %}</div>
+              <div>{% bootstrap_field vendor_bank_details_form.account_holder_name %}</div>
+               
+            </div>
+            <div class='col-lg-6'>            
+              <div>{% bootstrap_field vendor_bank_details_form.branch_code %}</div>                           
+              <div>{% bootstrap_field vendor_bank_details_form.account_number %}</div>
+            </div>
+
+          </div>
+        </div>
+
+        
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          <button type="submit" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          <a href="{% url 'fleetmanagement:view_vendors' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+          
+      </div>
+      
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

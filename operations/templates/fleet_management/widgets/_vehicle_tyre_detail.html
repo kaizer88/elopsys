@@ -1,0 +1,74 @@
+{% load bootstrap4 %}
+
+<div class="col-lg-12">
+  {% if formset %}
+  {{ formset.management_form }}
+  {% for form in formset %}
+  
+  <div class="col-lg-4">
+    <br>
+    <div class='panel-heading'>
+      {% if form.position.value == 'fr' %}
+        Tyre 1
+      {% endif %}
+      {% if form.position.value == 'fl' %}
+        Tyre 2
+      {% endif %}
+      {% if form.position.value == 'rr' %}
+        Tyre 3
+      {% endif %}
+      {% if form.position.value == 'rl' %}
+        Tyre 4
+      {% endif %}
+      {% if form.position.value == 'spare' %}
+        Tyre 5
+      {% endif %}
+    </div>
+    <br>
+    {% for f in form %}
+    <div class='col-lg-6'>{% bootstrap_field f %}</div>
+    {% endfor%}    
+  </div>
+  {% endfor %}
+  <div class='col-lg-4'><br>
+    <div class='panel-heading'>Document Upload</div>
+    <div class='col-lg-12'><br>
+      {% bootstrap_field tyres_document_file_form.document %}
+      {% bootstrap_field tyres_document_file_form.description %}
+      <div style="max-height: 230px; overflow: auto;">
+                <table id="vehicle_documents_table" class="table table-hover">
+                  <thead>
+                    <th>Created At</th>
+                    <th>Document</th>
+                  </thead>
+                  <tbody>
+                    {% for document in tyre_documents %}
+                    <tr>
+                      <td>{{document.created_at }}</td>
+                      <td>
+                        {% if document.document.document %}
+                        <a href="{{ document.document.document.url }}" 
+                           data-toggle="" 
+                           data-toggle="tooltip" 
+                           data-placement="bottom" 
+                           title="Description: {{document.document.description }}">
+                         {{ document.document.document_name }}</a>
+                        {% endif %}
+                      </td>                      
+                      {% empty %}
+                    <tr><td class="info" colspan="20">No Documents Added Yet</td></tr>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div><br>
+    </div>
+  </div>  
+  {% else %}
+  <table class='table' width='100%'>
+    <tr>
+      <td>Save changes to proceed</td>
+    </tr>
+  </table>
+  {% endif %}
+</div>

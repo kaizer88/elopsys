@@ -1,0 +1,42 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Stock Item</th>
+    <th>Category</th> 
+    <th>Transaction Type</th> 
+    <th>Opening Balance</th>
+    <th>Quantity</th>
+    <th>Stock Closing Balance</th>
+    <th>Date</th>
+    <th>Allocated To</th>
+    <th>Supplier</th>
+  </tr>
+
+  {% paginate stock_items %}
+  {% for item in stock_items %}
+
+  <tr> 
+    <td>      
+        <a href="{% url 'facilities:edit_stock_item_transaction' item.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Fuel Card Usage Detail">
+        <i class="fas fa-pencil-alt" aria-hidden="true"></i>  {{ item.stock_item.item_name }}</a>
+    </td>
+    <td>{{ item.stock_item.get_category_display }}</td>
+    <td>{{ item.get_transaction_type_display }}</td>
+    <td>{{ item.opening_stock }}</td> 
+    <td>{{ item.quantity }}</td>
+    <td>{{ item.stock_balance }}</td>
+    <td>{{ item.transaction_date|date:'Y-m-d H:i:s' }}</td>
+    <td>{{ item.district|default_if_none:"" }}</td>
+    <td>{{ item.supplier|default_if_none:"" }}</td>
+  </tr>  
+  {% endfor %}  
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block content%}
+{% if form %}   				
+  	<!-- Modal -->
+		    <!-- Modal content-->
+		   
+		      <div id="id_form_div" class="modal-body">
+		        <p>{% crispy form %}</p>
+		      </div>
+		      
+{% endif %}
+{%endblock%}

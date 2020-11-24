@@ -1,0 +1,46 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Registration Number</th>
+    <th>Driver</th>
+    <th>Division</th>
+    <th>Status</th>
+    <th>Cost</th>
+    <th>Balance</th>
+    <th>Service Interval</th>
+    <th>Fleet Administrator</th>
+    <th></th>
+    
+  </tr>
+
+  {% paginate service_bookings %}
+  {% for service_booking in service_bookings %}
+
+  <tr> 
+    <td><a href="" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Service/Maintenance"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ service_booking.vehicle }}</a></td>
+    <td>
+      {% if service_booking.vehicle.driver %}
+      <a href="{% url 'employees:edit_employee' service_booking.vehicle.driver.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Driver Profile"><i class="fa fa-info-circle" aria-hidden="true"></i>
+      {{ service_booking.vehicle.driver }}</a>
+      {% else %}
+      Unassigned
+      {% endif %}</td>  
+    <td>{{ service_booking.vehicle.division |title }}</td> 
+    <th>{{ service_booking.status |title }}</th>
+    <th>{{ service_booking.document_amount }}</th>
+    <th>{{ service_booking.vendor.balance }}</th>
+    <th>{{ service_booking.service_interval }}</th>
+    <td>{{ service_booking.created_by }}</td> 
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

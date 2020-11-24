@@ -1,0 +1,57 @@
+{% load el_pagination_tags %}
+<table id="all_fleet_table" class="table table-hover ">
+  <tr>
+    <th>Vehicle</th>
+    <th>Driver</th>
+    <th>Make</th>
+    <th>Model</th>
+    <th>Year Model</th>
+    <th>Brocker Name</th>
+    <th>Insurance Type</th>
+    <th>Cover Ammount</th>
+    <th>Installment</th>
+    <th></th><th></th>
+  </tr>
+  
+  {% paginate insured_vehicles %}
+  {% for vehicle in insured_vehicles %}
+  
+  <tr>
+    
+    <td><a href="{% url 'fleetmanagement:edit_vehicle' vehicle.vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ vehicle.vehicle.registration_number }}</a></td>    
+    <td>
+      {% if vehicle.vehicle.driver %}
+      <a href="{% url 'employees:edit_employee' vehicle.vehicle.driver.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Driver Profile"><i class="fa fa-info-circle" aria-hidden="true"></i> {{ vehicle.vehicle.driver }}</a>
+      {% else %}
+        "Unassigned"
+      {% endif %}
+    </td>    
+    <td>{{ vehicle.vehicle.make }}</td>
+    <td>{{ vehicle.vehicle.model }}</td>
+    <td>{{ vehicle.vehicle.year_model }}</td>
+    <td>{{ vehicle.broker_name|title }}</td>
+    <td>{{ vehicle.insurance_type|title }}</td>
+    <td>{{ vehicle.insured_amount }}</td>
+    <td>{{ vehicle.installment }}</td>
+    
+    <td>                  
+       <a href="{% url 'fleetmanagement:vehicle_dashboard' vehicle.vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Dashboard"><i class="fa fa-eye" aria-hidden="true"></i></a>
+    </td>
+     <td>                  
+       <a href="{% url 'fleetmanagement:vehicle_summary' vehicle.vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Summary"><i class="fa fa-bar-chart" aria-hidden="true"></i></a>
+     </td>
+  </tr>
+  {% endfor %}
+  
+  <tr><td colspan='11'>Total: {{ total }}</td></tr>
+  <tr>
+    <td colspan='11' style="text-align: center">
+      <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

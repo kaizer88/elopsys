@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block javascript %}
+{% load humanize %}
+<script>
+  $(function() {
+    $(".auto-complete-vehicle").autocomplete({
+    source: "{% url 'fleet:get_vehicle' %}",
+    minLength: 2});
+
+    $(".auto-complete-driver").autocomplete({
+    source: "{% url 'fleet:get_employee' %}",
+    minLength: 2});
+
+    $(".auto-complete-region").autocomplete({
+    source: "{% url 'fleet:get_region' %}",
+    minLength: 2});
+  });
+
+</script>
+
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency panel-body">
+<form method="POST" action=""> 
+{% csrf_token %}
+<h1>{{title}}</h1>  
+  <table class="table table-hover  table-fixed">              
+      <tr>
+        <th>{{filter_form.region}}</th>
+        <th>{{filter_form.driver}}</th>
+        <th>{{filter_form.start_date}}</th>
+        <th>{{filter_form.end_date}}</th>
+        <th><input class="btn btn-warning" id="filter_logs" name="filter_logs" type="submit" value="Search"/>
+            <a class="btn btn-warning" href="{% url 'fleet:rpt_driver_incidences' %}" type="submit">Refresh</a>
+            <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th>
+      </tr>
+    </table>
+  {% for employee, values in tran_dict.items %}				
+  <h4>{{ employee }}</h4>
+
+  <table class="table table-hover ">							     
+   <tr style="background-color: #808080;">                     
+        <th>Vehicle</th>
+        <th>Date</th>
+        <th>Incident Type</th>
+        <th>Location</th>
+        <th style="width:30%">Description</th>
+        <th>Damage Extent</th>
+      </tr> 
+    
+    {% for val in values.transactions %}
+    <tr>
+      <td>{{ val.incident_date }}</td>					
+      <td>{{ val.vehicle }}</td>
+      <td>{{ val.incident_type }} </td>
+      <td>{{ val.location }}</td>
+      <td>{{ val.description }} </td>					
+      <td>{{ val.status }} </td>
+      
+    </tr>
+    {% endfor %}  
+    
+    
+  </table>
+  {% endfor %}
+  </form>
+</div>
+{% endblock %}

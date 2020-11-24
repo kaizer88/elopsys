@@ -1,0 +1,23 @@
+
+{% if employee.employee_driving_licence %}
+  <div style="max-height: 300px; overflow: auto;">
+    <table id="driving_licence_history_table" class="table table-hover">
+      <thead>
+        <th>Code</th>
+        <th>Licence Number</th>
+        <th>Expiry Date</th>
+        <th>Image</th>
+      </thead>
+      {% for lic in employee.employee_driving_licence.all %}
+      <tbody>                
+        <td>{{ lic.code }}</td>                
+        <td>{{ lic.licence_number }}</td>                
+        <td>{{ lic.expiry_date }}</td>                
+        <td>
+          <a target="_blank" href="/media/{{ lic.licence_image.image }}">View</a>
+        </td>
+      </tbody>
+      {% endfor %}
+    </table>
+  </div>
+{% endif %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+
+			<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_purchase_list" name="filter_purchase_list" type="submit" value="Search"/></div>
+						  </div></p>					
+						<table class="table table-hover ">							
+							<tr>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden">Purchase Date</th>
+								<th>Mobile Number</th>							
+								<th class="col-hidden col-hidden-2">Mobile Option</th>
+								<th class="col-hidden col-hidden-2">Service Provider</th>
+								<th class="col-hidden col-hidden-2">Price</th>										
+								<th></th>
+							</tr>								
+							{% for purchase in purchase_list %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ purchase.branch.region }} </td>
+									<td>{{ purchase.branch }}</td>			
+									<td class="col-hidden">{{ purchase.purchase_date }}</td>									
+									<td>{{ purchase.phone_number }} </td>
+									<td class="col-hidden col-hidden-2">{{ purchase.mobile_option }} </td>
+									<td class="col-hidden col-hidden-2">{{ purchase.service_provider }}</td>
+									<td class="col-hidden col-hidden-2">{{ purchase.price }}</td>																								
+									<td><a href="{% url 'property:edit_mobilepurchase' purchase.id %}">Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if purchase_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if purchase_list.has_previous %}
+						      <li><a href="?page={{ purchase_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  purchase_list.number }} of {{purchase_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if purchase_list.has_next %}
+						      <li><a href="?page={{ purchase_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>									
+		</div>
+
+	</div>
+{% endblock %}

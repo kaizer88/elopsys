@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}	
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#renewals">Renewals</a></li>
+				<li><a data-toggle="pill" href="#expired">Expired</a></li>
+				<li><a data-toggle="pill" href="#due_expiry">Due Expiry</a></li>
+				
+			</ul>
+			<div class="tab-content">
+				<div id="renewals" class="tab-pane fade in active">
+					<form method="GET" action="">
+					<p><div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_list" name="filter_list" type="submit" value="Search"/></div>
+						  </div></p>
+						<table class="table table-hover ">
+							<tr>
+								<th>Licence Plate</th>								
+								<th class="col-hidden" >Driver</th>
+								<th class="col-hidden col-hidden-2">Expired On</th>
+								<th>Renewed On</th>								
+								<th class="col-hidden col-hidden-2">Expiring On</th>
+								<th class="col-hidden col-hidden-2">Amount</th>								
+								<th></th>
+							</tr>								
+							{% for transaction in licence_disk_list %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td class="col-hidden">{{ transaction.driver }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.expiry_date }} </td>
+									<td>{{ transaction.renewal_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.new_expiry_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.amount|floatformat:2|intcomma }}</td>
+																																		
+									<td>										
+										<a href="{% url 'fleet:editrenewlicencedisk' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Licencing"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>
+									<td>										
+										<a href="{% url 'fleet:viewrenewlicencedisk' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Licencing"><i class="fa fa-eye" aria-hidden="true"></i></a>
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if licence_disk_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if licence_disk_list.has_previous %}
+						      <li><a href="?page={{ licence_disk_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  licence_disk_list.number }} of {{licence_disk_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if licence_disk_list.has_next %}
+						      <li><a href="?page={{ licence_disk_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+				<div id="expired" class="tab-pane fade"><br/>
+					<form method="GET" action="">	
+					<div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_expired" name="filter_expired" type="submit" value="Search"/></div>
+						  </div>
+						<table class="table table-hover ">
+							<tr>								
+								<th>Vehicle</th>
+								<th class="col-hidden">Driver</th>								
+								<th class="col-hidden col-hidden-2">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th class="col-hidden col-hidden-2">Ownership Type</th>
+								<th>Expired</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in vehicles_with_expired_disks %}
+								<tr>
+									
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden">{{ vehicle.get_current_driver }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+									<td>{{ vehicle.licence_disk_expiry }}</td>																	
+									<td>         	
+							            <a href="{% url 'fleet:renewlicencedisk' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Vehicle Licencing"><i class="fa fa-repeat" aria-hidden="true"></i></a>							              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if vehicles_with_expired_disks.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if vehicles_with_expired_disks.has_previous %}
+						      <li><a href="?page={{ vehicles_with_expired_disks.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  vehicles_with_expired_disks.number }} of {{vehicles_with_expired_disks.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if vehicles_with_expired_disks.has_next %}
+						      <li><a href="?page={{ vehicles_with_expired_disks.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>	
+				</div>
+
+
+				<div id="due_expiry" class="tab-pane fade"><br/>
+					<form method="GET" action="">	
+					<div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_due" name="filter_due" type="submit" value="Search"/></div>
+						  </div>
+						<table class="table table-hover ">
+								<th>Vehicle</th>
+								<th class="col-hidden">Driver</th>								
+								<th class="col-hidden col-hidden-2">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th class="col-hidden col-hidden-2">Ownership Type</th>
+								<th>Expiring</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in vehicles_with_disks_due_expiry %}
+								<tr>
+									
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden">{{ vehicle.get_current_driver }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+									<td>{{ vehicle.licence_disk_expiry }}</td>																
+									<td>         	
+							            <a href="{% url 'fleet:renewlicencedisk' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Vehicle Licencing"><i class="fa fa-repeat" aria-hidden="true"></i></a>							              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if vehicles_with_disks_due_expiry.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if vehicles_with_disks_due_expiry.has_previous %}
+						      <li><a href="?page={{ vehicles_with_disks_due_expiry.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  vehicles_with_disks_due_expiry.number }} of {{vehicles_with_disks_due_expiry.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if vehicles_with_disks_due_expiry.has_next %}
+						      <li><a href="?page={{ vehicles_with_disks_due_expiry.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>					
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

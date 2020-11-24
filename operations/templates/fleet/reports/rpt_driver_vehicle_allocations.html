@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+{% block javascript %}
+
+<script>
+  $(function() {
+    $(".auto-complete-vehicle").autocomplete({
+    source: "{% url 'fleet:get_vehicle' %}",
+    minLength: 2});
+
+    $(".auto-complete-driver").autocomplete({
+    source: "{% url 'fleet:get_employee' %}",
+    minLength: 2});
+
+    $(".auto-complete-region").autocomplete({
+    source: "{% url 'fleet:get_region' %}",
+    minLength: 2});
+  });
+
+</script>
+
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency">
+<form method="POST" action="">
+{% csrf_token %}
+  <h1>{{title}}</h1>   
+  <table class="table table-hover  table-fixed">              
+    <tr>
+      <th>{{filter_form.region}}</th>
+      <th>{{filter_form.driver}}</th>
+      <th>{{filter_form.start_date}}</th>
+      <th>{{filter_form.end_date}}</th>
+      <th><input class="btn btn-warning" id="filter_logs" name="filter_logs" type="submit" value="Search"/>
+          <a class="btn btn-warning" href="{% url 'fleet:rpt_driver_vehicle_allocations' %}" type="submit">Refresh</a>
+          <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th>
+          </tr>
+        </table>
+  {% for employee, values in tran_dict.items %}				
+  <h4> {{ employee }}</h4>
+
+  <table class="table table-hover table-striped ">							     
+    <tr style="background-color: #808080;">
+      <th>Allocation date</th>
+      <th>Type</th>
+      <th>Vehicle</th>  
+      <th style="width: 18%;">Make and Model</th>     
+      <th>Year Model</th>
+      <th>Region</th>
+      <th>Ownership Type</th>
+      <th>Color</th>
+      <th>Current Mileage</th>
+      <th>Status</th>
+    </tr>   
+    
+    {% for val in values.transactions %}
+    <tr>     				
+      <td>{{ val.allocation_date }}</td>
+      <td>{{ val.allocation_type }} </td>
+      <td>{{ val.vehicle }}</td>
+      <td>{{ val.make_n_model }} </td>					
+      <td>{{ val.model_year }}</td>
+      <td>{{ val.region }}</td>
+      <td>{{ val.o_type }}</td>
+      <td>{{ val.color }}</td>
+      <td>{{ val.mileage }}</td>
+      <td>{{ val.status }}</td>                   
+        
+      
+    </tr>
+    {% endfor %}
+       
+    
+  </table>
+  {% endfor %}
+  </form>
+</div>
+{% endblock %}

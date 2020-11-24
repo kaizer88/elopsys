@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+  {# JQUERY FILE UPLOAD SCRIPTS #}
+  <script src="{% static 'js/jquery-file-upload/vendor/jquery.ui.widget.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.iframe-transport.js' %}"></script>
+  <script src="{% static 'js/jquery-file-upload/jquery.fileupload.js' %}"></script>
+
+  {# PHOTOS PAGE SCRIPTS #}
+  <script src="{% static 'js/file_upload/drag-and-drop-upload.js' %}"></script>
+  <script src="{% static 'js/file_upload/progress-bar-upload.js' %}"></script>
+{% endblock %}
+
+{% block content %}	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+		 	<h2>{{title}}</h2>
+		</div>
+
+		<div class="panel-body">
+			<div class="row panel-body" ">
+						
+				<div class="col-sm-4">
+					<ul class="nav nav-pills">
+						<li class="active"><a data-toggle="pill" href="#vehicle">Vehicle Details</a></li>
+						<li><a data-toggle="pill" href="#uploads">Upload</a></li>
+									
+					</ul>
+					<div class="tab-content">
+						<div id="vehicle" class="tab-pane fade in active">
+							<h4>Vehicle Description Details</h4>
+							<div style ="background-color: black; height: 260px;">
+								
+							</div>
+							<table class="table">
+								<tr>
+									<td>Make &amp Model</td>
+									<td>{{ vehicle.make_n_model }} </td>
+								</tr>
+								<tr>
+									<td>Model Year</td>
+									<td>{{ vehicle.model_year }} </td>
+								</tr>						
+								<tr>
+									<td>Current Status</td>
+									<td>{{ vehicle.status }} </td>
+								</tr>
+							</table>
+							<h4>Uploaded files</h4>						
+
+							<table class ="table">
+								<tr>
+									<th>File</th>
+									<th>File Name</th>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+								</tr>
+							</table>
+						</div>	
+
+						<div id="uploads" class="tab-pane fade"><br/>
+							<div class="well text-muted text-center" style="padding-top: 4rem; padding-bottom: 4rem;">
+							    <span class="glyphicon glyphicon-arrow-down" style="font-size: 4rem;"></span>
+							    <h3>Drop Files Here to Upload</h3>
+							</div>
+
+							  <input id="fileupload" type="file" name="file" multiple
+							         style="display: none;"
+							     	 data-url="{% url 'details_uploads' %}"
+							         data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+
+							  <table id="gallery" class="table table-bordered">
+							    <thead>
+							      <tr>
+							        <th>Uploaded Files</th>
+							      </tr>
+							    </thead>
+							    <tbody>
+							      {% for file in Files %}
+							        <tr>
+							          <td><a href="{{ file.file.url }}">{{ file.file.name }}</a></td>
+							        </tr>
+							      {% endfor %}
+							    </tbody>
+							  </table>
+
+							   <div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+								    <div class="modal-dialog">
+								      <div class="modal-content">
+								        <div class="modal-header">
+								          <h4 class="modal-title">Uploading...</h4>
+								        </div>
+								        <div class="modal-body">
+								          <div class="progress">
+								            <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+								          </div>
+								        </div>
+								      </div>
+								    </div>
+							  </div>
+						</div>
+					</div>
+				</div>
+				
+			</div>					
+		</div>
+	</div>
+
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+<!-- <script src="{% static 'js/vehicles.js' %}"></script> -->
+<script src="{% static 'js/dropdown.js' %}"></script>
+<script src="{% static 'js/service_bookings.js' %}"></script>
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+      {% if service_booking %}
+        <b>Edit Service/Maintenance: {{ service_booking.service_provider | title}}</b>
+      {% else %}
+        <b>Add Service/Maintenance:</b>
+      {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}      
+      <div id="edit_service_booking_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>       
+          <div class="row">            
+            <div class='col-lg-6'>
+              {% bootstrap_field service_booking_form.vehicle %}
+              <div class="row">
+                <div class="col-lg-3">{% bootstrap_field service_booking_form.service %}</div>
+                <div class="col-lg-3">{% bootstrap_field service_booking_form.maintenance %}</div> 
+                <div class="col-lg-6">{% bootstrap_field service_booking_form.long_term_repairs %}</div> 
+              </div> 
+              <div id="maintenance_options" class="row hidden">
+                <div class="col-lg-3"> {% bootstrap_field service_booking_form.tyres %}</div>
+                <div class="col-lg-3">{% bootstrap_field service_booking_form.brakes %}</div> 
+                <div class="col-lg-3"> {% bootstrap_field service_booking_form.clutch %}</div>
+                <div class="col-lg-3">{% bootstrap_field service_booking_form.other %}</div>  
+              </div>
+              {% bootstrap_field service_booking_form.follow_up_date %}            
+              {% bootstrap_field service_booking_form.current_mileage %}
+              {% bootstrap_field service_booking_form.service_interval %}            
+              {% bootstrap_field service_booking_form.booking_date %}
+              {% bootstrap_field service_booking_form.service_date %} <br>             
+              <div class="panel-heading row">Service Provider Details</div><br>
+              {% bootstrap_field service_booking_form.vendor %} 
+              {% if service_booking.status == "authorised" %}{% bootstrap_field service_booking_document_form.document %}{% endif %}
+            </div>
+            <div class='col-lg-6'>
+              {% bootstrap_field service_booking_form.status %}
+              {% bootstrap_field service_booking_form.drivers %}
+              {% bootstrap_field service_booking_form.balances %}
+              {% if service_booking.status == "authorised" %}{% bootstrap_field service_booking_form.document_received %}{% endif %}
+              {% bootstrap_field service_booking_form.document_number %}              
+              {% bootstrap_field service_booking_form.document_amount %}
+              {% bootstrap_field service_booking_form.document_date %}
+              {% bootstrap_field service_booking_form.comment %}
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class='col-lg-6'>
+              <div class="panel-heading row">Service Provider Details</div><br>
+              {% bootstrap_field service_booking_form.vendor %}
+            </div>            
+          </div> -->
+        </div>
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+        {% if not request.user.is_regional_manager or not request.user.is_regional_user %}
+        {% if not service_booking and not service_booking.status == "booked" or not service_booking.status %}
+            <button type="submit" class="btn btn-primary" id="book", name="book">
+              <i class='fa fa-floppy-o'></i> Book
+            </button>
+          {% else %}
+            {% if not service_booking.status == "declined" and not service_booking.status == "awaiting authorisation" and not service_booking.status == "authorised" and not service_booking.status == "declined" %}
+              <button type="submit" class="btn btn-primary" id="book" name="book">
+                <i class='fa fa-floppy-o'></i> Save
+              </button>
+            {% endif %}
+          {% endif %}
+          {% if service_booking.status == "booked" or service_booking.status == "authorised" and service_booking.status == "awaiting authorisation" and service_booking or service_booking.status == "awaiting authorisation" or service_booking.status == "declined" or service_booking.status == "authorised" %}
+
+            {% if service_booking.status == "escalated" or service_booking.status == "booked" %}
+              <button type="submit" class="btn btn-primary" id="accept" name="accept">
+                <i class='fa fa-check-square'></i> Accept
+              </button>
+            {% endif %}
+            {% if service_booking.status == "awaiting authorisation" and request.user.is_management %}
+              <button type="submit" class="btn btn-primary" id="authorise" name="authorise">
+                <i class='fa fa-check-square'></i> Authorise
+              </button>
+            {% endif %}
+             {% if service_booking.status == "authorised" and request.user.is_management %}
+              <button type="submit" class="btn btn-primary" id="resolve" name="resolve">
+                <i class='fa fa-check-square'></i> Resolved
+              </button>
+            {% endif %}
+            {% if service_booking.status == "awaiting authorisation" and request.user.is_management %}
+              <button type="submit" class="btn btn-primary" id="decline", name="decline">
+                <i class='fa fa-times-circle'></i> Decline
+              </button>
+            {% endif %}
+
+            {% if service_booking.status == "declined"%}
+              <button type="submit" class="btn btn-primary" id="accept", name="accept">
+                <i class='fa fa-times-circle'></i> Accept
+              </button>
+            {% endif %}
+          {% endif %}        
+          {% endif %}
+          
+
+          <a href="{% url 'fleetmanagement:service_booking' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+
+          <!-- <button type="submit" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          <a href="{% url 'fleetmanagement:service_booking' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a> -->
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="panel panel-primary transparency">  
+  <div class="panel-heading">Uploaded Documents</div>
+  {% include 'fleet_management/widgets/_service_booking_documents.html' %}
+</div>
+{% endblock %}

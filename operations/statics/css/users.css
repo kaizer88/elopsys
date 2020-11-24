@@ -1,0 +1,46 @@
+
+table.users {
+    /*border-collapse: collapse;*/
+    background:#efefef;
+    background:-webkit-gradient(linear, 0 0, 0 bottom, from(#efefef), to(#ccd5da));
+    background:-moz-linear-gradient(top, #efefef, #ccd5da);
+    background:linear-gradient(#efefef, #ccd5da);
+    border: solid 1px #c0c5c9;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    font-color: #04192c;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+table.users a {
+    font-color: #04192c;
+}
+
+table.users tr {
+}
+
+table.users td, table.users th {
+    /*border-left: 1px solid #ffffff;*/
+    padding-left: 20px;
+    padding-right: 20px;
+    /*border: 0;*/
+    /*border-right: 1px solid #ffffff;*/
+}
+
+table.users .odd_row td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    /*padding-right: 3px;*/
+}
+
+table.users .even_row {
+    background-color: #eaebed;   
+}
+
+table.users .even_row td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    /*padding-right: 3px;*/
+}

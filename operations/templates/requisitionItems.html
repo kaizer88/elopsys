@@ -1,0 +1,74 @@
+{% load staticfiles%}
+{% block javascript %}
+{% load humanize %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+	
+	
+<table class="table table-hover table-bordered">
+	<tr>	
+		<th style="width: 50%">Line Item</th>
+		<th>Qty</th>
+		<th>Unit Price</th>																			
+		<th>Line Total</th>
+	</tr>								
+	{% for transaction in requisition_items %}
+		<tr>											
+			<td>{{ transaction.line_item }}</td>
+			<td>{{ transaction.qty }} </td>
+			<td>{{ transaction.unit_price|floatformat:2|intcomma }}</td>
+			<td>{{ transaction.line_total|floatformat:2|intcomma }}</td>			
+		</tr>										
+	{%  endfor %}
+	<tr>
+		<th colspan="4">Requisition Totals</th>
+	</tr>
+	<tr>		
+		<td colspan="3">Delivery</td>
+		<td>0.00</td>
+	</tr>
+	<tr>
+		<td colspan="3">Sub Total</td>
+		<td>{{ requisition.get_sub_total }}</td>
+	</tr>
+	<tr>
+		<td colspan="3">VAT</td>
+		<td>{{ requisition.get_total_tax }}</td>
+	</tr>
+	<tr>
+		<td colspan="3">Total</td>
+		<td>{{ requisition.get_total }}</td>
+	</tr>						
+</table>
+<span class="pull-right">
+	<input class="btn btn-warning" id="save" name="save" type="submit" value="Add"/>
+	<input class="btn btn-warning" id="addClose" name="addClose" type="submit" value="Add & Close"/>
+</span>
+{% if comments.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if comments.has_previous %}
+      <li><a href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+   <li class="active"><span>{{  comments.number }} of {{comments.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if comments.has_next %}
+      <li><a href="?page={{ comments.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}

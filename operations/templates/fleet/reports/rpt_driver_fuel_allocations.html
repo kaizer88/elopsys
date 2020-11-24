@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+{% block javascript %}
+<script>
+  $(function() {
+    $(".auto-complete-vehicle").autocomplete({
+    source: "{% url 'fleet:get_vehicle' %}",
+    minLength: 2});
+
+    $(".auto-complete-driver").autocomplete({
+    source: "{% url 'fleet:get_employee' %}",
+    minLength: 2});
+
+    $(".auto-complete-region").autocomplete({
+    source: "{% url 'fleet:get_region' %}",
+    minLength: 2});
+
+  });
+
+</script>
+
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency">
+<form method="POST" action="">
+{% csrf_token %}
+<h1>{{title}}</h1>   
+  <table class="table table-hover  table-fixed">              
+    <tr>
+      <th>{{filter_form.region}}</th>
+      <th>{{filter_form.driver}}</th>
+      <th>{{filter_form.start_date}}</th>
+      <th>{{filter_form.end_date}}</th>
+      <th><input class="btn btn-warning" id="filter_logs" name="filter_logs" type="submit" value="Search"/>
+           <a class="btn btn-warning" href="{% url 'fleet:rpt_driver_fuel_allocations' %}" type="submit">Refresh</a>
+          <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th>
+      </tr>                     
+    </table>
+  {% for employee, values in tran_dict.items %}				
+  <h4> {{ employee }}</h4>
+
+  <table class="table table-hover table-striped ">							     
+    <tr style="background-color: #808080;">				
+      <tr>				
+		<th>Allocation date</th>
+		<th>Transaction Type</th>
+		<th>Vehicle</th>
+		<th style="width: 18%">Make and Model</th>				
+		<th>Fuel Card</th>
+		<th>Fuel OB</th>
+		<th>Fuel Amount</th>
+		<th>Fuel CB</th>
+		
+	</tr>
+      
+    </tr>
+    
+    {% for val in values.transactions %}
+    <tr>
+      <td>{{ val.allocation_date }}</td>
+      <td>{{ val.allocation_type }}</td>					
+      <td>{{ val.vehicle }}</td>
+      <td>{{ val.make_n_model }}</td>
+      <td>{{ val.fuel_card }} </td>     					
+      <td>{{ val.fuel_ob|floatformat:2|intcomma }} </td>
+      <td>{{ val.allocated|floatformat:2|intcomma }}</td>
+      <td>{{ val.fuel_cb|floatformat:2|intcomma }} </td>      
+    </tr>
+    {% endfor %}
+    
+    <tr style="background-color: #808080;">
+      <th>Totals</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>				
+      <th>{{ values.totals.allocated|floatformat:2|intcomma }}</th>
+      <th></th>
+    </tr>
+    
+  </table>
+  {% endfor %}
+  </form>
+</div>
+{% endblock %}
+

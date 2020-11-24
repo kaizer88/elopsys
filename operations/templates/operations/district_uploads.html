@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block content%}
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Upload Districts</b>
+  </div>
+  
+  <div class="panel-body">
+    <form method='post' enctype="multipart/form-data">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <br>
+      <button class="btn btn-primary pull-right">Update Districts</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

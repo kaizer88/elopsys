@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load bootstrap4 %}
+{% load humanize %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b>Insurers</b>    
+  </div>
+  <div class="panel-body">
+
+    {% for insurer in insurers %}
+
+    <div class="col-lg-4" style="margin-bottom: 25px">
+      <div class="card">
+        <div class="card-block">
+          <h3>{{insurer.name}}</h3>
+          <table width="100%">
+            <tr>
+              <th>Contact Person: </th>
+              <td>{{insurer.contact_person.first_name | title}} 
+                  {{insurer.contact_person.last_name | title}}</td>
+            </tr>
+            <tr>
+              <th>Contact Numbers: </th>
+              <td>{{insurer.contact_person.tel_number | title}} 
+                  {{insurer.contact_person.cell_number | title}}</td>
+            </tr>
+            <tr>
+              <th>{{insurer.address.address_type | title }} Address:</th>
+              <td>{{insurer.address.address_line_1 | title}} 
+                  {{insurer.address.address_line_2 | title}}
+              </td> 
+            </tr>
+            <tr><td></td>
+              <td>
+                  {{insurer.address.suburb | title}}</td>
+            </tr>
+            <tr><td></td> 
+              <td>
+                  {{insurer.address.city | title}}
+                  {{insurer.address.postal_code | title}}</td>
+            </tr>
+           
+          </table>
+          </p>
+          
+        </div>
+        <div class="card-footer align-right">
+          <span class="pull-left"> Total insured Vehicles: {{insurer.insured_vehicles}}</span>
+          
+          <a href="{% url 'fleetmanagement:view_insured' insurer.id %}" class="btn btn-primary btn-xs">View insured vehices</a>
+         
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+    
+  </div>
+</div>
+
+{% endblock %}

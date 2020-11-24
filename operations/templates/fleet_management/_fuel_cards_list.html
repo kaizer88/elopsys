@@ -1,0 +1,40 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Card Number</th>
+    <th>Registration Number</th>
+    <th>Driver</th>
+    <th>Card Type</th>
+    <th>Card Limit</th>
+    <th>Supplier</th>
+    <th>Status</th>
+    <th>Cancelled Date</th> 
+  </tr>
+
+  {% paginate fuel_cards %}
+  {% for fc in fuel_cards %}
+
+  <tr>   
+    <td> 
+      <a href="{% url 'fleetmanagement:edit_fuel_card' fc.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Fuel Card">
+        <i class="fa fa-binoculars" aria-hidden="true"></i>  {{ fc.card_number }}</a>
+    </td>
+    <td>{{ fc.vehicle_assigned|default_if_none:"" }}</td> 
+    <td>{{ fc.driver|default_if_none:"" }}</td>
+    <td>{{ fc.get_card_type_display }}</td>
+    <td>{{ fc.card_limit|default_if_none:"0" }}
+    <td>{{ fc.vendor|default_if_none:"" }}</td>
+    <td>{{ fc.get_status_display|default_if_none:"" }}</td>
+    <td>{{ fc.cancelled_date|date:'Y-m-d H:i:s'|default_if_none:"" }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,65 @@
+
+{% load staticfiles %}
+{% load humanize %}
+
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+	
+	
+<table class="table table-hover">
+	<tr>
+		<th>Book</th>								
+		<th class="col-hidden">Writer</th>
+		<th>Qty</th>	
+		<th></th>														
+		
+	</tr>								
+	{% for item in books %}
+		<tr>
+			<td>{{ item.book_type }} </td>									
+			<td class="col-hidden">{{ item.written_by }}</td>
+			<td>{{ item.quantity|floatformat:0|intcomma  }} </td>
+			<td>{% if edit_stock %}
+					<!-- <a href="{% url 'inventory:edit_branchstockitem' item.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Edit</a> -->
+				{% endif %}	
+				{% if replenish_stock %}
+					<a href="{% url 'inventory:add_bookreplenishment' item.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Repl</a>
+				{% endif %}
+				{% if stock_take %}
+					<!-- <a href="{% url 'inventory:add_stocktake' item.branch.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Check</a> -->
+				{% endif %}				
+			</td>
+			
+			
+		</tr>										
+	{%  endfor %}						
+</table>
+{% if items_list.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if items_list.has_previous %}
+      <li><a href="?page={{ items_list.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+   <li class="active"><span>{{  items_list.number }} of {{items_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if items_list.has_next %}
+      <li><a href="?page={{ items_list.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}

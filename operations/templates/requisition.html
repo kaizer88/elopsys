@@ -1,0 +1,282 @@
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+  $("#id_fuel_card").autocomplete({
+  source: "{% url 'fleet:get_fuel_card' %}",
+  minLength: 2});
+
+  $("#id_driver").autocomplete({
+  source: "{% url 'fleet:get_employee' %}",
+  minLength: 2});
+
+  $('select').select2();
+  });
+
+</script>
+<style type="text/css">
+	@page {
+		size: ;
+		margin: 1cm;
+		@frame footer {
+		    -pdf-frame-content: footerblock;
+		    bottom: 1cm;
+		    margin-left: 1cm;
+		    margin-right: 1cm;
+         	margin-top: 1cm;
+		    height: 1cm;
+		}
+	}	
+
+	.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+		padding: 8px;
+	    line-height: 1.42857143;
+	    vertical-align: top;
+    	border: 1px solid #000;
+
+	}
+
+	#table-bordered{
+		padding: 3px;
+	    line-height: 0.5;
+	    vertical-align: top;
+    	border: 1px solid #000;
+
+	}
+	
+	table {
+	    width: 100%;
+	    max-width: 100%;
+	    margin-bottom: 20px;
+	}
+
+
+
+
+</style>
+
+
+{% endblock %}
+
+<div class=" panel panel-primary col-sm-8 col-sm-offset-2">
+<div class="panel-body"> 	
+	
+<table>
+	<tr>
+		<td class="col-sm-4">
+			<table>	
+				<tr> 				
+					<td>Emerald Life</td>
+				</tr>
+				<tr> 				
+					<td>{{ branch.address }}</td>
+				</tr>
+				<tr> 			
+					<td>{{ branch.street_address }}</td>
+				</tr>
+				<tr> 				
+					<td>{{ branch.suburb }}</td>
+				</tr>
+				<tr> 				
+					<td>{{ branch.city }}</td>
+				</tr>
+				<tr> 				
+					<td>{{ branch.postal_code }}</td>
+				</tr>
+			</table>			
+		</td>
+		<td class="col-sm-4">
+			<table>
+				<tr>
+					<td>
+						<img src="{% static 'img/emerald_banner.jpg' %}" height="100px"> 					
+					</td>
+				</tr>
+			</table>
+			
+		</td>
+		<td class="col-sm-4">
+			<table>	
+				<tr>
+					<td style="width: 75px"></td>
+					<td>Reg No:</td>
+					<td style="text-align:right;">2016/534835/07</td>
+				</tr>
+				<tr>
+					<td style="width: 75px"></td>
+					<td>Tel No:</td>
+					<td style="text-align:right;">{{ branch.telephone }}</td>
+				</tr>
+				<tr>
+					<td style="width: 75px"></td>
+					<td>Fax No:</td>
+					<td style="text-align:right;">{{ branch.fax }}</td>
+				</tr>
+				<tr>
+					<td style="width: 75px"></td>
+					<td>Cell No:</td>
+					<td style="text-align:right;">{{ branch.cellphone }}</td>
+				</tr>
+			</table>
+			
+		</td>
+	</tr>
+</table>
+<table>	
+	<tr>
+		<td colspan="6"><h2 style="text-align:center;">REQUISITION</h2></td>
+	</tr>
+	<tr>
+		<td>Name:</td>
+		<td style="width: 30%">Emerald Life</td>		
+		<td></td>
+		<td></td>
+		<td>Date:</td>
+		<td style="text-align:right; ">{{ requisition.requested|date:"M-d-Y" }}</td>
+	</tr>
+	<tr>
+		<td>Contact:</td>
+		<td>Elmarie Rousseau</td>		
+		<td>VAT No:</td>
+		<td>4440266791</td>
+		<td>Quote No:</td>
+		<td style="text-align:right;">{{ requisition.quote_number }}</td>
+	</tr>
+	<tr>
+		<td>Address:</td>
+		<td>3rd Floor, Sterling House</td>		
+		<td>Tel No:</td>
+		<td>0861 666 333</td>
+		<td>Order No:</td>
+		<td style="text-align:right;">{{ requisition.id }}</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>86 Edward Street</td>
+		<td>Cell No:</td>
+		<td></td>
+		<td>Area</td>
+		<td style="text-align:right;">{{ region.region }}</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>Bellville</td>
+		<td>Fax No:</td>
+		<td></td>
+		<td>Req By:</td>
+		<td style="text-align:right;">{{ requisition.requested_by }}</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>7530</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td style="text-align:right;"></td>
+	</tr>
+</table><br/>
+
+<table class=" table table-bordered" id="table-bordered">
+	<tr>
+		<td class="text-align-center"><h3>COMMENTS</h3></td>		
+	</tr>	
+	<tr>
+		<td>{{ requisition.description }}. Vehicle: {{ requisition.vehicle }}. Driver: {{ requisition.driver }}.</td>		
+	</tr>	
+</table>
+<br/>
+
+<table class=" table table-bordered" id="table-bordered">
+	<tr>
+		<td>Supplier</td>
+		<td colspan="4">{{ requisition.supplier }}</td>		
+	</tr>
+	
+	<tr>
+		<td>Code</td>
+		<td>Line Item</td>
+		<td class="text-align-center">Qty</td>
+		<td>Unit Price</td>
+		<td>Line Total</td>		
+	</tr>
+	{% for transaction in requisition_items %}
+		<tr><td>{{ transaction.item_code}}</td>											
+			<td style="width: 50%">{{ transaction.line_item }}</td>
+			<td class="text-align-center">{{ transaction.qty }} </td>
+			<td>{{ transaction.unit_price|floatformat:2|intcomma }}</td>
+			<td>{{ transaction.line_total|floatformat:2|intcomma }}</td>			
+		</tr>										
+	{%  endfor %}
+
+	<tr>
+		<td colspan="3" rowspan="4"></td>
+		<td>Delivery</td>
+		<td>0.00</td>	
+	</tr>
+	<tr>		
+		<td>Sub Total</td>
+		<td>{{ requisition.get_sub_total|floatformat:2|intcomma  }}</td>	
+	</tr>
+	<tr>		
+		<td>Total Tax</td>
+		<td>{{ requisition.get_total_tax|floatformat:2|intcomma  }}</td>
+	</tr>
+	<tr>		
+		<td>Total</td>
+		<td>{{ requisition.get_total|floatformat:2|intcomma }}</td>
+	</tr>
+</table><br/>
+
+
+<table class=" table table-bordered"  id="table-bordered">
+	<tr>
+		<td colspan="3" style="text-align:center"><h3>SIGN OFF</h3></td>
+	</tr>
+	<tr>
+		<td>Designation</td>
+		<td>Name &amp Surname</td>
+		<td style="width: 40%">Signature</td>
+	</tr>
+	<tr>
+		<td>Operations Manager</td>
+		<td>Lewis M. Kufazvinei</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Operations Executive</td>
+		<td>Callie Nepgen</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>IT Executive</td>
+		<td>Richard Cozens</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Financial Executive</td>
+		<td>Elmarie Rousseau</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Managing Dirrector</td>
+		<td>Muller Van Staden</td>
+		<td></td>
+	</tr>
+</table>
+<div id="footerblock">
+<hr/>
+    <span class="pull-right">Page: <pdf:pagenumber></span> 
+</div>
+</div>
+</div>
+
+
+

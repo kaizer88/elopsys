@@ -1,0 +1,35 @@
+{% load el_pagination_tags %}
+<table id="all_user_table" class="table table-hover ">
+  <tr>
+    <th>Username</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Phone Number</th>
+    <th>Email</th>
+  </tr>
+
+  {% paginate users %}
+  {% for user in users %}
+
+  <tr>   
+    <td>
+      <a href="{% url 'user_edit' user.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit {{ user.first_name }} {{ user.last_name }}"><i class="fas fa-pencil-alt" aria-hidden="true"></i>&nbsp;
+      {{ user.username }}</a>
+    </td>
+    <td>{{ user.first_name }}</td>
+    <td>{{ user.last_name }}</td>
+    <td>{{ user.phone_number }}</td>
+    <td>{{ user.email }}</td>
+  </tr>
+  {% endfor %}
+  <tr><th colspan='13'>Total: {{ total }}</th></tr>
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

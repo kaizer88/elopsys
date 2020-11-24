@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+
+<!-- {% block extra_css %}
+  <link href="{% static 'css/bootstrap-multiselect.css' %}" rel="stylesheet">
+{% endblock %} -->
+
+
+{% block javascript %}
+<script src="{% static 'js/vehicles.js' %}"></script>
+<script src="{% static 'js/dropdown.js' %}"></script>
+<script src="{% static 'js/incident.js' %}"></script>
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+  {% if incident %}
+    <b>Edit Traffic Fine:</b>
+  {% else %}
+    <b>Add Traffic Fine:</b>
+  {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div id="edit_traffic_fine_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>
+          <div class='col-lg-6'>
+            {% bootstrap_field traffic_fine_form.vehicle %}
+            {% bootstrap_field traffic_fine_form.reference_number %}
+            {% bootstrap_field traffic_fine_form.cost %}
+            {% bootstrap_field traffic_fine_form.incident_date %}
+            {% bootstrap_field traffic_fine_form.date_recieved_by_fleet %}
+            {% bootstrap_field traffic_fine_form.date_sent_to_finance %}
+          </div>
+          <div class='col-lg-6'>
+            {% bootstrap_field traffic_fine_form.driver %}
+            {% bootstrap_field traffic_fine_form.description %}
+            {% bootstrap_field file_form.document %}
+            {% bootstrap_field traffic_fine_document_form.document_type %}
+          </div>
+      </div>
+      <div class="btn-group-horizontal col-lg-12"> 
+       
+        <div class='pull-right'>
+          {% if not request.user.is_regional_manager or not request.user.is_regional_user %}
+          {% if not incident and not incident.status == "captured" or not incident.status %}
+            <button type="submit" class="btn btn-primary" id="captured", name="captured">
+              <i class='fa fa-floppy-o'></i> Capture
+            </button>
+          {% else %}
+            {% if not incident.status == "paid" %}
+              <button type="submit" class="btn btn-primary">
+                <i class='fa fa-floppy-o'></i> Save
+              </button>
+            {% endif %}
+          {% endif %}
+          {% if not incident.status == "paid" and incident %}
+            {% if incident.status == "captured" or incident.status == "rejected" %}
+              <button type="submit" class="btn btn-primary" id="submit_for_payment" name="submit_for_payment">
+                <i class='fa fa-check-circle'></i> Submit For Payment
+              </button>
+            {% endif %}
+            {% if incident.status == "submitted for payment" and proof_of_pay %}
+              <button type="submit" class="btn btn-primary" id="paid" name="paid">
+                <i class='fa fa-check-square'></i> Paid
+              </button>
+            {% endif %}
+            {% if incident.status == "captured" or incident.status == "submitted for payment" or incident.status == "rejected" %}
+              <button type="submit" class="btn btn-primary" id="rejected", name="rejected">
+                <i class='fa fa-times-circle'></i> Rejected
+              </button>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+          <a href="{% url 'fleetmanagement:view_traffic_fines' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

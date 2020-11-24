@@ -1,0 +1,59 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    {% if request.user.is_superuser %}
+      <th>Edit</th>
+    {% endif %}
+    <th>Driver</th>
+    <th>Registration Number</th>
+    <th>Fuel Card Number</th>
+    <th>Transaction Date</th>
+    <th>Usage Type</th>
+    <th>Transaction Type</th>
+    <th>Amount</th>
+  </tr>
+
+  {% paginate fuel_card_usage %}
+  {% for fcu in fuel_card_usage %}
+
+  <tr>
+     {% if request.user.is_superuser %}
+     <td>
+        <a href="{% url 'fleetmanagement:edit_fuel_card_usage' fcu.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Fuel Card Usage Detail">
+        <i class="fa fa-edit" aria-hidden="true"></i></a>
+    </td>
+    {% endif %}
+    <td>{{ fcu.driver.full_name }}</td> 
+    <td>{{ fcu.vehicle.registration_number}}</td> 
+    <td>{{ fcu.fuel_card.card_number }}</td>
+    <td>{{ fcu.transaction_date|date:'Y-m-d' }}</td>
+    <td>{{ fcu.get_usage_type_display }}</td>
+    <td>{% for type in fcu.transaction_type.all %}
+             {{ type.description }}{% if not forloop.last %},{% endif %}
+          {% endfor %}</td>
+    <td>{{ fcu.amount }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    {% if request.user.is_superuser %}<th colspan="7">Total Fuel Usage</th>
+    {% else %}<th colspan="6">Total Fuel Usage</th>
+    {%endif%}
+    <th>{{total_usage}}</th>
+  </tr> 
+  <tr>
+    {% if request.user.is_superuser %}<th colspan="7">Available Balance</th>
+    {% else %}<th colspan="6">Available Balance</th>
+    {%endif%}
+    <th>{{available}}</th>
+    
+  </tr>
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

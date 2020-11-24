@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}	
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<h2>{{title}}</h2>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#incidences">Incidences</a></li>
+				<li><a data-toggle="pill" href="#unclaimed">Unclaimed Incidences</a></li>			
+				
+			</ul>
+			<div class="tab-content">
+				<div id="incidences" class="tab-pane fade in active">
+					<form method="GET" action="">
+					<p><div class="row">
+						<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_incidences" name="filter_incidences" type="submit" value="Search"/></div>
+					  </div></p>				
+						<table class="table table-hover">
+							<tr>
+								<th>Licence Plate</th>								
+								<th class="col-hidden">Driver</th>
+								<th>Date</th>
+								<th>Incident Type</th>
+								<th class="col-hidden col-hidden-2">Location</th>
+								<th class="col-hidden col-hidden-2">Damage Extent</th>														
+								<th></th><th></th>
+							</tr>								
+								{% for transaction in incidences_list %}
+									<tr>
+										<td>{{ transaction.vehicle }} </td>									
+										<td class="col-hidden">{{ transaction.driver }}</td>
+										<td>{{ transaction.incident_date }} </td>
+										<td>{{ transaction.incident_type }}</td>
+										<td class="col-hidden col-hidden-2">{{ transaction.location }}</td>
+										<td class="col-hidden col-hidden-2">{{ transaction.damage_extent }}</td>																
+										<td>										
+											<a href="{% url 'fleet:editvehicleincidences' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Incident"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+										</td>
+										<td>										
+											<a href="{% url 'fleet:viewvehicleincidences' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Incident"><i class="fa fa-eye" aria-hidden="true"></i></a>
+										</td>
+									</tr>										
+								{%  endfor %}						
+						</table>
+								{% if incidences_list.has_other_pages %}
+								  <ul class="pagination pull-right">
+								    {% if incidences_list.has_previous %}
+								      <li><a href="?page={{ incidences_list.previous_page_number }}">&laquo;</a></li>
+								    {% else %}
+								      <li class="disabled"><span>&laquo;</span></li>
+								    {% endif %}
+								   <li class="active"><span>{{  incidences_list.number }} of {{incidences_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+								    {% if incidences_list.has_next %}
+								      <li><a href="?page={{ incidences_list.next_page_number }}">&raquo;</a></li>
+								    {% else %}
+								      <li class="disabled"><span>&raquo;</span></li>
+								    {% endif %}
+								  </ul>
+								{% endif %}
+					</form>	
+				</div>
+
+				<div id="unclaimed" class="tab-pane fade">
+					<form method="GET" action="">
+					<p><div class="row">
+						<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_unclaimed" name="filter_unclaimed" type="submit" value="Search"/></div>
+					  </div></p>				
+						<table class="table table-hover">
+							<tr>
+								<th>Licence Plate</th>								
+								<th class="col-hidden">Driver</th>
+								<th>Date</th>
+								<th>Incident Type</th>
+								<th class="col-hidden col-hidden-2">Location</th>
+								<th class="col-hidden col-hidden-2">Damage Extent</th>														
+								<th></th>
+							</tr>								
+								{% for transaction in unclaimed_list %}
+									<tr>
+										<td>{{ transaction.vehicle }} </td>									
+										<td class="col-hidden">{{ transaction.driver }}</td>
+										<td>{{ transaction.incident_date }} </td>
+										<td>{{ transaction.incident_type }}</td>
+										<td class="col-hidden col-hidden-2">{{ transaction.location }}</td>
+										<td class="col-hidden col-hidden-2">{{ transaction.damage_extent }}</td>
+																											
+										<td>										
+											<a href="{% url 'fleet:editvehicleincidences' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Incident"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+										</td>
+									</tr>										
+								{%  endfor %}						
+						</table>
+								{% if unclaimed_list.has_other_pages %}
+								  <ul class="pagination pull-right">
+								    {% if unclaimed_list.has_previous %}
+								      <li><a href="?page={{ unclaimed_list.previous_page_number }}">&laquo;</a></li>
+								    {% else %}
+								      <li class="disabled"><span>&laquo;</span></li>
+								    {% endif %}
+								   <li class="active"><span>{{  unclaimed_list.number }} of {{unclaimed_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+								    {% if unclaimed_list.has_next %}
+								      <li><a href="?page={{ unclaimed_list.next_page_number }}">&raquo;</a></li>
+								    {% else %}
+								      <li class="disabled"><span>&raquo;</span></li>
+								    {% endif %}
+								  </ul>
+								{% endif %}
+					</form>	
+				</div>
+			</div>			
+
+		</div>
+	</div>
+{% endblock %}

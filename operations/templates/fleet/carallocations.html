@@ -1,0 +1,65 @@
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+  $("#id_fuel_card").autocomplete({
+  source: "{% url 'fleet:get_fuel_card' %}",
+  minLength: 2});
+
+  $("#id_driver").autocomplete({
+  source: "{% url 'fleet:get_employee' %}",
+  minLength: 2});
+
+  $('select').select2();
+  });
+
+</script>
+{% endblock %}
+<b>Allocations History</b>
+<table class="table table-hover ">							     
+	<tr>										
+		<th>Driver</th>
+		<th class="col-hidden">Type</th>
+		<th>Date</th>
+		<th class="col-hidden col-hidden-2">Status</th>								
+		<th></th><th></th>
+	</tr>														
+	{% for transaction in allocations_list %}
+		<tr>											
+			<td>{{ transaction.driver }}</td>
+			<td class="col-hidden">{{ transaction.transaction_type }} </td>
+			<td >{{ transaction.allocation_date }}</td>	
+			<td class="col-hidden col-hidden-2">{{ transaction.status }}</td>																						
+			<td>										
+				<a href="{% url 'fleet:editallocatevehicle' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Allocation"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+			</td>
+      <td>                    
+        <a href="{% url 'fleet:viewallocatevehicle' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Allocation"><i class="fa fa-eye" aria-hidden="true"></i></a>
+      </td>
+		</tr>										
+	{%  endfor %}											
+</table>
+{% if allocations_list.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if allocations_list.has_previous %}
+      <li><a href="?page={{ allocations_list.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    <li class="active"><span>{{  allocations_list.number }} of {{allocations_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if allocations_list.has_next %}
+      <li><a href="?page={{ allocations_list.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</form>

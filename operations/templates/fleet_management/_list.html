@@ -1,0 +1,83 @@
+{% load el_pagination_tags %}
+<table id="all_fleet_table" class="table table-hover ">
+  <tr>
+    <th>Registration Number</th>
+    <th>Driver</th> 
+    <th>Make</th>
+    <th>Model</th>
+    <!-- <th>Year Model</th> -->
+    <th>Division</th>
+    <th>Region</th>
+    <th>District</th>
+    <th>Vehicle Status</th>
+    <th>Authorization Status</th>
+    {% if request.user.is_management or request.user.is_superuser or request.user.is_executive %}
+    <th>Auth</th>
+    {% endif %}
+    {% comment %}
+    {% if request.user.is_superuser %}
+      <th class="text-align-center">Dashboard</th>
+      <th class="text-align-center">Vehicle Summary</th>
+    {% endif %}
+    {% endcomment %}
+  </tr>
+  
+  {% paginate vehicles %}
+  {% for vehicle in vehicles %}
+  
+  <tr>
+    
+    <td>
+      <a href="{% url 'fleetmanagement:edit_vehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ vehicle.registration_number }}</a>
+    </td>    
+    <td>
+      {% if vehicle.driver %}
+        {{ vehicle.driver }}</a>
+      {% else %}
+        Unassigned
+      {% endif %}
+    </td>        
+    <!-- <td>{{ vehicle.get_status_at_create_display }}</td> -->
+    
+    <td>{{ vehicle.vehicle_make }}</td>
+    <td>{{ vehicle.vehicle_model }}</td>
+    <!-- <td>{{ vehicle.year_model }}</td> -->
+    <td>{{ vehicle.get_division_display }}</td>
+    <td>{{ vehicle.region.region_name }}</td>  
+    <td>{{ vehicle.district.description }}</td>
+    <td>{{ vehicle.status|default_if_none:"" }}</td>
+    <td>
+      {{vehicle.authorization_status|default_if_none:""|title}}
+    </td>
+    {% if request.user.is_management or request.user.is_superuser or request.user.is_executive %}
+    <td>
+      {% if vehicle.authorization_status == "pending authorization" %}
+      <a href="{%url 'fleetmanagement:authorize_assigned_driver' vehicle.id%}"><i class="fas fa-check-double"></i></a>
+      {% endif %}
+    </td>
+    {% endif %}   
+    {% comment %}
+    {% if request.user.is_superuser %}
+      <td class="text-align-center">                  
+         <a href="{% url 'fleetmanagement:vehicle_dashboard' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Dashboard"><i class="fa fa-eye" aria-hidden="true"></i></a>
+      </td>
+       <td class="text-align-center">                  
+         <a href="{% url 'fleetmanagement:vehicle_summary' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Summary"><i class="fa fa-info" aria-hidden="true"></i></a>
+       </td>
+    {% endif %}
+  {% endcomment %}
+  </tr>
+  {% endfor %}
+  
+  <tr><td colspan='13' class="bold">TOTAL: {{ total }}</td></tr>
+  <tr>
+    <td colspan='13' style="text-align: center">
+      <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

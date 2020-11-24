@@ -1,0 +1,43 @@
+{% load el_pagination_tags %}
+<table id="service_providers" class="table table-hover ">
+  <tr>
+    <th>Service Provider</th>
+    <th>Contact Person</th>
+    <th>Address</th>
+    <th>Telephone</th>   
+    <th>Cell</th>
+    <th>Email</th>   
+    
+  </tr>
+
+  {% paginate service_providers %}
+  {% for service_provider in service_providers %}
+
+  <tr> 
+    <td><a href="{% url 'fleetmanagement:edit_service_provider' service_provider.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Service Provider"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ service_provider.name }}</a></td>
+    <td>{% if service_provider.contact_person.first_name %}{{service_provider.contact_person.first_name | title }} {% endif %} 
+        {% if service_provider.contact_person.first_name %}{{ service_provider.contact_person.last_name | title }} {% endif %} </td>   
+    <td>
+      {% if service_provider.address.address_line_1 %}{{service_provider.address.address_line_1 | title}} {% endif %}  
+      {% if service_provider.address.address_line_2 %}{{service_provider.address.address_line_2 | title}} {% endif %}
+      {% if service_provider.address.suburb %}{{service_provider.address.suburb | title}} {% endif %}
+      {% if service_provider.address.city %}{{service_provider.address.city | title}} {% endif %}
+      {% if service_provider.address.postal_code %}{{service_provider.address.postal_code | title}} {% endif %}
+    </td>
+    {% if service_provider.contact_person.tel_number %}<td>{{service_provider.contact_person.tel_number | title}} {% endif %}</td>  
+    {% if service_provider.contact_person.cell_number %}<td>{{service_provider.contact_person.cell_number | title}} {% endif %}</td>
+    {% if service_provider.contact_person.email %}<td>{{service_provider.contact_person.email | title}}{% endif %} </td> 
+
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='7' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,27 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>District Code</th>
+    <th>District Desciption</th>
+    <th>Region</th>
+  </tr>
+
+  {% paginate branches %}
+  {% for branch in branches %}
+
+  <tr>   
+    <td>{{ branch.code }}</td>
+    <td>{{ branch.description }}</td>
+    <td>{{ branch.region.name }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

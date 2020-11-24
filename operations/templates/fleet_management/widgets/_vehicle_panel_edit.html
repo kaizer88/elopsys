@@ -1,0 +1,51 @@
+<div id="side_panel" class="sidenav">
+    <div>
+        <a href="javascript:void(0)" class="closebtn" onclick="close_side_panel()">&times;</a>
+    </div>
+    <table class="table table-hover table-bordered table-striped" id = "panel_table">
+        <tr>
+            <td>Make</td>
+            <td>{{ vehicles.make}}</td>
+        </tr>
+        <tr>
+            <td>Model</td>
+            <td>{{ vehicles.model}} </td>
+        </tr>
+        <tr>
+            <td>Model Year</td>
+            <td>{{ vehicles.ownership }} </td>
+        </tr>
+        <tr>
+            <td>VIN Number</td>
+            <td> {{ vehicles.vin_number }}</td>
+        </tr>
+        <tr>
+            <td>Engine Number</td>
+            <td> {{ vehicles.engine_number|default_if_none:'' }}</td>
+        </tr>
+        <tr>
+            <td>Current Mileage</td>
+            <td> {{ vehicles.get_current_mileage }} KM </td>
+        </tr>
+        <tr>
+            <td>Next Service @</td>
+            <td> {{ vehicles.get_next_service_mileage }} KM </td>
+        </tr>
+        <tr>
+            <td>Current Status</td>
+            <td>{{ vehicles.status }} </td>
+        </tr>
+        <tr>
+            <td>Process</td>
+            <td> {{ vehicles.get_current_mileage }} KM </td>
+        </tr>
+        <tr>
+            <td>Comments</td>
+            <td> {{ vehicles.get_next_service_mileage }} KM </td>
+        </tr>
+        <tr>
+            <td>Fleet Transactions</td>
+            <td>{{ vehicles.status }} </td>
+        </tr>
+    </table>
+</div>

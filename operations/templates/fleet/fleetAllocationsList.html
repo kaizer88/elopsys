@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block javascript %}
+  
+  <script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+
+{% endblock %}
+
+{% block content%}	
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#vehicleAllocations">Vehicle Allocations</a></li>
+				<li><a data-toggle="pill" href="#availableFleet">Available Fleet</a></li>
+				<li><a data-toggle="pill" href="#fuelAllocations">Fuel Allocation</a></li>	
+				<li><a data-toggle="pill" href="#fuelTransfers">Fuel Transfers</a></li>			
+			</ul>
+			<div class="tab-content">
+				<div id="vehicleAllocations" class="tab-pane fade in active">	
+		  			<form method="GET" action="">	
+		  				<p><div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter" name="filter" type="submit" value="Search"/></div>
+						  </div></p>
+						<table class="table table-hover ">							     
+							<tr>
+								<th>Vehicle</th>								
+								<th>Driver</th>
+								<th class="col-hidden">Type</th>
+								<th>Date</th>
+								<th class="col-hidden col-hidden-2">Status</th>								
+								<th></th>
+							</tr>														
+							{% for transaction in allocations_list %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td>{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.transaction_type }} </td>
+									<td >{{ transaction.allocation_date }}</td>	
+									<td class="col-hidden col-hidden-2">{{ transaction.status }}</td>																						
+									<td>										
+										<a href="{% url 'fleet:editallocatevehicle' transaction.id %}"  data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Allocation"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>
+									<td>									
+										<a href="{% url 'fleet:viewallocatevehicle' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Allocation"><i class="fa fa-eye" aria-hidden="true"></i></a>
+									</td>
+								</tr>										
+							{%  endfor %}											
+						</table>
+						{% if allocations_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if allocations_list.has_previous %}
+						      <li><a href="?page={{ allocations_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  allocations_list.number }} of {{allocations_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if allocations_list.has_next %}
+						      <li><a href="?page={{ allocations_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+				<div id="availableFleet" class="tab-pane fade">
+					
+						<form method="GET" action="">
+						<p><div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_available" name="filter_available" type="submit" value="Search"/></div>
+						  </div></p>
+						<table class="table table-hover">							
+							<tr>
+								<th>Last Driver</th>
+								<th>Vehicle</th>								
+								<th class="col-hidden">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th class="col-hidden col-hidden-2">Ownership Type</th>
+								<th class="col-hidden col-hidden-2">Color</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in available_fleet %}
+								<tr>
+									<td>{{ vehicle.get_current_driver }}</td>
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.color }}</td>																	
+									<td>							
+							              	
+							            <a href="{% url 'fleet:allocatevehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Allocate Vehicle"><i class="fa fa-users" aria-hidden="true"></i></a>
+							                
+									</td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if available_fleet.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if available_fleet.has_previous %}
+						      <li><a href="?page={{ available_fleet.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  available_fleet.number }} of {{available_fleet.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if available_fleet.has_next %}
+						      <li><a href="?page={{ available_fleet.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}	
+					</form>				
+				</div>
+				<div id="fuelAllocations" class="tab-pane fade">
+						<form method="POST" action="">
+							{% csrf_token %}									
+																
+						</form>							
+						<form method="GET" action="">
+						<p><div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_fuel" name="filter_fuel" type="submit" value="Search"/>
+							<input class="btn btn-warning" id="reload_fuel" name="reload_fuel" type="submit" value="load Monthly Fuel"/></div>
+						  </div></p>
+						<table class="table table-hover">							
+							<tr>
+								<th>Date</th>
+								<th>Driver</th>
+								<th class="col-hidden">Vehicle</th>
+								<th class="col-hidden col-hidden-2">Type</th>							
+								<th class="col-hidden col-hidden-2">Balance BF</th>
+								<th>Allocation</th>
+								<th class="col-hidden col-hidden-2">New Balance</th>
+								
+							</tr>								
+							{% for allocation in fuel_allocations_list %}
+								<tr>
+									<td>{{ allocation.allocation_date }} </td>
+									<td>{{ allocation.driver }}</td>
+									<td class="col-hidden">{{ allocation.vehicle }} </td>									
+									<td class="col-hidden col-hidden-2">{{ allocation.transaction_type }}</td>
+									<td class="col-hidden col-hidden-2">{{ allocation.balance|floatformat:2|intcomma }}</td>
+									<td>{{ allocation.amount_allocated|floatformat:2|intcomma }}</td>
+									<td class="col-hidden col-hidden-2">{{ allocation.new_balance|floatformat:2|intcomma }}</td>																	
+									
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if fuel_allocations_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if fuel_allocations_list.has_previous %}
+						      <li><a href="?page={{ fuel_allocations_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  fuel_allocations_list.number }} of {{fuel_allocations_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if fuel_allocations_list.has_next %}
+						      <li><a href="?page={{ fuel_allocations_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}	
+					</form>				
+				</div>
+				<div id="fuelTransfers" class="tab-pane fade">
+						<form method="POST" action="">
+							{% csrf_token %}								
+															
+						</form>							
+						<form method="GET" action="">
+						<p><div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_fueltransfers" name="filter_fueltrsnfers" type="submit" value="Search"/></div>
+						  </div></p>
+						<table class="table table-hover">							
+							<tr>
+								<th class="col-hidden">Date</th>
+								<th class="col-hidden col-hidden-2">From Driver</th>
+								<th>From Vehicle</th>
+								<th class="col-hidden col-hidden-2">Balance</th>
+								<th class="col-hidden col-hidden-2">To Driver</th>
+								<th>To Vehicle</th>	
+								<th class="col-hidden col-hidden-2">Balance</th>													
+								<th>Transferd</th>
+																
+							</tr>								
+							{% for allocation in fueltransfers %}
+								<tr>
+									<td class="col-hidden">{{ allocation.transfer_date }} </td>
+									<td class="col-hidden col-hidden-2">{{ allocation.from_driver }}</td>
+									<td>{{ allocation.from_vehicle }} </td>	
+									<td class="col-hidden col-hidden-2">{{ allocation.from_new_balance }}</td>								
+									<td class="col-hidden col-hidden-2">{{ allocation.driver }}</td>
+									<td>{{ allocation.vehicle }}</td>
+									<td class="col-hidden col-hidden-2">{{ allocation.to_new_balance }}</td>
+									<td>{{ allocation.from_amount_allocated|floatformat:2|intcomma }}</td>																	
+									
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if fueltransfers.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if fueltransfers.has_previous %}
+						      <li><a href="?page={{ fueltransfers.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  fueltransfers.number }} of {{fueltransfers.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if fueltransfers.has_next %}
+						      <li><a href="?page={{ fueltransfers.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}	
+					</form>				
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

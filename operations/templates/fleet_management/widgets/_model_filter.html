@@ -1,0 +1,22 @@
+{% load bootstrap4 %}
+
+<div class="row">  
+    <input name="filter" type="hidden"> 
+  <div class="col-lg-3 pull-right">      
+    <div class='pull-right'>
+      <button type="submit" name="search" class="btn btn-primary" title="Search"><i class="fa fa-search"></i> Search</button>
+      <a href="{% url 'fleetmanagement:view_vehicle_models' %}"  class="btn btn-primary" title="Clear Search"><i class="fa fa-search-minus"></i> Clear</a>
+      <button type="submit" name="extract" class="btn btn-primary" title="Extract Vehicle Model(s)" id="load_modal"><i class="fa fa-download"></i> Extract</button>
+      <a href="{% url 'fleetmanagement:add_vehicle_model' %}" class="btn btn-primary" title="Add Vehicle Model"><i class="fa fa-plus"></i> Add</a>
+    </div> 
+  </div>
+  <div class="col-lg-9"> 
+    {% for field in filter_form %}
+      <div class='col-lg-3'>
+        {% bootstrap_field field layout='inline' %}
+      </div>      
+    {% endfor %}  
+   
+  </div>
+</div>
+

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+
+			<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_renewals" name="filter_fleet" type="submit" value="Search"/></div>
+						  </div></p>				
+						<table class="table table-hover ">							
+							<tr>								
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden">Date</th>
+								<th>Type</th>
+								<th class="col-hidden col-hidden-2" style="width: 30%">Description</th>							
+								<th class="col-hidden col-hidden-2">Service Provider</th>							
+								<th class="col-hidden col-hidden-2">Status</th>								
+								<th></th>
+							</tr>								
+							{% for maintenance in maintenance_list %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ maintenance.branch.region }}</td>
+									<td>{{ maintenance.branch }} </td>
+									<td class="col-hidden">{{ maintenance.maint_date }} </td>
+									<td>{{ maintenance.maintenance_type }} </td>
+									<td class="col-hidden col-hidden-2">{{ maintenance.description }} </td>
+									<td class="col-hidden col-hidden-2">{{ maintenance.service_provider }}</td>
+									<td class="col-hidden col-hidden-2">{{ maintenance.status }}</td>																							
+									<td><a href="{% url 'property:edit_propertymaintanance' maintenance.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if maintenance_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if maintenance_list.has_previous %}
+						      <li><a href="?page={{ maintenance_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  maintenance_list.number }} of {{maintenance_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if maintenance_list.has_next %}
+						      <li><a href="?page={{ maintenance_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>									
+		</div>
+
+	</div>
+{% endblock %}

@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+<script src="{% static 'js/vehicles.js' %}"></script>
+<!-- <script src="{% static 'js/bootstrap-tab-history.js' %}"></script> -->
+<script>
+$( document ).ready(function() {
+ var own_type = ownership_selection();
+});
+</script>
+{% endblock %}
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    {% if vehicle %}
+      <b>Edit Vehicle: {{ vehicle.vehicle_make.make_name }} {{ vehicle.vehicle_model.model_name }}</b>
+    {% else %}
+      <b>Add Vehicle:</b>
+    {% endif %}
+  </div>
+
+  <div class="panel-body">
+    <ul class="nav nav-pills" id="myTab">
+      <li class="active">
+        <a href="#details"
+           data-toggle="tab">
+            Vehicle Information{% if vehicle_form.has_changed %}{% if vehicle_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}
+        </a>
+      </li>
+
+      <li class="">
+        <a href="#extras" data-toggle="tab">Additional Information</a>
+      </li>
+
+      {% if vehicle.id %}
+
+      <li class="">
+        <a href="#fuel_card" data-toggle="tab">Fuel Card</a>
+      </li>
+
+      <li class="">
+        <a href="#vehicle_driver"
+           data-toggle="tab"
+           data-tab-history="true"
+           data-tab-history-changer="push"
+           data-tab-history-update-url="true"
+           aria-expanded="false">Driver Allocation{% if vehicle_driver_form.has_changed %}{% if vehicle_driver_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}</a>
+      </li>
+
+      <li class="">
+        <a href="#vehicle_tyre"
+           data-toggle="tab">Tyres{% if vehicle_tyre_formset.has_changed %}{% if vehicle_tyre_formset.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}</a>
+      </li>
+
+      <li class="">
+        <a href="#purchase_detail"
+           data-toggle="tab">
+            Purchase Details{% if purchase_detail_form.has_changed or finance_detail_form.has_changed %}{% if purchase_detail_form.errors or finance_detail_form.errors or purchase_detail_address_form.errors or purchase_detail_contact_person_form.errors %}&nbsp;
+            <i class='fa fa-exclamation error'></i>{% endif %}{% endif %}
+        </a>
+      </li>
+
+      <!-- <li class="">
+        <a href="#insurance"
+           data-toggle="tab">Insurance {% if insurance_form.has_changed %}{% if insurance_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}</a>
+      </li> -->
+
+      <li class="">
+        <a href="#tracker"
+           data-toggle="tab">Tracking {% if tracker_form.has_changed %}{% if tracker_form.errors or tracker_address_form.errors or tracker_contact_person_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}</a>
+      </li>
+
+      <li class="">
+        <a href="#branding"
+           data-toggle="tab">Branding {% if branding_form.has_changed %}{% if branding_form.errors or branding_supplier_address_form.errors or branding_supplier_contact_person_form.errors or branding_installer_address_form.errors or branding_installer_contact_person_form.errors %}&nbsp;<i class='fa fa-exclamation error'></i>{% endif %}{% endif %}</a>
+      </li>
+
+      <!-- <li class="">
+        <a href="#maintenance"
+           data-toggle="tab">
+            Maintenance{% if maintenance_form.has_changed %}{% if maintenance_form.errors %}&nbsp;
+            <i class='fa fa-exclamation error'></i>{% endif %}{% endif %}
+        </a>
+      </li> -->
+
+      <li class="">
+        <a href="#service_booking" data-toggle="tab">Service/Maintenance</a>
+      </li>
+
+      <li class="">
+        <a href="#incidents" data-toggle="tab">Incidents</a>
+      </li>
+
+      <li class="">
+        <a href="#insurance" data-toggle="tab">Insurance Claims</a>
+      </li>
+
+      <li class="">
+        <a href="#file_upload" data-toggle="tab">File Upload</a>
+      </li>
+
+      {% endif %}
+    </ul>
+
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="">
+      <input type="hidden" name="is_rm" value={{request.user.is_regional_manager}}> 
+      <input type="hidden" name="is_mgt" value={{request.user.is_management}}>
+      <div id="edit_vehicle_tab_content" class="tab-content">
+
+        <div class="tab-pane fade active in" id="details">
+          <br/>
+
+          <div class="col-lg-8">
+            <div class='panel-heading'>Vehicle Details</div><br>
+            <div id='rental' class='col-lg-6'>
+              {% bootstrap_field vehicle_form.status %}
+              {% bootstrap_field vehicle_form.ownership %}
+              {% bootstrap_field vehicle_form.division %}
+              {% bootstrap_field vehicle_form.registration_number %}
+              {% bootstrap_field vehicle_form.vehicle_make %}
+              {% bootstrap_field vehicle_form.vehicle_model %}
+              {% bootstrap_field vehicle_form.transmission %}
+              {% bootstrap_field vehicle_form.fuel_type %}
+              <div id='rental3'>
+                {% bootstrap_field vehicle_form.rental_deposit_amount %}
+                {% bootstrap_field vehicle_form.deposit_paid_by %}
+                {% bootstrap_field vehicle_form.deposit_driver %}
+                {% bootstrap_field vehicle_form.deposit_paid_date %}
+              </div>
+            </div>
+            <div id='all' class='col-lg-6'>
+              {% bootstrap_field vehicle_form.engine_capacity %}
+              {% bootstrap_field vehicle_form.vin_number %}
+              {% bootstrap_field vehicle_form.engine_number %}
+              {% bootstrap_field vehicle_form.year_model %}
+              {% bootstrap_field vehicle_form.status_at_create %}
+              {% bootstrap_field vehicle_form.region %}
+              {% bootstrap_field vehicle_form.district %}
+              {% bootstrap_field vehicle_form.service_area %}              
+            </div>
+            <div id='rental2' class='col-lg-6'>
+              {% bootstrap_field vehicle_form.rental_company %}
+              {% bootstrap_field vehicle_form.rental_contact_person %}
+              {% bootstrap_field vehicle_form.delivery_date %}
+              {% bootstrap_field vehicle_form.delivery_location %}
+              {% bootstrap_field vehicle_form.delivery_odometer_mileage %}
+              {% bootstrap_field vehicle_form.returned_date %}
+              {% bootstrap_field vehicle_form.returned_location %}
+              {% bootstrap_field vehicle_form.returned_mileage %}
+              {% bootstrap_field vehicle_form.vehicle_class %}
+              {% bootstrap_field vehicle_form.rental_reason %}
+            </div>
+          </div>
+          <div class='col-lg-4'>
+            <div class='panel-heading'>Document Upload</div><br>
+            <div class="col-lg-12">
+              {% bootstrap_field vi_document_file_form.document %}
+              {% bootstrap_field vi_document_file_form.description %}
+              <div style="max-height: 230px; overflow: auto;">
+                <table id="vehicle_documents_table" class="table table-hover">
+                  <thead>
+                    <th>Created At</th>
+                    <th>Document</th>
+                  </thead>
+                  <tbody>
+                    {% for document in vi_documents %}
+                    <tr>
+                      <td>{{document.created_at }}</td>
+                      <td>
+                        {% if document.document.document %}
+                        <a href="{{ document.document.document.url }}"
+                           data-toggle=""
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="Description: {{document.document.description }}">
+                         {{ document.document.document_name }}</a>
+                        {% endif %}
+                      </td>
+                      {% empty %}
+                    <tr><td class="info" colspan="20">No Documents Added Yet</td></tr>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div><br>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="extras">
+          <br>
+         <div class="col-lg-8">
+          <div class='panel-heading'>Vehicle Additional Details</div><br>
+            <div class='col-lg-6'>
+              {% bootstrap_field vehicle_form.registration_date %}
+              {% bootstrap_field vehicle_form.licence_disk_expiry %}
+              {% bootstrap_field vehicle_form.delivery_mileage %}
+              {% bootstrap_field vehicle_form.tank_capacity %}
+              {% bootstrap_field vehicle_form.colour %}
+              {% bootstrap_field vehicle_form.service_interval %}
+              {% bootstrap_field vehicle_form.updated_mileage %}
+              {% bootstrap_field vehicle_form.updated_date %}
+              {% bootstrap_field vehicle_form.fleet_administator %}
+            </div>
+            <div class='col-lg-3'>
+              {% bootstrap_field vehicle_form.has_aircon %}
+              {% bootstrap_field vehicle_form.has_radio %}
+              {% bootstrap_field vehicle_form.has_bluetooth %}
+            </div>
+            <div class='col-lg-3'>
+              {% bootstrap_field vehicle_form.has_jack %}
+              {% bootstrap_field vehicle_form.has_spanner %}
+              {% bootstrap_field vehicle_form.has_triangle %}
+            </div>
+          </div>
+          <div class='col-lg-4'>
+            <div class='panel-heading'>Document Upload</div><br>
+            <div class="col-lg-12">
+              {% bootstrap_field ai_document_file_form.document %}
+              {% bootstrap_field ai_document_file_form.description %}
+              <div style="max-height: 230px; overflow: auto;">
+                <table id="vehicle_documents_table" class="table table-hover">
+                  <thead>
+                    <th>Created At</th>
+                    <th>Document</th>
+                  </thead>
+                  <tbody>
+                    {% for document in vi_documents %}
+                    <tr>
+                      <td>{{document.created_at }}</td>
+                      <td>
+                        {% if document.document.document %}
+                        <a href="{{ document.document.document.url }}"
+                           data-toggle=""
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="Description: {{document.document.description }}">
+                         {{ document.document.document_name }}</a>
+                        {% endif %}
+                      </td>
+                      {% empty %}
+                    <tr><td class="info" colspan="20">No Documents Added Yet</td></tr>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div><br>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="fuel_card">
+          <br>
+            {% include 'fleet_management/widgets/_vehicle_fuel_card.html' %}
+        </div>
+
+        <div class="tab-pane fade" id="vehicle_driver">
+          <br>
+            {% include 'fleet_management/widgets/_vehicle_details.html' with form=vehicle_driver_form %}
+        </div>
+
+        <div class="tab-pane fade" id="vehicle_tyre">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_tyre_detail.html' with formset=vehicle_tyre_formset %}
+        </div>
+
+        <div class="tab-pane fade" id="purchase_detail">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_edit_purchase_details.html' %}
+        </div>
+
+        <!-- <div class="tab-pane fade" id="insurance">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_edit_insurance.html' %}
+        </div> -->
+
+        <div class="tab-pane fade" id="tracker">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_edit_tracker.html' %}
+        </div>
+
+        <div class="tab-pane fade" id="branding">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_edit_branding.html' %}
+        </div>
+
+        <!-- <div class="tab-pane fade" id="maintenance">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_details.html' with form=maintenance_form %}
+        </div> -->
+
+        <div class="tab-pane fade" id="service_booking">
+          <br>
+        </div>
+
+        <div class="tab-pane fade" id="incidents">
+          <br>
+        </div>
+
+        <div class="tab-pane fade" id="insurance">
+          <br>
+        </div>
+
+        <div class="tab-pane fade" id="file_upload">
+          <br>
+          {% include 'fleet_management/widgets/_vehicle_file_upload.html' with form=document_file_form %}
+        </div>
+
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          {% if vehicle.driver %}
+          <a href="{% url 'fleetmanagement:unassign' vehicle.id %}" class="btn btn-primary" id="unassign_vehicle">
+            <i class='fa fa-minus-square'></i> Unassign
+          </a>
+          {% endif %}
+          <button type="submit" class="btn btn-primary" id="save_vehicle">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          <button type="submit" class="btn btn-primary" id="submit_for_authorization">
+            <i class='fa fa-floppy-o'></i> Submit For Authorization
+          </button>
+          <button type="submit" class="btn btn-primary" id="authorize">
+            <i class='fa fa-floppy-o'></i> Authorize
+          </button>
+          <a href="{% url 'fleetmanagement:vehicles' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+      </div>
+
+  </div>
+
+</div>
+
+<div class="panel panel-primary transparency hidden" id='fuel_card_history'>
+  <div class="panel-heading">Fuel Card History</div>
+  <div class="panel-body">
+    {% include 'fleet_management/widgets/vehicle_summary/_fuel_card_history.html' %}
+  </div>
+
+</div>
+
+<div class="panel panel-primary transparency hidden test"  id='unassign_driver'>
+  <div class="panel-heading">Driver History</div>
+  {% include 'fleet_management/widgets/vehicle_summary/_driver_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden test"  id='tyre_history'>
+  <div class="panel-heading">Tyre Incidents History</div>
+ {% include 'fleet_management/widgets/vehicle_summary/_tyres_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden" id="service_history">
+  <div class="panel-heading">Service History</div>
+  {% include 'fleet_management/widgets/vehicle_summary/_service_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden"  id='insurance_history'>
+  <div class="panel-heading">Insurance Claims History</div>
+  {% include 'fleet_management/widgets/vehicle_summary/_insurance_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden"  id='incidents_history'>
+  <div class="panel-heading">Incidents History</div>
+  {% include 'fleet_management/widgets/vehicle_summary/_incidents_history.html' %}
+</div>
+
+<div class="panel panel-primary transparency hidden" id='file_upload_document'>
+  <div class="panel-heading">Uploaded Documents</div>
+  {% include 'fleet_management/widgets/vehicle_summary/_vehicle_documents.html' %}
+</div>
+
+</form>
+{% endblock %}

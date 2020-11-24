@@ -1,0 +1,27 @@
+{% load bootstrap4 %}
+{% if insurance_form %}
+	<div class='col-lg-6'>
+		<div class="panel-heading">Insurance Details</div>
+		<div class='col-lg-12'><br>
+	  		{% bootstrap_field insurance_form.insurance_type %}
+			{% bootstrap_field insurance_form.insured_amount %}
+			{% bootstrap_field insurance_form.installment %}
+			{% bootstrap_field insurance_form.vendor %}
+		</div>
+	</div>
+	<div class='col-lg-6'>
+		<div class='panel-heading'>Document Upload</div>
+        <div class="col-lg-12"><br>
+			{% bootstrap_field document_file_form.document %}
+			{% bootstrap_field document_file_form.document_type %}
+			{% bootstrap_field document_file_form.description %}
+		</div>
+	</div>
+<br><br><br>
+{% else %}
+<table class='table' width='100%'>
+  <tr>
+      <td>Save changes to proceed</td>
+  </tr>
+</table>
+{% endif %}

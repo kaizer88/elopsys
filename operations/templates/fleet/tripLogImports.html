@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+
+
+{% block content%}
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <h2>{{title}}</h2>
+  </div>
+
+  <div class="panel-body">
+    <div class="col-sm-2">
+      <form method="POST" action="" enctype="multipart/form-data" novalidate>
+		{% csrf_token %}
+		<h4>Import Trip Log</h4>
+		<input style="display:none" id="save" type="submit" value="Save "/>
+		<div class="clear_left new_upload">
+		  <div class='btn btn-primary' onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">Upload File</div>
+		  <div class="hidden_content" style="display:none">
+		    {%  bootstrap_form upload_file_form %}	
+
+		    <input type="submit" id="save" name="save" class='btn btn-default' value='Import'>
+
+		    </div>
+		    </div><br/>	
+		    <table class ="table table-hover">
+		      <tr>
+			<th><h4>Imported Files</h4></th>		
+		      </tr>
+		      {% for item in uploads %}
+		      <tr>
+			<td><a href= "{{ item.file.url }}" target="top"> {{ item.file_name }}</a> </td>																
+		      </tr>
+		      {% endfor %}
+		    </table>
+
+		  </form>
+		</div>
+		<div class="col-sm-10">
+		  <form method="GET" action="">	
+		  {% csrf_token %}
+		    <table class="table table-hover table-striped">							
+		      <tr>
+			<th>{{filter_form.licence_plate}}</th>
+			<th>{{filter_form.driver}}</th>
+			<th>{{filter_form.start_date}}</th>
+			<th>{{filter_form.end_date}}</th>
+			<th><input class="btn btn-warning" id="filter_log" name="filter_log" type="submit" value="Search"/></th>
+		      </tr>
+		    </table>   
+
+		    <h4>Trip</h4>
+		    <table class="table table-hover">							
+		      <tr>								
+			<th>Log Date</th>															
+			<th>Vehicle</th>								
+			<th>Driver</th>
+			<th>Avarage Speed</th>
+			<th>Max Speed</th>
+			<th>Distance</th>
+		      </tr>								
+		      {% for log in trip %}		        
+		      <tr onclick="loadTripLog(this, '{% url 'fleet:load_trip_log' log.pk %}');">
+			<td>{{ log.log_date }}</td>
+			<td>{{ log.vehicle }} </td>															
+			<td>{{ log.driver }}</td>
+			<td>{{ log.avarage_speed|floatformat:0|intcomma }}</td>
+			<td>{{ log.max_speed|floatformat:0|intcomma }}</td>
+			<td>{{ log.distance|floatformat:2|intcomma }}</td>								
+		      </tr>										
+		      {% endfor %}
+		    </table>
+		    {% if trip.has_other_pages %}
+			  <ul class="pagination pull-right">
+			    {% if trip.has_previous %}
+			      <li><a href="?page={{ trip.previous_page_number }}">&laquo;</a></li>
+			    {% else %}
+			      <li class="disabled"><span>&laquo;</span></li>
+			    {% endif %}
+			  	<li class="active"><span>{{ trip.number }} of {{ trip.paginator.num_pages }}<span class="sr-only">(current)</span></span></li> 
+			    {% if trip.has_next %}
+			      <li><a href="?page={{ trip.next_page_number }}">&raquo;</a></li>
+			    {% else %}
+			      <li class="disabled"><span>&raquo;</span></li>
+			    {% endif %}
+			  </ul>
+			{% endif %}
+		    
+		    <div class="trip_log_table">
+		      {% include 'fleet/_trip_log.html' %}
+		    </div>
+		    
+	  </form>
+	</div>			
+      </div>
+    </div>
+{% endblock %}

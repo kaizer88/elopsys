@@ -1,0 +1,81 @@
+{% load staticfiles %}
+{% load bootstrap4 %}
+
+{% if service_booking_form %}
+<div class='col-lg-8'>
+  <div class="row">
+    <div class="panel-heading">Service/Maintenance Details</div><br>
+    <!-- <div class="col-lg-6">      
+      <div class="col-lg-3"> {% bootstrap_field service_booking_form.service %}</div>
+      <div class="col-lg-3">{% bootstrap_field service_booking_form.maintenance %}</div>
+    </div> -->
+    <div class='col-lg-6'> 
+      <div class="row">
+        <div class="col-lg-3"> {% bootstrap_field service_booking_form.service %}</div>
+        <div class="col-lg-3">{% bootstrap_field service_booking_form.maintenance %}</div>  
+      </div>
+      <div id="maintenance_options" class="row">
+        <div class="col-lg-3"> {% bootstrap_field service_booking_form.tyres %}</div>
+        <div class="col-lg-3">{% bootstrap_field service_booking_form.brakes %}</div> 
+        <div class="col-lg-3"> {% bootstrap_field service_booking_form.clutch %}</div>
+        <div class="col-lg-3">{% bootstrap_field service_booking_form.other %}</div>  
+      </div>        
+      {% bootstrap_field service_booking_form.current_mileage %}
+      {% bootstrap_field service_booking_form.booking_date %}
+      {% bootstrap_field service_booking_form.service_date %}
+      <br>
+      <div class="panel-heading row">Service Provider Details</div><br>
+      <div class="col-lg-12">{% bootstrap_field service_booking_form.vendor %}</div>
+    </div>
+    <div class='col-lg-6'>              
+      {% bootstrap_field service_booking_form.document_received %}
+      {% bootstrap_field service_booking_form.document_number %}             
+      {% bootstrap_field service_booking_form.document_amount %}
+      {% bootstrap_field service_booking_form.document_date %}
+      {% bootstrap_field service_booking_form.comment %}
+    </div>
+  </div>
+
+</div>
+<div class='col-lg-4'>
+  <div class='panel-heading'>Document Upload</div><br>
+  <div class="col-lg-12">
+    {% bootstrap_field sb_document_file_form.document %}
+    {% bootstrap_field sb_document_file_form.description %}
+    <div style="max-height: 230px; overflow: auto;">
+      <table id="vehicle_documents_table" class="table table-hover">
+        <thead>
+          <th>Created At</th>
+          <th>Document</th>
+        </thead>
+        <tbody>
+          {% for document in sb_documents %}
+          <tr>
+            <td>{{document.created_at }}</td>
+            <td>
+              {% if document.document.document %}
+              <a href="{{ document.document.document.url }}" 
+                 data-toggle="" 
+                 data-toggle="tooltip" 
+                 data-placement="bottom" 
+                 title="Description: {{document.document.description }}">
+               {{ document.document.document_name }}</a>
+              {% endif %}
+            </td>                      
+            {% empty %}
+          <tr><td class="info" colspan="20">No Documents Added Yet</td></tr>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div><br>
+  </div>
+</div>
+
+{% else %}
+<table class='table' width='100%'>
+  <tr>
+      <td>Save changes to proceed</td>
+  </tr>
+</table>
+{% endif %}

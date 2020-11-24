@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<h2>{{title}}</h2>
+		</div>
+
+		<div class="panel-body">
+
+			<form method="GET" action="">								
+				<table class="table table-hover ">							
+					<tr>
+						<th>Branch</th>
+						<th>Item</th>
+						<th>Category</th>
+						<th>Replenished</th>																
+						<th>Quantity</th>
+						<th style="width: 35%"></th>
+					</tr>								
+					{% for item in items_list %}
+						<tr>
+							<td>{{ item.branch }}</td>
+							<td>{{ item.item }} </td>
+							<td>{{ item.item.category }}</td>
+							<td>{{ item.date_replenished }} </td>
+							<td>{{ item.quantity }} </td>																																
+							<td><a href="{% url 'inventory:edit_stockitemreplenishment' item.id %}"><i class="fa fa-building-o" aria-hidden="true"></i> Edit</a></td>
+							
+						</tr>										
+					{% endfor %}						
+				</table>
+				{% if items_list.has_other_pages %}
+				  <ul class="pagination pull-right">
+				    {% if items_list.has_previous %}
+				      <li><a href="?page={{ items_list.previous_page_number }}">&laquo;</a></li>
+				    {% else %}
+				      <li class="disabled"><span>&laquo;</span></li>
+				    {% endif %}
+				     <li class="active"><span>{{  items_list.number }} of {{items_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+				    {% if items_list.has_next %}
+				      <li><a href="?page={{ items_list.next_page_number }}">&raquo;</a></li>
+				    {% else %}
+				      <li class="disabled"><span>&raquo;</span></li>
+				    {% endif %}
+				  </ul>
+				{% endif %}
+			</form>									
+		</div>
+
+	</div>
+{% endblock %}

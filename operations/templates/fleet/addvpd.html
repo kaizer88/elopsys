@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block content%}
+	
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+		 	<h2>{{title}}</h2>
+				
+			<div class="col-sm-4 text-align-center">				
+				{% block vehicle_details %}
+				{% endblock %}
+			</div>
+		
+{% endblock %}

@@ -1,0 +1,1 @@
+Dear {{ driver }}, your vehicle {{ vehicle }} was booked in for {{ mileage }}km service at {{ garage }} on {{ service_date }}. From Emerald Life Operations Fleet.

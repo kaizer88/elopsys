@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+{% block javascript %}
+
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency">
+<form method="POST" action="">
+{% csrf_token %}
+	<h1>{{title}}</h1>
+	<input class="btn btn-warning pull-right" id="report" name="report" type="submit" value="Export CSV"/>
+	<table class="table table-hover ">							
+		<tr>
+			<th>Current Driver</th>
+			<th>Vehicle</th>								
+			<th>Make and Model</th>
+			<th>Current Mileage</th>
+			<th>Incidences</th>
+			<th>Repairs Cost</th>
+			<th>Tyres Cost</th>
+			<th>Service Cost</th>
+			<th>Total Maintenace </th>
+			<th>Status<th>
+		</tr>								
+		{% for vehicle in vehicles %}
+			<tr>
+				<td>{{ vehicle.get_current_driver }}</td>
+				<td>{{ vehicle.vehicle }} </td>
+				<td>{{ vehicle.make_n_model }} </td>
+				<td>{{ vehicle.get_current_mileage|floatformat:2|intcomma }} </td>
+				<td>{{ vehicle.get_count_incidences}}</td>
+				<td>{{ vehicle.get_total_maintenance|floatformat:2|intcomma }}</td>
+				<td>{{ vehicle.get_total_tyres_cost|floatformat:2|intcomma }}</td>	
+				<td>{{ vehicle.get_total_service_cost|floatformat:2|intcomma }}</td>
+				<td>{{ vehicle.get_total_maintenance_cost|floatformat:2|intcomma }}</td>
+				<td>{{ vehicle.status }}</td>																
+				
+			</tr>										
+		{% endfor %}						
+	</table>
+</form>
+</div>
+{% endblock %}

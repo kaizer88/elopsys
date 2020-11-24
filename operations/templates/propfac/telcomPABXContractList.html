@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#contracts">Telcom Contracts</a></li>
+				<li><a data-toggle="pill" href="#renewals">Telcom Contract Renewals</a></li>
+				<li><a data-toggle="pill" href="#expiring">Expiring Contracts</a></li>
+				<li><a data-toggle="pill" href="#expired">Expired Contracts</a></li>			
+				
+			</ul>
+			<div class="tab-content">
+				<div id="contracts" class="tab-pane fade in active">
+
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_contracts" name="filter_contracts" type="submit" value="Search"/></div>
+						  </div></p>				
+						<table class="table table-hover ">							
+							<tr>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden">Start Date</th>
+								<th>Expiry Date</th>							
+								<th class="col-hidden col-hidden-2">Extensions</th>
+								<th class="col-hidden col-hidden-2">Amount</th>										
+								<th></th>
+							</tr>								
+							{% for contract in contracts %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ contract.branch.region }} </td>
+									<td>{{ contract.branch }}</td>			
+									<td class="col-hidden">{{ contract.start_date }}</td>									
+									<td>{{ contract.expiry_date }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.extensions }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.price }}</td>																								
+									<td><a href="{% url 'property:edit_telcomcontract' contract.id %}">Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if contracts.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if contracts.has_previous %}
+						      <li><a href="?page={{ contracts.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  contracts.number }} of {{contracts.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if contracts.has_next %}
+						      <li><a href="?page={{ contracts.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>									
+				</div>
+
+				<div id="renewals" class="tab-pane fade">
+				
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_renewals" name="filter_renewals" type="submit" value="Search"/></div>
+						  </div></p>			
+						<table class="table table-hover ">	
+
+							<tr>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden col-hidden-2">Date Expired</th>
+								<th class="col-hidden">Start Date</th>							
+								<th>Expiry Date</th>
+								<th class="col-hidden col-hidden-2">Extensions</th>
+								<th class="col-hidden col-hidden-2">Amount</th>										
+								<th></th>
+							</tr>								
+							{% for contract in contract_renewals %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ contract.branch.region }} </td>
+									<td>{{ contract.branch }}</td>
+									<td class="col-hidden col-hidden-2">{{ contract.date_expired }}</td>			
+									<td class="col-hidden">{{ contract.start_date }}</td>									
+									<td>{{ contract.expiry_date }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.extensions }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.price }}</td>																								
+									<td><a href="{% url 'property:edit_telcomcontractrenewal' contract.id %}">Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if contract_renewals.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if contract_renewals.has_previous %}
+						      <li><a href="?page={{ contract_renewals.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  contract_renewals.number }} of {{contract_renewals.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if contract_renewals.has_next %}
+						      <li><a href="?page={{ contract_renewals.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>	
+				</div>
+
+				<div id="expiring" class="tab-pane fade">
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_expiring" name="filter_expiring" type="submit" value="Search"/></div>
+						  </div></p>			
+						<table class="table table-hover ">							
+							<tr>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden">Start Date</th>
+								<th>Expiry Date</th>							
+								<th class="col-hidden col-hidden-2">Extensions</th>
+								<th class="col-hidden col-hidden-2">Amount</th>										
+								<th></th>
+							</tr>								
+							{% for contract in contracts_expiring %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ contract.branch.region }} </td>
+									<td>{{ contract.branch }}</td>			
+									<td class="col-hidden">{{ contract.start_date }}</td>									
+									<td>{{ contract.expiry_date }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.extensions }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.price }}</td>																								
+									<td><a href="{% url 'property:add_telcomcontractrenewal' contract.id %}">Renew</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if contracts_expiring.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if contracts_expiring.has_previous %}
+						      <li><a href="?page={{ contracts_expiring.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  contracts_expiring.number }} of {{contracts_expiring.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if contracts_expiring.has_next %}
+						      <li><a href="?page={{ contracts_expiring.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>									
+
+				</div>
+
+
+				<div id="expired" class="tab-pane fade">
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_expired" name="filter_expired" type="submit" value="Search"/></div>
+						  </div></p>			
+						<table class="table table-hover ">							
+							<tr>
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th class="col-hidden">Start Date</th>
+								<th>Expiry Date</th>							
+								<th class="col-hidden col-hidden-2">Extensions</th>
+								<th class="col-hidden col-hidden-2">Amount</th>										
+								<th></th>
+							</tr>								
+							{% for contract in contracts_expired %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ contract.branch.region }} </td>
+									<td>{{ contract.branch }}</td>			
+									<td class="col-hidden">{{ contract.start_date }}</td>									
+									<td>{{ contract.expiry_date }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.extensions }} </td>
+									<td class="col-hidden col-hidden-2">{{ contract.price }}</td>																								
+									<td><a href="{% url 'property:add_telcomcontractrenewal' contract.id %}">Renew</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if contracts_expired.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if contracts_expired.has_previous %}
+						      <li><a href="?page={{ contracts_expired.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  contracts_expired.number }} of {{contracts_expired.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if contracts_expired.has_next %}
+						      <li><a href="?page={{ contracts_expired.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>						
+
+				</div>
+
+
+			</div>
+
+	</div>
+{% endblock %}

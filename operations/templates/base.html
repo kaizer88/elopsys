@@ -1,0 +1,74 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
+    <title>Elopsys</title>
+    {% include '_css.html' %}
+
+    {% block extra_css %}
+    {% endblock %}
+
+    <style>
+    
+    {% block style %}
+    
+
+    {% endblock %}
+    
+    </style>
+    {% include '_scripts.html' %}
+
+    {% block javascript %}
+    {% endblock %}
+  </head>
+
+  <body>
+    <div class="bg_fixed"></div>
+    <div class="outer_wrapper">
+      
+      {% block body %}
+      
+      <div class="content_wrapper">
+
+        {% include 'navbar.html' %}
+        <div style="clear:both"></div>
+        
+        {% block extra_content %}
+        {% endblock %}
+        
+        <div class="content">
+          <br/>
+          {% if messages %}
+          
+          {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}info{% endif %}">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <strong>{{ message }}</strong>
+          </div>
+          {% endfor %}
+          
+          {% endif %}
+
+          {% block content %}
+          {% endblock %}
+          
+        </div>
+        
+      </div>
+      
+      {% endblock %}
+      
+      <div class="push_footer"> </div>
+      <div style="clear:both"></div>
+      
+    </div>
+  </body>
+</html>

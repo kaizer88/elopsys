@@ -1,0 +1,54 @@
+
+{% load staticfiles%}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+	
+<b>Mobile Numbers</b>	
+<table class="table table-hover">
+	<tr>
+		<th>Phone N0</th>								
+		<th class="col-hidden">Sim N0</th>
+		<th>Service Provider</th>	
+		<th></th>														
+		
+	</tr>								
+	{% for number in mobile_numbers %}
+		<tr>
+			<td>{{ number.phone_number }} </td>									
+			<td class="col-hidden">{{ number.sim_number }}</td>
+			<td>{{ number.service_provider }} </td>
+			<td><a href="{% url 'offices:edit_mobilenumber' number.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i></a></td>
+			
+			
+		</tr>										
+	{%  endfor %}						
+</table>
+{% if mobile_numbers.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if mobile_numbers.has_previous %}
+      <li><a href="?page={{ mobile_numbers.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+   <li class="active"><span>{{  mobile_numbers.number }} of {{mobile_numbers.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if mobile_numbers.has_next %}
+      <li><a href="?page={{ mobile_numbers.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}

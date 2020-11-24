@@ -1,0 +1,170 @@
+{% load staticfiles%}
+
+<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+  <div class=" row col-sm-12 col-sm-offset-0">
+    <div class="navbar-header">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'img/emerald_banner_small.png' %}" style="height:50px; cursor:pointer">
+        </a>
+    </div>
+    <div class=" collapse navbar-collapse navbar-font" id="navbar">
+        <ul class="nav navbar-nav">
+          {% if not request.user.is_emerald_employee and not request.user.is_technician %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle panel_field" href="" id="FleetNavbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                    Fleet <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="FleetNavbarDropdown">
+
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:vehicles' %}"><i class="fa fa-list-ol" aria-hidden="true"></i>&nbsp;&nbsp;Vehicles</a>
+                    </li>
+                    {% if request.user.is_superuser or request.user.is_management or request.user.is_executive %}
+                    <li class="dropdown-submenu">
+                        <a class="dropdown-item dropdown-toggle" href=""><i class="fas fa-credit-card" aria-hidden="true"></i>&nbsp;&nbsp;Fuel Cards</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'fleetmanagement:fuel_cards' %}"><i class="far fa-credit-card" aria-hidden="true"></i>&nbsp;&nbsp;Fuel Cards Administration</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'fleetmanagement:fuel_card_usage' %}"><i class="fas fa-credit-card" aria-hidden="true"></i>&nbsp;&nbsp;Fuel Card Transactions</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_incidents' %}"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp;&nbsp;Incidents</a>
+                    </li>
+                   <!--  <a href="{% url 'fleetmanagement:view_insurers' %}"><i class="fa fa-umbrella" aria-hidden="true"></i>&nbsp;&nbsp;Insurance</a> -->
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_traffic_fines' %}"><i class="fas fa-file-invoice" aria-hidden="true"></i>&nbsp;&nbsp;Traffic Fines</a>
+                    </li>
+                    <!-- <a href="{% url 'fleetmanagement:vehicle_maintenance' %}"><i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;Vehicle Maintenance</a> -->
+                    <!-- <a href="{% url 'fleetmanagement:view_service_providers' %}"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;Service Providers</a>  -->
+                    <li class="dropdown-submenu">
+                            <a class="dropdown-item dropdown-toggle" href=""><i class="fas fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;Service/Maintenance</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'fleetmanagement:service_booking' %}"><i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;Bookings</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'fleetmanagement:resolved_service_booking' %}"><i class="fas fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;Resolved</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'fleetmanagement:service_booking_invoice' %}"><i class="fas fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;Invoice History</a>
+                                </li>
+                            </ul>
+                        </li>
+                     <li>
+                        <a class="dropdown-item" href="{% url 'employees:employees' %}"><i class="fa fa-list-ol" aria-hidden="true"></i>&nbsp;&nbsp;Drivers</a>
+                    </li>
+                     <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_insurance_claims' %}"><i class="fa fa-umbrella" aria-hidden="true"></i>&nbsp;&nbsp;Insurance</a>
+                    </li>
+
+                </ul>
+            </li>
+
+            {% if request.user.is_superuser or request.user.is_executive or request.user.is_administrator %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="OperationsNavbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                    Operations <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="OperationsNavbarDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'view_regions' %}"><i class="fa fa-map-marker aria-hidden="true"></i>&nbsp;&nbsp;Regions</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'view_branches' %}"><i class="fa fa-map-pin" aria-hidden="true"></i>&nbsp;&nbsp;Districts</a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
+
+             {% if not request.user.is_regional_user or not request.user.is_regional_manager %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="FacilitiesNavbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                    Facilities <i class="fa fa-caret-down"></i>
+                </a>
+               <ul class="dropdown-menu" aria-labelledby="FacilitiesNavbarDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'facilities:stock_items' %}"><i class="fas fa-boxes aria-hidden="true"></i>&nbsp;&nbsp;Stock Items</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'facilities:stock_items_transactions' %}"><i class="fas fa-box-open aria-hidden="true"></i>&nbsp;&nbsp;Stock Transactions</a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
+
+            <li class="nav-item">
+                <a href="{% url 'assets:view_assets' %}">Assets</a>
+            </li>
+
+          {% endif %}
+
+            {% if request.user.is_superuser or request.user.is_management  %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="" id="AdministrationNavbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                    Administration <i class="fa fa-caret-down"></i>
+                </a>
+               <ul class="dropdown-menu" aria-labelledby="AdministrationNavbarDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:vehicle_uploads' %}"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;&nbsp;Vehicle Bulk Uploads</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:mileage_uploads' %}"><i class="fa fa-tachometer-alt" aria-hidden="true"></i>&nbsp;&nbsp;Vehicle Mileage Uploads</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:additional_vehicle_information_uploads' %}"><i class="fa fa-tachometer-alt" aria-hidden="true"></i>&nbsp;&nbsp;Additional Vehicle Information Uploads</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:fuel_cards_upload' %}"><i class="fa fa-tachometer-alt" aria-hidden="true"></i>&nbsp;&nbsp;Fuel Card Uploads</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:vehicle_service_due' %}"><i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;Vehicle Service Due</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'employees:drivers_licence_expiry' %}"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;&nbsp; Expired Drivers Licences</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_vendors' %}"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;Service Providers</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_vehicle_makes' %}"><i class="fa fa-briefcase" aria-hidden="true"></i>&nbsp;Vehicle Makes</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleetmanagement:view_vehicle_models' %}"><i class="fa fa-suitcase" aria-hidden="true"></i>&nbsp;Vehicle Models</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'fleet_admins' 1 %}"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;Fleet Administrators</a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
+            {% if not request.user.is_emerald_employee and not request.user.is_technician  %}
+           <!--  <li class="dropdown">
+              <ul class="dropbtn">Staff
+                <i class="fa fa-caret-down"></i>
+              </ul>
+              <div class="dropdown-content">
+                <a href="{% url 'employees:employees' %}"><i class="fa fa-list-ol" aria-hidden="true"></i>&nbsp;&nbsp;Employees</a>
+              </div>
+            </li> -->
+                <li class="nav-item"><a class="nav-link" href="{% url 'view_tickets' %}">Tickets</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'view_downloads' %}">Downloads</a></li>
+            {% endif %}
+
+            {% if request.user.is_superuser or request.user.is_management %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'users' %}">Users</a></li>
+            {% endif %}
+
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item"><a class="nav-link" href="{% url 'user_profile' request.user.id %}">Welcome {{ request.user }}</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+          </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,51 @@
+{% load el_pagination_tags %}
+<table id="vendors" class="table table-hover ">
+  <tr>
+    <th>Service Provider Name</th>
+    <th>Type</th>
+    <th>Contact Person</th>
+    <th>Address</th>
+    <th>Telephone</th>  
+    <th>Telephone 2</th> 
+    <th>Cell</th>
+    <th>Email</th>
+    <th>Account Type</th>  
+    <th>Balance</th>  
+    
+ </tr>
+
+ {% paginate vendors %}
+  {% for vendor in vendors %}
+
+ <tr>
+    <td><a href="{% url 'fleetmanagement:edit_vendor' vendor.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Service Provider"><i class="fas fa-pencil-alt" aria-hidden="true"></i>
+      {{ vendor.name }}</a></td>
+    <td>{{ vendor.get_vendor_type_display }}</td>
+    <td>{{ vendor.contact_person.first_name|default_if_none:''|title}} 
+        {{ vendor.contact_person.last_name|default_if_none:''|title}}</td>
+    <td>
+      {% if vendor.address.address_line_1 %}{{vendor.address.address_line_1 | title}} {% endif %}
+      {% if vendor.address.address_line_2 %}{{vendor.address.address_line_2 | title}} {% endif %}
+      {% if vendor.address.suburb %}{{vendor.address.suburb | title}} {% endif %}
+      {% if vendor.address.city %}{{vendor.address.city | title}} {% endif %}
+      {% if vendor.address.postal_code %}{{vendor.address.postal_code | title}} {% endif %}
+    </td>
+    <td>{{vendor.contact_person.tel_number|default_if_none:''}}</td>  
+    <td>{{vendor.contact_person.tel_number_2|default_if_none:''}}</td>  
+    <td>{{vendor.contact_person.cell_number|default_if_none:''}}</td>
+    <td>{{vendor.contact_person.email|default_if_none:''}} </td>
+    <td>{{vendor.account_type |default_if_none:"" | title |default_if_none:""}}</td>
+    <td>{{vendor.balance |default_if_none:"" }}</td>
+
+ </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='7' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

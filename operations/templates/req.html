@@ -1,0 +1,195 @@
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+  $("#id_fuel_card").autocomplete({
+  source: "{% url 'fleet:get_fuel_card' %}",
+  minLength: 2});
+
+  $("#id_driver").autocomplete({
+  source: "{% url 'fleet:get_employee' %}",
+  minLength: 2});
+
+  $('select').select2();
+  });
+
+</script>
+<style type="text/css">
+	@page {
+		size: a4; 
+		margin: 2cm;
+		@frame footer {
+		    -pdf-frame-content: footerblock;
+		    bottom: 0cm;
+		    margin-left: 1cm;
+		    margin-right: 1cm;
+         	margin-top: 1cm;
+		    height: 3cm;
+		}
+	}	
+
+	.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+		padding: 3px;
+	    line-height: 1.5;
+	    vertical-align: center;
+    	border: 1px solid #000;
+
+	}
+	.heading {
+		font-size: 30px;
+	}
+
+	#table-bordered{
+		padding: 3px;
+	    line-height: 1.5;
+	    vertical-align: center;
+    	border: 1px solid #000;
+
+	}
+	
+	.mtable {
+	    width: 100%;
+	    max-width: 100%;
+	    margin-bottom: 40px;
+	}
+
+
+
+
+</style>
+
+
+{% endblock %}
+
+<div class=" panel panel-primary col-sm-8 col-sm-offset-2">
+	<div class="panel-body"> 
+		<p><div style=" text-align: right;">
+			<img src="{{ http_origin }}{% static 'img/emerald_banner.jpg' %}" width="300px" height="100px" > 
+
+		</div></p>
+		<p><div>
+			<h2 style="text-align:center; font-size: 20px">EXPENSE REQUISITION FORM</h2>
+		</div></p>
+		<p>
+		<table class="table table-bordered" id="table-bordered">
+			<tr>
+				<td>DATE</td>
+				<td colspan="4">{{ requisition.requested|date:"M-d-Y" }}</td>
+			</tr>
+			<tr>
+				<td>REGION</td>
+				<td>
+					{% if requisition.vehicle %}
+						{{ requisition.driver.branch.region }}
+					{% else %}
+						{{ employee.branch.region }}
+					{% endif %}
+				
+				</td>
+				<td>AMOUNT</td>
+				<td colspan="2">{{ requisition.amount|floatformat:2|intcomma }}</td>
+			</tr>
+			<tr>
+				<td>SUPPLIER</td>
+				<td>{{ requisition.supplier }}</td>
+				<td>BUDGETED</td>
+				<td>YES: {% if budgeted %}<img src="{{ http_origin }}{% static 'img/accept.jpg' %}" width="20px" height="20px" >{% endif %}</td>
+				<td>NO: {% if not budgeted %}<img src="{{ http_origin }}{% static 'img/accept.jpg' %}" width="20px" height="20px" >{% endif %}</td>
+			</tr>			
+		</table></p>
+		<p>
+				<div>Please state in the space provided below what the purpose for the requisition is:</div>
+				<div>(Please remember to include 2 two quotes where applicable)</div>
+			</p>
+
+
+		<p><table class=" table mtable table-bordered" id="table-bordered">
+			<tr>
+				<td>
+					<h3 style="text-align:center; font-size: 15px">DETAILS OF EXPENSE</h3>
+				</td>
+			</tr>
+			<tr>
+				<td style="height: 50px">
+				{%if requisition.vehicle%}
+					<b>Vehicle: {{ requisition.vehicle }}, Driver: {{ requisition.driver }}. </b><br>
+				{% endif %}
+					{{ requisition.description }}
+				}
+				</td>
+			</tr>			
+		</table>
+
+		<table class="mtable table table-bordered" id="table-bordered">
+			<tr>
+				<td>
+					<h3 style="text-align:center; font-size: 15px">MORTIVATION FOR EXPENSE</h3>
+				</td>
+			</tr>
+			<tr>
+				<td style="height: 50px">
+					{{ requisition.mortivation }}
+				</td>
+			</tr>			
+		</table></p>
+
+		<p><table class="mtable table table-bordered" id="table-bordered">
+			<tr>
+				<td colspan="2" style="width: 50%">
+					<h3 style="font-size: 15px">REQUESTED BY</h3>
+				</td>
+				<td colspan="2" style="width: 50%">
+					<h3 style="font-size: 15px">DEPARTMENT AUTHORIZATION</h3>
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 20%">NAME</td>
+				<td>{{ requisition.requested_by }}</td>
+				<td style="width: 20%">NAME</td>
+				<td>{{ requisition.authorized_by}}</td>
+			</tr>
+			<tr>
+				<td style="width: 20%">DEPARTMENT</td>
+				<td>{{ requisition.requested_by.department }}</td>
+				<td style="width: 20%">DEPARTMENT</td>
+				<td>{{ requisition.authorized_by.employee.department }}</td>
+			</tr>
+			<tr>
+				<td style="width: 20%">DESIGNATION</td>
+				<td>{{ requisition.requested_by.designation }}</td>
+				<td style="width: 20%">DESIGNATION</td>
+				<td>{{ requisition.authorized_by.employee.designation }}</td>
+			</tr>
+		</table></p>
+
+		<p><table class="mtable table table-bordered" id="table-bordered">
+			<tr>
+				<td colspan="2">
+					<h3 style="font-size: 15px">FINAL AUTHORIZATION</h3>
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 20%">NAME</td>
+				<td>{{ requisition.finalized_by}}</td>
+			</tr>
+			<tr>
+				<td style="width: 20%">DESIGNATION</td>
+				<td>CEO</td>
+			</tr>
+		</table></p>
+		<div id="footerblock">
+		<hr/>
+		<b><div style="text-align: center;">DIRECTOR: ANDRE VAN DER WESTHUIZEN</div>
+		<div style="text-align: center;">86 EDWARD STREET, STERLING BUILDING, BELLVILLE, CAPETOWN</div>
+		<div style="text-align: center;">TEL: 086 166 6333</div></b>   
+</div>
+	</div>
+</div>	

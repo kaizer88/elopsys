@@ -1,0 +1,30 @@
+{% extends "accounts_base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% block content %}
+
+<br/>
+<div class='col-sm-8 col-sm-offset-2'>	
+<div class="panel panel-primary transparency">
+	<div class="panel-heading">
+	 	<h2>ELOPSYS <span class="pull-right">{{title}}</span></h2>
+	</div>
+
+	<div class="panel-body">
+	<div class="row">
+		<div class='col-sm-6 col-sm-offset-3'>	
+	  		<img src="{% static 'img/emerald_banner.jpg' %}" width="100%">	
+		</div></div>
+
+		<form method="POST" action="" enctype="multipart/form-data" novalidate>								      
+			{% csrf_token %}
+				  {% crispy form %}
+				  
+				   					
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

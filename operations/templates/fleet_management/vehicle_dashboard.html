@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load humanize %}
+
+
+{% block extra_css %}
+<link href="{% static 'css/material_dashboard.css' %}" rel="stylesheet"> 
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'js/vehicle_dashboard.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  
+  <div class="row">
+    
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="orange">
+          <i class="fa fa-car"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Vehicle</p>
+          <h3 class="title">{{ vehicle.model }}<br>
+            <small>{{ vehicle.make|title }}</small>
+          </h3>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <a href="{% url 'fleetmanagement:edit_vehicle' vehicle.id %}">
+            <i class="fas fa-pencil-alt"></i> Edit Vehicle</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="green">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Driver</p>
+          <h3 class="title">{{ vehicle.driver|default_if_none:"Vehicle not Assigned"|title }}
+            <br>
+            <small>{{ vehicle.get_division_display|title }}</small>
+          </h3>
+        </div>
+        <div class="card-footer">
+              
+          <div class="stats">
+            
+            <a href="#" aria-hidden="true" data-toggle="modal" data-target="#assign_driver_modal">
+              {% if vehicle.current_vehicle_driver %}
+              <i class="fa fa-user"></i> Change Driver</a>
+              {% else %}
+              <i class="fa fa-user"></i> Assign New Driver</a>
+              {% endif %}
+            {% include 'fleet_management/widgets/_assign_driver.html' with form=vehicle_assign_form vehicle=vehicle %}
+            
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="red">
+          <i class="fa fa-map-marker"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Region</p>
+          <h3 class="title">Head Office<br>
+            <small>Western Cape</small></h3>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class=""></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <div class="row">
+
+    <div class="col-md-4 text-center">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="red">
+          <i class="fa fa-wrench"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Next Service</p>
+          <div id="vehicle-service-chart" ></div>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class=""></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header card-chart" data-background-color="orange">
+          <div id="vehicle-mileage-line" ></div>
+        </div>
+        <div class="card-content">
+          <h4 class="title">Mileage Driven Monthly</h4>
+          <p class="category"></p>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="material-icons"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      {% if vehicle.driver %}
+          <div class="card">
+            <div class="card-header card-chart" data-background-color="orange">
+              <div id="fuel-usage-line" ></div>
+            </div>
+            <div class="card-content">
+              <h4 class="title">Vehicle Fuel Usage</h4>
+              <p class="category"></p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons"></i>
+              </div>
+            </div>
+          </div>
+      {% endif %}
+      
+    </div>
+  </div>
+
+  <div class="row">
+
+      <div class="col-lg-6 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="blue">
+          <i class="fa fa-umbrella"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Insurance</p>
+          <h3 class="title">{{ vehicle.insurance.first.insurer_name }}<br>
+            <small>Insured for R {{ vehicle.insurance.first.insured_amount|intcomma }}</small>
+          </h3>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="fas fa-pencil-alt"></i>
+            <a href="{% url 'fleetmanagement:edit_vehicle' vehicle.id %}#insurance">Edit Insurance Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header" data-background-color="green">
+          <i class="fa fa-location-arrow"></i>
+        </div>
+        <div class="card-content">
+          <p class="category">Tracking</p>
+          <h3 class="title">{{ vehicle.tracker.first.dealership_name }}<br>
+            <small>Active</small>
+          </h3>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="fas fa-pencil-alt"></i>
+            <a href="{% url 'fleetmanagement:edit_vehicle' vehicle.id %}#tracker">Edit Tracker Details</a>
+          </div>
+        </div>
+      </div>
+    </div>    
+    
+  </div>
+  
+  <div class="row">
+    
+    <div class="col-lg-6 col-md-12">
+      <div class="card card-nav-tabs">
+        <div class="card-header" data-background-color="purple">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <span class="nav-tabs-title">Incidents:</span>
+              <ul class="nav nav-tabs" data-tabs="tabs">
+                <li class="active">
+                  <a href="#fines" data-toggle="tab">
+                    <i class="fa fa-file-text-o"></i> Fines
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+                <li class="">
+                  <a href="#accidents" data-toggle="tab">
+                    <i class="fa fa-exclamation"></i> Accidents
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+                <li class="">
+                  <a href="#speeding" data-toggle="tab">
+                    <i class="fa fa-exclamation-triangle"></i> Speed Warnings
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+
+                {% if vehicle.driver %}
+                <i id="add_incident" title="Add Incident" class="fa fa-plus-square pull-right" aria-hidden="true" data-toggle="modal" data-target="#incident_modal"></i>
+                
+                {% include 'fleet_management/widgets/_incidents.html' with vehicle_driver=vehicle.current_vehicle_driver  %}
+                {% endif %}
+
+              </ul>             
+            </div>
+            
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="tab-content">
+            <div class="tab-pane active" id="fines">
+              <table class="table">
+                <td></td>
+                <td>Incident Type</td>
+                <td>Description</td>
+                <td>Incident Date</td>
+                <tbody>
+                  {% for fine in vehicle_fines %}
+                  <tr>
+                    <td></td>
+                    <td readonly="readonly">{{ fine.incident_type }}</td>
+                    <td readonly="readonly">{{ fine.description }}</td>
+                    <td readonly="readonly">{{ fine.incident_date |date:"d M Y" }}</td>
+                    <td class="td-actions text-right">
+                      <a href="#" rel="tooltip" title="View Traffic Fine Details">
+                        <i class="fa fa-eye"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="tab-pane" id="accidents">
+              <table class="table">
+                <td></td>
+                <td>Incident Type</td>
+                <td>Description</td>
+                <td>Incident Date</td>
+                <tbody>
+                  {% for accident in vehicle_accidents %}
+                  <tr>
+                    <td></td>
+                    <td readonly="readonly">{{ accident.incident_type }}</td>
+                    <td readonly="readonly">{{ accident.description }}</td>
+                    <td readonly="readonly">{{ accident.incident_date |date:"d M Y" }}</td>
+                    <td class="td-actions text-right">
+                      <a href="#" rel="tooltip" title="View Traffic Fine Details">
+                        <i class="fa fa-eye"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tab-pane" id="speeding">
+              <table class="table">
+                <td></td>
+                <td>Incident Type</td>
+                <td>Description</td>
+                <td>Incident Date</td>
+                <tbody>
+                  {% for speed_warning in vehicle_speed_warnings %}
+                  <tr>
+                    <td></td>
+                    <td readonly="readonly">{{ speed_warning.incident_type }}</td>
+                    <td readonly="readonly">{{ speed_warning.description }}</td>
+                    <td readonly="readonly">{{ speed_warning.incident_date |date:"d M Y" }}</td>
+                    <td class="td-actions text-right">
+                      <a href="#" rel="tooltip" title="View Traffic Fine Details">
+                        <i class="fa fa-eye"></i>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6 col-md-12">
+      <div class="card">
+        <div class="card-header" data-background-color="orange">
+          <h4 class="title">Service History</h4>
+          <p class="category">{{ vehicle.model }} Service History</p>
+        </div>
+        <div class="card-content table-responsive">
+          <table class="table table-hover">
+            <thead class="text-warning">
+              <th>Invoice #</th>
+              <th>Service Provider</th>
+              <th>Cost</th>
+              <th>Date</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A01-001</td>
+                <td>{{ vehicle.make }} Bellville</td>
+                <td>R 3,738.00</td>
+                <td>Nov 2nd, 2017 </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

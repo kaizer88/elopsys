@@ -1,0 +1,70 @@
+
+{% load staticfiles%}
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$('.comment_row').click(comment_click);
+  		});
+
+  		comment_click = function(){
+  			var id = $(this).data('id');
+  			var type = $(this).data('type');
+  			$.post(		"{% url 'fleet:redirect_from_comment' %}", 
+  						
+  						{id: id,
+						 type: type},
+						 
+						 function(data){						 		
+						 		window.location.href = data.url;
+						 }
+					);
+
+  		}
+
+	</script>	
+
+{% endblock %}
+	
+	
+<table class="table table-hover">
+	<tr>								
+		<th>Commented</th>
+		<th class="comment col-comment">Comments</th>
+		<th class="col-hidden">Type</th>
+		<th class="col-hidden">Commenter</th>																		
+		
+	</tr>								
+	{% for transaction in comments %}
+		<tr class='comment_row' data-id={{transaction.obj_id}} data-type={{transaction.comment_type}}>									
+			<td>{{ transaction.commented }}</td>
+			<td class="comment col-comment">{{ transaction.comments }} </td>
+			<td class="col-hidden">{{ transaction.comment_type }}</td>
+			<td class="col-hidden">{{ transaction.created_by }}</td>
+			
+		</tr>										
+	{%  endfor %}						
+</table>
+{% if comments.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if comments.has_previous %}
+      <li><a href="?page={{ comments.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+   <li class="active"><span>{{  comments.number }} of {{comments.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if comments.has_next %}
+      <li><a href="?page={{ comments.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}

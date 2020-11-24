@@ -1,0 +1,42 @@
+{% load el_pagination_tags %}
+<table id="" class="table table-hover ">
+  <tr>
+    <th>Ticket Number</th>
+    <th>Created By</th>
+    <th>Status</th>
+    <th>Subject</th>
+    <th>Category</th>
+    <th>Technician</th>  
+    <th>Created Date</th>     
+  </tr>
+
+  {% paginate tickets %}
+  {% for ticket in tickets %}
+
+  <tr>   
+    <td>
+      <a href="{% url 'edit_ticket' ticket.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Ticket">
+        <i class="fas fa-pencil-alt" aria-hidden="true"></i>  {{ ticket.number }}</a>
+    </td>
+    <td>{{ ticket.created_by }} </td> 
+    <td>{{ ticket.status }}</td> 
+    <td>{{ ticket.subject }} </td>
+    <td>{{ ticket.category |title }} </td>
+    <td>{{ ticket.technician | default_if_none:"Unassigned" }} </td>  
+    <td>{{ ticket.created_at | date:"d M Y" }} </td>  
+     
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='13' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>
+
+
+

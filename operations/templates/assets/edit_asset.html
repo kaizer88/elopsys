@@ -1,0 +1,155 @@
+
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+
+<script src="{% static 'js/assets.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+   <div class="panel-heading">
+      {% if asset %}
+        <b>Edit Asset:</b>
+      {% else %}
+        <b>Add Asset:</b>
+      {% endif %}
+  </div>
+  
+  <div class="panel-body">   
+    <ul class="nav nav-pills" id="myTab">
+      <li class="active">
+        <a href="#tab1" 
+           data-toggle="tab">Asset Details&nbsp;
+        </a>
+      </li>
+      
+      <li class="">
+        <a href="#tab2" 
+           data-toggle="tab">Purchase Details</a>
+      </li>
+
+      <li class="">
+        <a href="#tab3" 
+           data-toggle="tab">Contact Details</a>
+      </li>
+
+      <li class="">
+        <a href="#tab4" 
+           data-toggle="tab">Address Details</a>
+      </li>
+
+
+    </ul>
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="tab" value="">   
+      <div id="edit_asset_tab_content" class="tab-content">
+
+        <div class="tab-pane fade active in" id="tab1">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-4'>
+              <div class='col-lg-12'>{% bootstrap_field asset_detail_form.region %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_detail_form.district %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_detail_form.department %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_detail_form.user %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.category_one %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.category_two %}</div>                                       
+            </div>
+            <div class='col-lg-4'>              
+              <div class='col-lg-12'>{% bootstrap_field asset_form.category_three %}</div>           
+              <div class='col-lg-12'>{% bootstrap_field asset_form.asset_description %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.make %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.model %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_detail_form.quantity %}</div>
+            </div>
+            <div class='col-lg-4'>            
+              <div class='col-lg-12'>{% bootstrap_field asset_form.serial_number %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.colour %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.reason %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.condition %}</div>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.status %}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="tab2">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div class='col-lg-12'>{% bootstrap_field purchase_detail_form.invoice_number %}</div>
+              <div class='col-lg-12'>{% bootstrap_field purchase_detail_form.purchase_date %}</div>
+              <div class='col-lg-12'>{% bootstrap_field purchase_detail_form.asset_purchase_price %}</div>
+                                            
+            </div>
+            <div class='col-lg-6'>    
+              <div class='col-lg-12'>{% bootstrap_field purchase_detail_form.vat %}</div>
+              <div class='col-lg-12'>{% bootstrap_field purchase_detail_form.total_price %}</div>  
+              <div class='col-lg-12'>{% bootstrap_field asset_form.warranty_expiry %}</div>
+                               
+            </div>
+          </div>
+        </div>   
+
+        <div class="tab-pane fade" id="tab3">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div class='col-lg-12'>{% bootstrap_field asset_form.supplier_name %}</div>
+              <div class='col-lg-12'>{% bootstrap_field contact_form.first_name %}</div> 
+              <div class='col-lg-12'>{% bootstrap_field contact_form.last_name %}</div>                            
+            </div>
+            <div class='col-lg-6'>                   
+              <div class='col-lg-12'>{% bootstrap_field contact_form.tel_number %}</div>
+              <div class='col-lg-12'>{% bootstrap_field contact_form.cell_number %}</div>
+              <div class='col-lg-12'>{% bootstrap_field contact_form.email %}</div>                                 
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="tab4">
+          <br>
+         <div class="col-lg-12">
+            <div class='col-lg-6'>
+              <div class='col-lg-12'>{% bootstrap_field address_form.address_line_1 %}</div>
+              <div class='col-lg-12'>{% bootstrap_field address_form.address_line_2 %}</div>
+              <div class='col-lg-12'>{% bootstrap_field address_form.suburb %}</div>                                             
+            </div>
+            <div class='col-lg-6'>     
+              <div class='col-lg-12'>{% bootstrap_field address_form.country %}</div>
+              <div class='col-lg-12'>{% bootstrap_field address_form.province %}</div>             
+              <div class='col-lg-12'>{% bootstrap_field address_form.city %}</div>
+              <div class='col-lg-12'>{% bootstrap_field address_form.postal_code %}</div>                                
+            </div>
+          </div>
+        </div>
+   
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          {% if not request.user.is_regional_user or not request.user.is_regional_manager %}
+          <button type="submit" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button>
+          {% endif %}
+          <a href="{% url 'assets:view_assets' %}" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </a>
+        </div>
+          
+      </div>
+      
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

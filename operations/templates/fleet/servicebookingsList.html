@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize%}
+
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+
+
+{% block content %}	
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#service_bookings">Service Bookings</a></li>
+				<li><a data-toggle="pill" href="#service_due">Service Due</a></li>
+				<li><a data-toggle="pill" href="#service_overdue">Service Over-due</a></li>
+				
+			</ul>
+			<div class="tab-content">
+				<div id="service_bookings" class="tab-pane fade in active">			
+					<form method="GET" action="">	
+					 <p> <div class="row">
+						<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_bookings" name="filter_bookings" type="submit" value="Search"/></div>
+					  </div></p>	  
+					
+						<table class="table table-hover ">							
+							<tr>
+								<th>Vehicle</th>								
+								<th class="col-hidden">Driver</th>
+								<th class="col-hidden">Service Type</th>
+								<th class="col-hidden col-hidden-2">Booking date</th>
+								<th>Service date</th>
+								<th class="col-hidden col-hidden-2">Garage</th>
+								<th class="col-hidden col-hidden-2">Mileage</th>
+								<th></th>
+							</tr>								
+							{% for transaction in service_list %}
+								<tr>
+									<td>{{ transaction.vehicle }} </td>									
+									<td class="col-hidden">{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.service_type }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.booking_date }}</td>
+									<td>{{ transaction.service_date }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.garage }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.mileage|floatformat:2|intcomma }}</td>																		
+									<td>										
+										 <a href="{% url 'fleet:editbookservice' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Service Booking"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>
+									<td>										
+										 <a href="{% url 'fleet:viewbookservice' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Service Booking"><i class="fa fa-eye" aria-hidden="true"></i></a>
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if service_list.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if service_list.has_previous %}
+						      <li><a href="?page={{ service_list.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  service_list.number }} of {{service_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if service_list.has_next %}
+						      <li><a href="?page={{ service_list.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+				<div id="service_due" class="tab-pane fade">
+					<br/>
+						<form method="GET" action="">
+						<div class="row">
+							<div class="col-md-2">{{filter_form.region}}</div>
+							<div class="col-md-2">{{filter_form.vehicle}}</div>
+							<div class="col-md-2">{{filter_form.driver}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_due" name="filter_due" type="submit" value="Search"/></div>
+						  </div>		  
+						
+						<table class="table table-hover ">							
+							<tr>
+								<th class="col-hidden">Driver</th>
+								<th>Vehicle</th>								
+								<th class="col-hidden col-hidden-2">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th>Mileage</th>
+								<th class="col-hidden col-hidden-2">Last Serviced</th>
+								<th>Service KM</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in vehicles_due_service %}
+								<tr>
+									<td class="col-hidden">{{ vehicle.get_current_driver }}</td>
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td>{{ vehicle.get_current_mileage|floatformat:1|intcomma }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.get_last_service_mileage|floatformat:1|intcomma }}</td>
+									<td>{{ vehicle.get_next_service_mileage|floatformat:1|intcomma }}</td>																	
+									<td>         	
+							            <a href="{% url 'fleet:bookservice' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Book Vehicle Service"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></a>						              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if vehicles_due_service.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if vehicles_due_service.has_previous %}
+						      <li><a href="?page={{ vehicles_due_service.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  vehicles_due_service.number }} of {{vehicles_due_service.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if vehicles_due_service.has_next %}
+						      <li><a href="?page={{ vehicles_due_service.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+
+				<div id="service_overdue" class="tab-pane fade">
+				<br/>
+					<form method="GET" action="">	
+					  <div class="row">
+						<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_overdue" name="filter_overdue" type="submit" value="Search"/></div>
+					  </div>
+						<table class="table table-hover ">
+							<tr>
+								<th class="col-hidden">Driver</th>
+								<th>Vehicle</th>								
+								<th class="col-hidden col-hidden-2">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th>Mileage</th>
+								<th class="col-hidden col-hidden-2">Last Serviced</th>
+								<th>Service KM</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in vehicles_over_due_service %}
+								<tr>
+									<td class="col-hidden">{{ vehicle.get_current_driver }}</td>
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td>{{ vehicle.get_current_mileage|floatformat:1|intcomma }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.get_last_service_mileage|floatformat:1|intcomma }}</td>
+									<td>{{ vehicle.get_next_service_mileage|floatformat:1|intcomma }}</td>																	
+									<td>    	
+							            <a href="{% url 'fleet:bookservice' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Book Vehicle Service"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></a>						              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if vehicles_over_due_service.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if vehicles_over_due_service.has_previous %}
+						      <li><a href="?page={{ vehicles_over_due_service.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  vehicles_over_due_service.number }} of {{vehicles_over_due_service.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if vehicles_over_due_service.has_next %}
+						      <li><a href="?page={{ vehicles_over_due_service.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+					</div>							
+					
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

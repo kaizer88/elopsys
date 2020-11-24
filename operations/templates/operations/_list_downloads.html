@@ -1,0 +1,33 @@
+{% load el_pagination_tags %}
+    <!-- Rounded switch -->
+          
+    {% paginate downloads %}
+    <table id="gridtable" class="table table-hover downloads_table">
+      <thead>
+        <th>Download Date</th>
+        <th>Downloaded By</th>
+        <th>Description</th>
+        <th>File Name</th>
+        <th class="text-align-center">Download</th>
+      <tbody>
+        {% for download in downloads %}
+        <tr class="{% cycle 'even_row' 'odd_row' %} {% if download.created_by.id == dl_user.id %}dl_user{% else %}hidden{% endif %}" >
+          <td>{{ download.created_at }}</td>
+          <td>{{ download.created_by.full_name }}</td>
+          <td>{{ download.description }}</td>
+          <td>{{ download.document.name }}</td>
+          <td class="text-align-center">
+            <a title="Download" href="{% url 'file_download' download.id %}">
+              <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+    <div class="text-align-center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+  

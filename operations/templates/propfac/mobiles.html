@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+
+	  $("#id_branch").autocomplete({
+	  source: "{% url 'property:get_branch' %}",
+	  minLength: 2});
+
+	  $('select').select2();
+  });
+
+</script>
+
+
+{% endblock %}
+
+
+{% block content %}	
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    <b><i class="fa fa-building-o" aria-hidden="true"></i> {{title}} <span class="pull-right">{{branch.region}} {{ branch.branch }} </span></B>
+  </div>
+  <div class="row panel-body">
+    <form method="POST" action="" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      
+      <div class="col-sm-3 section-boder img-rounded" style="margin-bottom: 15px;">
+      <b>Property &amp Facilities Description</b>
+
+	<p><ul class="nav nav-pills">
+	  <li class="active"><a data-toggle="pill" href="#fleet">Mobile Number Details</a></li>	 
+	  <li><a data-toggle="pill" href="#uploads">File Uploads</a></li>
+
+	  </ul></p>
+	  <div class="tab-content">
+	    <div id="fleet" class="tab-pane fade in active">
+	   		
+		    </div>
+		    <div id="uploads" class="tab-pane fade">	     
+		      <input style="display:none" id="save" type="submit" value="Save "/>
+		      <div class="clear_left new_upload">
+			<a class="btn btn-primary"  onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">Upload File <span class="caret"></span></a>
+			<div class="hidden_content" style="display:none">
+			  {%  bootstrap_form upload_file_form %}						                       
+			</div>
+			</div><br/>	
+			<table class ="table table-hover ">
+			  <tr>
+			    <th>Uploaded Files</th>		
+			  </tr>
+			  {% for item in uploads %}
+			  <tr>
+			    <td><a href= "{{ item.file.url }}" target="top"> {{ item.file_name }}</a> </td>																
+			  </tr>
+			  {% endfor %}
+			</table>
+		    </div>
+		  </div>
+		</div>			
+		<div class="col-sm-9 pill_body">
+
+		<ul class="nav nav-pills">
+			<li class="active"><a data-toggle="pill" href="#process">Process</a></li>
+			<li><a data-toggle="pill" href="#comments">Comments</a></li>			
+		</ul>
+		<div class="tab-content">
+			<div id="process" class="tab-pane fade in active"><br/>
+				{% crispy form %}
+				 
+				  	<a class="btn btn-primary" href="#comments" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true">Next 
+						<i class="fa fa-forward" aria-hidden="true"></i><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+				  
+			</div>
+			<div id="comments" class="tab-pane fade">
+			 <input style="display:none" id="save" type="submit" value="Save "/>
+		      <p><div class="clear_left new_upload">
+				<a  onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">
+				Add Comment <span class="caret"></span>
+				</a>
+				<div class="hidden_content" style="display:none">
+				  {{ comment_form|crispy }}						                       
+				</div>
+			  </div></p>
+				<span class="pull-right">
+					<a class="btn btn-primary" href="#process" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true"><i class="fa fa-fast-backward" aria-hidden="true"></i> Prev</a>
+					<button type="submit" name="save" class="btn btn-primary" id="submit-id-save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+				</span>					
+				{% include 'pf_comments.html' %}
+				
+			</div>
+		</div>				
+		</div>
+
+	     </form>
+
+
+	    </div>
+	  </div>
+	  </p
+
+
+	  {% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block javascript %}
+{% load humanize %}
+
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency">
+	<form method="POST" action="">
+	{% csrf_token %}
+	<h1>{{title}}</h1>
+	<table class="table table-hover  table-fixed">              
+    <tr>
+      <th>Vehicle</th>
+      <th>{{filter_form.vehicle}}</th>
+      <th>Date From</th>
+      <th>{{filter_form.start_date}}</th>
+      <th>Date To</th>                  
+      <th>{{filter_form.end_date}}</th>
+      <th><input class="btn btn-warning" id="filter_logs" name="filter_logs" type="submit" value="Search"/>
+          <a class="btn btn-warning" href="{% url 'fleet:rpt_vehicle_fuel_allocations' %}" type="submit">Refresh</a>
+          <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th>
+          </tr>
+        </table>
+	{% for licence_plate, values in tran_dict.items %}				
+  		<h4>{{ values.make }} {{ licence_plate }}</h4>
+
+
+		<table class="table table-hover ">							     
+			<tr>				
+				<th>Allocation date</th>
+				<th>Transaction Type</th>
+				<th class="aligned-big-cell">Driver</th>				
+				<th>Fuel Card</th>
+				<th>Opening Balance</th>
+				<th>Allocated Amt</th>
+				<th>Closing Balance</th>
+				
+			</tr>
+										
+			 {% for val in values.transactions %}			
+				<tr>
+					<td>{{ val.allocation_date }}</td>
+					<td>{{ val.transaction_type }} </td>
+					<td>{{ val.driver }}</td>					
+					<td>{{ val.fuel_card }} </td>
+					<td>{{ val.balance_bf|floatformat:2|intcomma }} </td>
+					<td>{{ val.amount_allocated|floatformat:2|intcomma }}</td>
+					<td>{{ val.new_balance|floatformat:2|intcomma }} </td>
+				</tr>
+														
+			{%  endfor %}
+			<tr>
+				<th></th>
+				<th></th>
+				<th>Total Fuel Allocated</th>
+				<th></th>
+				<th></th>
+				<th>{{ values.totals.amount|floatformat:2|intcomma }}</th>				
+				<th></th>
+			</tr>
+							
+		</table>
+	{% endfor %}
+	</form>
+</div>
+{% endblock %}

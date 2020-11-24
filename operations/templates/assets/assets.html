@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+{% load humanize %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+
+	  $("#id_serial").autocomplete({
+	  source: "{% url 'assets:get_serial' %}",
+	  minLength: 2});
+
+	  $('select').select2();
+  });
+
+</script>
+
+
+{% endblock %}
+
+
+{% block content %}	
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+  	<div><b><i class="fa fa-building-o" aria-hidden="true"></i> {{title}} </b></div>
+    <div>{{asset.branch}} {{ asset.description }}</div>
+  </div>
+  <div class="row panel-body">
+    <form method="POST" action="" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      
+      <div class="col-sm-4 section-boder img-rounded">
+      <h4>Asset Description</h4>    
+
+	<p><ul class="nav nav-pills">
+	  <li class="active"><a data-toggle="pill" href="#fleet">Property Details</a></li>
+	  <li><a data-toggle="pill" href="#uploads">File Uploads</a></li>				
+	  </ul><p>
+	  <div class="tab-content">
+	    <div id="fleet" class="tab-pane fade in active">
+	    {% if sliders %}						
+	  <div style ="/*background-color: black;*/ height: 260px;">		
+		
+		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+		  <!-- Indicators -->
+
+		  <ol class="carousel-indicators">		  
+		    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+		    	  
+		    <li data-target="#myCarousel" data-slide-to="1"></li>
+		    	
+		    <li data-target="#myCarousel" data-slide-to="2"></li>
+		    
+		    <li data-target="#myCarousel" data-slide-to="3"></li>
+		  
+		  </ol>	
+		
+		  <!-- Wrapper for slides -->
+		  <div class="carousel-inner" role="listbox">
+		    <div class="item active">
+		      <img src="{{sliders.0}}"  alt="Fleet" style="height: 260px">
+			<div class="carousel-caption">
+			  <h3>{{ asset.tag }}</h3>								          
+			</div>
+		      </div>
+
+		      <div class="item">
+			<img src="{{sliders.1}}"  alt="Fleet" style="height: 260px">
+			  <div class="carousel-caption">
+			    <h3>{{ asset.tag }}</h3>							           
+			  </div>
+			</div>
+
+			<div class="item">
+			  <img src="{{sliders.2}}" alt="Fleet" style="height: 260px">
+			    <div class="carousel-caption">
+			      <h3>{{ asset.tag }}</h3>							         
+			    </div>
+			  </div>
+
+			  <div class="item">
+			    <img src="{{sliders.3}}" alt="Fleet" style="height: 260px">
+			      <div class="carousel-caption">
+				<h3>{{ asset.tag }}</h3>							         
+			      </div>
+			    </div>
+			  </div>
+
+			  <!-- Left and right controls -->
+			  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+			    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+			    <span class="sr-only">Previous</span>
+			  </a>
+			  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+			    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+			    <span class="sr-only">Next</span>
+			  </a>
+			</div>
+
+		      </div>
+		{% endif %}
+		      <table style="width: 100%; font-size: 18px;" class="table table-hover">
+			<tr>
+			  <td style="width: 25%">Branch</td>
+			    <td>:</td>
+			  <td>{{ asset.branch }} </td>
+			</tr>
+			<tr>
+			  <td>Region</td>
+			    <td>:</td>
+			  <td>{{ asset.branch.region }} </td>
+			</tr>
+			{% if asset.tag %}
+			<tr>
+			  <td>Asset Tag</td>
+			    <td>:</td>
+			  <td>{{ asset.tag }} </td>
+			</tr>
+			{% endif %}
+			{% if asset.description %}								
+			<tr>
+			  <td>Description</td>
+			  <td>:</td>
+			  <td> {{ asset.description }}</td>
+			</tr>
+			{% endif %}
+			{% if asset.model %}
+			<tr>
+			  <td>Asset Model</td>
+			    <td>:</td>
+			  <td> {{ asset.model }}</td>
+			</tr>
+				{% endif %}
+			{% if asset.category %}
+			<tr>
+			  <td>Category</td>
+			    <td>:</td>
+			  <td>{{ asset.category }} </td>
+			</tr>
+				{% endif %}
+			{% if asset.status %}
+			<tr>
+			  <td>Status</td>
+			    <td>:</td>
+			  <td>{{ asset.status }} </td>
+			</tr>
+				{% endif %}
+			
+			
+		      </table>					
+		    </div>
+		    <div id="uploads" class="tab-pane fade">					
+		      <h4>File Uploads</h4>
+		      <input style="display:none" id="save" type="submit" value="Save "/>
+		      <div class="clear_left new_upload">
+			<div class='btn btn-primary' onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">Upload File</div>
+			<div class="hidden_content" style="display:none">
+			  {%  bootstrap_form upload_file_form %}						                       
+			</div>
+			</div><br/>	
+			<table class ="table table-hover ">
+			  <tr>
+			    <th><h4>Uploaded Files</h4></th>		
+			  </tr>
+			  {% for item in uploads %}
+			  <tr>
+			    <td><a href= "{{ item.file.url }}" target="top"> {{ item.file_name }}</a> </td>																
+			  </tr>
+			  {% endfor %}
+			</table>
+		    </div>
+		  </div>
+		</div>				
+		<div class="col-sm-8 pill_body">
+
+		<ul class="nav nav-pills">
+			<li class="active"><a data-toggle="pill" href="#process">Process</a></li>
+			<li><a data-toggle="pill" href="#comments">Comments</a></li>			
+		</ul>
+		<div class="tab-content">
+			<div id="process" class="tab-pane fade in active">
+				 {% if not addnew  %}	
+					<p><div class="dropdown">
+			          <a href="{% url 'fleet:vehiclesList' %}" class="dropdown-toggle btn btn-warning" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Select a Transaction<span class="caret"></span></a>
+			          <ul class="dropdown-menu">          	
+			            <li class="dropdown-header">Assets Inventory Transactions</li>    
+			            <li><a href="{% url 'assets:edit_asset' asset.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Edit Asset</a></li> 
+			            <li><a href="{% url 'assets:allocate_asset' asset.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Allocate Asset</a></li>
+			            <li><a href="{% url 'assets:add_assetincident' asset.id %}"><i class="fa fa-plus-circle" aria-hidden="true"></i> Asset Incident</a></li>      
+			           
+			           
+			          </ul>
+			        </div></p>
+			       {% endif %}
+
+				  {% if not "view/asset" in request.path  %}					
+				  	{% crispy form %}
+				  {% else %}		  
+				  	  				  
+					<table class=" table table-hover " >							
+						<tr>							
+							<th>{{filter_form.serial}}</th>														
+							<th><input class="btn btn-warning" id="search" name="search" type="submit" value="Search"/>
+							<a class="btn btn-warning" href="" type="submit">Close</a></th>
+						</tr>
+					</table>
+				  	
+				 <!--  <div class="row">
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Service Cost</h3><hr/>
+				  			<h2>{{ vehicle.get_total_service_cost|floatformat:2|intcomma }}</h2>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Tyres Cost</h3><hr/>
+				  			<h2>{{ vehicle.get_total_tyres_cost|floatformat:2|intcomma }}</h2>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Repairs Cost</h3><hr/>
+				  			<h2>{{ vehicle.get_total_maintenance|floatformat:2|intcomma }}</h2>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+				  		<div class="thumb-nail-inner img-rounded">
+				  			<h3>Total Maintenance</h3><hr/>
+				  			<h2>{{ vehicle.get_total_maintenance_cost|floatformat:2|intcomma }}</h2>
+				  		</div>
+				  		</div>
+				</div><br/>
+				<div class="row">
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>No. Of Claims</h3><hr/>
+				  			<h1>{{ vehicle.get_count_claims }}</h1>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Claims Pending</h3><hr/>
+				  			<h1>{{ vehicle.get_count_claims_pending }}</h1>
+				  		</div>		  			
+						</div>						
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Claims Excess</h3><hr/>
+				  			<h2>{{ vehicle.get_total_excess|floatformat:2|intcomma }}</h2>
+				  		</div>		  			
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Total Claims Paid</h3><hr/>
+				  			<h2>{{ vehicle.get_total_claims|floatformat:2|intcomma }}</h2>
+				  		</div>
+						</div>
+				</div><br/>
+				<div class="row">
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Incidences</h3><hr/>
+				  			<h1>{{ vehicle.get_count_incidences }}</h1>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Traffic Fines</h3><hr/>
+				  			<h1>{{ vehicle.get_count_fines }}</h1>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Fines Pending</h3><hr/>
+				  			<h1>{{ vehicle.get_count_fines_pending }}</h1>
+				  		</div>
+						</div>
+					<div class="col-sm-3 text-align-center height-thumb-nail ">
+						<div class="thumb-nail-inner img-rounded">
+							<h3>Total Fines</h3><hr/>
+				  			<h2>{{ vehicle.get_total_fines|floatformat:2|intcomma }}</h2>
+				  		</div>
+						</div>
+				</div><br/>		 -->
+				  {% endif %}
+				  <span class="pull-right">
+				  	<a class="btn btn-primary" href="#comments" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true">Next 
+						<i class="fa fa-forward" aria-hidden="true"></i><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+				  <span class="pull-right">
+			</div>
+			<div id="comments" class="tab-pane fade">
+				
+				<br/>
+			 <input style="display:none" id="save" type="submit" value="Save "/>
+		      <div class="clear_left new_upload">
+				<a  onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">
+					<i class="fa fa-plus-square-o" aria-hidden="true"></i> Add Comment
+				</a>
+				<div class="hidden_content" style="display:none">
+				  {{ comment_form|crispy }}						                       
+				</div>
+			  </div>
+				<span class="pull-right">
+					<a class="btn btn-primary" href="#process" data-toggle="tab" onclick="newPillToggle()" aria-expanded="true"><i class="fa fa-fast-backward" aria-hidden="true"></i> Prev</a>
+					<button type="submit" name="save" class="btn btn-primary" id="submit-id-save"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+				</span>	<br/>		
+				{% include 'pf_comments.html' %}
+
+				
+			</div>
+
+
+		</div>				
+		</div>
+
+	     </form>
+
+
+	    </div>
+	  </div>
+	  </p
+
+
+	  {% endblock %}

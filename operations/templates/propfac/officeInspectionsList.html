@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+ 
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+		<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#office">Office Inspections</a></li>
+				<li><a data-toggle="pill" href="#toilet">Toilet Inspections</a></li>
+				
+			</ul>
+			<div class="tab-content">
+				<div id="office" class="tab-pane fade in active">
+
+					<form method="GET" action="">	
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_inspections" name="filter_inspections" type="submit" value="Search"/></div>
+						  </div></p>	  
+						<table class="table table-hover">					
+							<tr>								
+								<th class="col-hidden">Region</th>
+								<th>Branch</th>
+								<th>Floor</th>
+								<th class="col-hidden">Section</th>							
+								<th class="col-hidden col-hidden-2">Date Checked</th>								
+								<th class="col-hidden col-hidden-2">Inspector</th>
+								<th class="col-hidden col-hidden-2">Status</th>								
+								<th></th>
+							</tr>								
+							{% for inspection in inspections %}
+								<tr>
+									<td class="col-hidden">{{ inspection.branch.region }}</td>
+									<td>{{ inspection.branch }} </td>
+									<td>{{ inspection.floor }} </td>
+									<td class="col-hidden">{{ inspection.section }} </td>
+									<td class="col-hidden col-hidden-2">{{ inspection.date_checked }}</td>
+									<td class="col-hidden col-hidden-2">{{ inspection.inspector }}</td>	
+									<td class="col-hidden col-hidden-2">{{ inspection.status }}</td>																							
+									<td><a href="{% url 'property:edit_officeinspection' inspection.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if inspections.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if inspections.has_previous %}
+						      <li><a href="?page={{ inspections.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  inspections.number }} of {{inspections.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if inspections.has_next %}
+						      <li><a href="?page={{ inspections.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>	
+				</div>
+
+				<div id="toilet" class="tab-pane fade">
+				<br/>
+					<form method="GET" action="">		  
+						<p><div class="row">
+							<div class="col-md-3">{{filter_form.branch}}</div>
+							<div class="col-md-2">{{filter_form.start_date}}</div>
+							<div class="col-md-2">{{filter_form.end_date}}</div>
+							<div class="col-md-2"><input class="btn btn-warning" id="filter_toilet_inspections" name="filter_toilet_inspections" type="submit" value="Search"/></div>
+						  </div></p>			
+						<table class="table table-hover ">							
+							<tr>								
+								<th class="col-hidden col-hidden-2">Region</th>
+								<th>Branch</th>
+								<th>Floor</th>
+								<th class="col-hidden">Section</th>							
+								<th class="col-hidden col-hidden-2">Date Checked</th>								
+								<th class="col-hidden col-hidden-2">Inspector</th>
+								<th class="col-hidden col-hidden-2">Status</th>								
+								<th></th>
+							</tr>								
+							{% for inspection in toilet_inspections %}
+								<tr>
+									<td class="col-hidden col-hidden-2">{{ inspection.branch.region }}</td>
+									<td>{{ inspection.branch }} </td>
+									<td>{{ inspection.floor }} </td>
+									<td class="col-hidden">{{ inspection.toilet }} </td>
+									<td class="col-hidden col-hidden-2">{{ inspection.date_checked }}</td>
+									<td class="col-hidden col-hidden-2">{{ inspection.inspector }}</td>	
+									<td class="col-hidden col-hidden-2">{{ inspection.status }}</td>																							
+									<td><a href="{% url 'property:edit_officetoiletinspection' inspection.id %}"><i class="fa fa-check" aria-hidden="true"></i> Edit</a></td>
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if toilet_inspections.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if toilet_inspections.has_previous %}
+						      <li><a href="?page={{ toilet_inspections.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{  toilet_inspections.number }} of {{toilet_inspections.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if toilet_inspections.has_next %}
+						      <li><a href="?page={{ toilet_inspections.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>	
+
+				</div>
+			</div>								
+		</div>
+
+	</div>
+{% endblock %}

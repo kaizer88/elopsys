@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize%}
+
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>	
+
+{% endblock %}
+
+
+{% block content %}	
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+
+		<div class="panel-body">
+			<ul class="nav nav-pills">
+				<li class="active"><a data-toggle="pill" href="#driving_licences">Driving Licences</a></li>
+				<li><a data-toggle="pill" href="#expiring_driving_licences">Expiring Licences</a></li>
+				<li><a data-toggle="pill" href="#expired_driving_licences">Expired Licences</a></li>
+				
+			</ul>
+			<div class="tab-content">
+				<div id="driving_licences" class="tab-pane fade in active">			
+					<form method="GET" action="">	
+					 <p> <div class="row">
+					 	<div class="col-md-3">{{filter_form.region}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_driving_licences" name="filter_driving_licences" type="submit" value="Search"/></div>
+					  </div></p>	  
+					
+						<table class="table table-hover ">							
+							<tr>
+								<th>Driver</th>
+								<th class="col-hidden">Licence No.</th>								
+								<th class="col-hidden col-hidden-2">Issue Date</th>
+								<th class="col-hidden col-hidden-2">Expiry Date</th>
+								<th>Code</th>
+								<th class="col-hidden col-hidden-2">Vehicle Resprictions</th>
+								<th class="col-hidden col-hidden-2">Drive Restrictions</th>
+								<th></th>
+							</tr>								
+							{% for transaction in driving_licences %}
+								<tr>
+									<td>{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.licence_number }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.date_of_issue }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.expiry_date }}</td>
+									<td>{{ transaction.code }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.vehicle_restrictions }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.driver_restrictions }}</td>																			
+									<td>										
+										 <a href="{% url 'fleet:edit_drivinglicence' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Driving Licence"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+									</td>									
+								</tr>
+
+								{% empty %}	
+									<p class="text-align-center"><strong> No data to display!</strong>	</p>								
+							{%  endfor %}						
+						</table>
+						{% if driving_licences.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if driving_licences.has_previous %}
+						      <li><a href="?page={{ driving_licences.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  driving_licences.number }} of {{driving_licences.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if driving_licences.has_next %}
+						      <li><a href="?page={{ driving_licences.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+				<div id="expiring_driving_licences" class="tab-pane fade">
+						<form method="GET" action="">
+						 <p> <div class="row">	
+						 <div class="col-md-3">{{filter_form.region}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_expiring_driving_licences" name="filter_expiring_driving_licences" type="submit" value="Search"/></div>
+					  </div></p>
+						
+						<table class="table table-hover ">							
+							<tr>
+								<th>Driver</th>
+								<th class="col-hidden">Licence No.</th>								
+								<th class="col-hidden col-hidden-2">Issue Date</th>
+								<th class="col-hidden col-hidden-2">Expiry Date</th>
+								<th>Code</th>
+								<th class="col-hidden col-hidden-2">Vehicle Resprictions</th>
+								<th class="col-hidden col-hidden-2">Drive Restrictions</th>
+								<th></th>
+							</tr>								
+							{% for transaction in expiring_driving_licences %}
+								<tr>
+									<td>{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.licence_number }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.date_of_issue }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.expiry_date }}</td>
+									<td>{{ transaction.code }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.vehicle_restrictions }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.driver_restrictions }}</td>																
+									<td>         	
+							            <a href="{% url 'fleet:bookservice' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Driving Licence"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></a>						              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if expiring_driving_licences.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if expiring_driving_licences.has_previous %}
+						      <li><a href="?page={{ expiring_driving_licences.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  expiring_driving_licences.number }} of {{expiring_driving_licences.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if expiring_driving_licences.has_next %}
+						      <li><a href="?page={{ expiring_driving_licences.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+				</div>
+
+				<div id="expired_driving_licences" class="tab-pane fade">
+					<form method="GET" action="">	
+					  <p> <div class="row">
+					  	<div class="col-md-3">{{filter_form.region}}</div>
+						<div class="col-md-3">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_expired_driving_licences" name="filter_expired_driving_licences" type="submit" value="Search"/></div>
+					  </div></p>
+						<table class="table table-hover ">
+							<tr>
+								<th>Driver</th>
+								<th class="col-hidden">Licence No.</th>								
+								<th class="col-hidden col-hidden-2">Issue Date</th>
+								<th class="col-hidden col-hidden-2">Expiry Date</th>
+								<th>Code</th>
+								<th class="col-hidden col-hidden-2">Vehicle Resprictions</th>
+								<th class="col-hidden col-hidden-2">Drive Restrictions</th>
+								<th></th>
+							</tr>								
+							{% for transaction in expired_driving_licences %}
+								<tr>
+									<td>{{ transaction.driver }}</td>
+									<td class="col-hidden">{{ transaction.licence_number }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.date_of_issue }} </td>
+									<td class="col-hidden col-hidden-2">{{ transaction.expiry_date }}</td>
+									<td>{{ transaction.code }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.vehicle_restrictions }}</td>
+									<td class="col-hidden col-hidden-2">{{ transaction.driver_restrictions }}</td>																	
+									<td>    	
+							            <a href="{% url 'fleet:bookservice' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Renew Driving Licence"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i></a>						              
+									</td>
+								</tr>										
+							{%  endfor %}						
+						</table>
+						{% if expired_driving_licences.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if expired_driving_licences.has_previous %}
+						      <li><a href="?page={{ expired_driving_licences.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						    <li class="active"><span>{{  expired_driving_licences.number }} of {{expired_driving_licences.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if expired_driving_licences.has_next %}
+						      <li><a href="?page={{ expired_driving_licences.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}
+					</form>
+					</div>							
+					
+				</div>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

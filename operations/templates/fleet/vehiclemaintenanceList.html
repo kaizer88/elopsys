@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load humanize %}
+
+{% block javascript %}
+  
+  	<script>
+  		$(function() {
+  			$(".auto-complete-vehicle").autocomplete({
+				source: "{% url 'fleet:get_vehicle' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-driver").autocomplete({
+				source: "{% url 'fleet:get_employee' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-region").autocomplete({
+				source: "{% url 'fleet:get_region' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+	
+
+{% endblock %}
+
+{% block content%}	
+<div class="panel panel-primary transparency">
+<div class="panel-heading">
+<b><i class="fa fa-car" aria-hidden="true"></i> {{title}}</b>
+</div>
+
+<div class="panel-body">
+	<ul class="nav nav-pills">
+		<li class="active"><a data-toggle="pill" href="#maintenance_list">Maintenance Logs</a></li>
+		<li><a data-toggle="pill" href="#minor">Minor Damages</a></li>
+		<li><a data-toggle="pill" href="#major">Major Damages</a></li>
+		<li><a data-toggle="pill" href="#maintenance_stats">Maintenance Stats</a></li>			
+	</ul>
+<div class="tab-content">
+<div id="maintenance_list" class="tab-pane fade in active">
+
+<form method="GET" action="">	
+	<p><div class="row">
+		<div class="col-md-2">{{filter_form.region}}</div>
+		<div class="col-md-2">{{filter_form.vehicle}}</div>
+		<div class="col-md-3">{{filter_form.driver}}</div>
+		<div class="col-md-2">{{filter_form.start_date}}</div>
+		<div class="col-md-2">{{filter_form.end_date}}</div>
+		<div class="col-md-1"><input class="btn btn-warning" id="filter_maintenance" name="filter_maintenance" type="submit" value="Search"/></div>
+	  </div></p>	
+<table class="table table-hover ">
+	<tr>
+		<th>Vehicle</th>								
+		<th class="col-hidden">Driver</th>
+		<th>Date</th>
+		<th>Type</th>
+		<th class="col-hidden col-hidden-2">Projected Cost</th>
+		<th class="col-hidden col-hidden-2">Actual Cost</th>
+		<th class="col-hidden col-hidden-2">Difference</th>								
+		<th></th><th></th>
+	</tr>								
+	{% for transaction in maintenance_list %}
+		<tr>
+			<td>{{ transaction.vehicle }} </td>									
+			<td class="col-hidden">{{ transaction.driver }}</td>
+			<td>{{ transaction.maint_date }} </td>
+			<td>{{ transaction.maint_type }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.projected_cost|floatformat:2|intcomma }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.actual_cost|floatformat:2|intcomma }}</td>
+			<td class="col-hidden col-hidden-2">{{ transaction.difference|floatformat:2|intcomma }}</td>																		
+			<td>										
+				<a href="{% url 'fleet:editvehiclemaintenance' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="Edit Vehicle Maintenance"><i class="fa fa-check-square-o" aria-hidden="true"></i></a>
+			</td>
+			<td>										
+				<a href="{% url 'fleet:viewvehiclemaintenance' transaction.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Maintenance"><i class="fa fa-eye" aria-hidden="true"></i></a>
+			</td>
+		</tr>										
+	{%  endfor %}						
+</table>
+{% if maintenance_list.has_other_pages %}
+  <ul class="pagination pull-right">
+    {% if maintenance_list.has_previous %}
+      <li><a href="?page={{ maintenance_list.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    <li class="active"><span>{{  maintenance_list.number }} of {{maintenance_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+    {% if maintenance_list.has_next %}
+      <li><a href="?page={{ maintenance_list.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</form>
+</div>
+
+<div id="minor" class="tab-pane fade">					
+					  <form method="GET" action="">
+					  <p><div class="row">
+					  	<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_minor" name="filter_minor" type="submit" value="Search"/></div>
+					  </div></p>
+						<table class="table table-hover ">							
+							<tr>
+								<th>Driver</th>
+								<th>Vehicle</th>								
+								<th class="col-hidden">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th class="col-hidden col-hidden-2">Ownership Type</th>
+								<th class="col-hidden col-hidden-2">Color</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in minor_damages %}
+								<tr>
+									<td>{{ vehicle.get_current_driver }}</td>
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.color }}</td>																	
+									<td><a href="{% url 'fleet:viewvehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Profile"><i class="fa fa-car" aria-hidden="true"></i></a></td>       
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if minor_damages.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if minor_damages.has_previous %}
+						      <li><a href="?page={{ minor_damages.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{ minor_damages.number }} of {{minor_damages.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if minor_damages.has_next %}
+						      <li><a href="?page={{ minor_damages.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}			
+					</form>
+				</div>
+
+
+				<div id="major" class="tab-pane fade">					
+					  <form method="GET" action="">
+					  <p><div class="row">
+					  	<div class="col-md-2">{{filter_form.region}}</div>
+						<div class="col-md-2">{{filter_form.vehicle}}</div>
+						<div class="col-md-2">{{filter_form.driver}}</div>
+						<div class="col-md-2">{{filter_form.start_date}}</div>
+						<div class="col-md-2">{{filter_form.end_date}}</div>
+						<div class="col-md-2"><input class="btn btn-warning" id="filter_major" name="filter_major" type="submit" value="Search"/></div>
+					  </div></p>
+						<table class="table table-hover ">							
+							<tr>
+								<th>Driver</th>
+								<th>Vehicle</th>								
+								<th class="col-hidden">Make and Model</th>
+								<th class="col-hidden col-hidden-2">Model Year</th>
+								<th class="col-hidden col-hidden-2">Ownership Type</th>
+								<th class="col-hidden col-hidden-2">Color</th>
+								<th></th>
+							</tr>								
+							{% for vehicle in major_damages %}
+								<tr>
+									<td>{{ vehicle.get_current_driver }}</td>
+									<td>{{ vehicle.vehicle }} </td>
+									<td class="col-hidden">{{ vehicle.make_n_model }} </td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.model_year }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.ownership_type }}</td>
+									<td class="col-hidden col-hidden-2">{{ vehicle.color }}</td>																	
+									<td><a href="{% url 'fleet:viewvehicle' vehicle.id %}" data-toggle="" data-toggle="tooltip" data-placement="right" title="View Vehicle Profile"><i class="fa fa-car" aria-hidden="true"></i></a></td>       
+								</tr>										
+							{% endfor %}						
+						</table>
+						{% if major_damages.has_other_pages %}
+						  <ul class="pagination pull-right">
+						    {% if major_damages.has_previous %}
+						      <li><a href="?page={{ major_damages.previous_page_number }}">&laquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&laquo;</span></li>
+						    {% endif %}
+						     <li class="active"><span>{{ major_damages.number }} of {{major_damages.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+						    {% if major_damages.has_next %}
+						      <li><a href="?page={{ major_damages.next_page_number }}">&raquo;</a></li>
+						    {% else %}
+						      <li class="disabled"><span>&raquo;</span></li>
+						    {% endif %}
+						  </ul>
+						{% endif %}			
+					</form>
+				</div>
+						
+
+	<div id="maintenance_stats" class="tab-pane fade">
+      <form method="GET" action="">
+      <p><div class="row">
+      	<div class="col-md-2">{{filter_form.region}}</div>
+		<div class="col-md-3">{{filter_form.vehicle}}</div>
+		<div class="col-md-3">{{filter_form.driver}}</div>
+		<div class="col-md-6"><input class="btn btn-warning" id="filter_stats" name="filter_stats" type="submit" value="Search"/></div>
+	  </div></p>		
+	<table class="table table-hover ">							
+		<tr>
+			<th>Current Driver</th>
+			<th>Vehicle</th>								
+			<th class="col-hidden">Make and Model</th>
+			<th class="col-hidden col-hidden-2">Incidences</th>
+			<th class="col-hidden col-hidden-2">Maintenace Cost</th>
+			<th class="col-hidden col-hidden-2">Tyres Cost</th>
+			<th class="col-hidden col-hidden-2">Service Cost</th>
+			<th>Total</th>
+		</tr>								
+		{% for vehicle in vehicles %}
+			<tr>
+				<td>{{ vehicle.get_current_driver }}</td>
+				<td>{{ vehicle.vehicle }} </td>
+				<td class="col-hidden">{{ vehicle.make_n_model }} </td>
+				<td class="col-hidden col-hidden-2">{{ vehicle.get_count_incidences}}</td>
+				<td class="col-hidden col-hidden-2">{{ vehicle.get_total_maintenance|floatformat:2|intcomma }}</td>
+				<td class="col-hidden col-hidden-2">{{ vehicle.get_total_tyres_cost|floatformat:2|intcomma }}</td>	
+				<td class="col-hidden col-hidden-2">{{ vehicle.get_total_service_cost|floatformat:2|intcomma }}</td>
+				<td>{{ vehicle.get_total_maintenance_cost|floatformat:2|intcomma }}</td>																
+				
+			</tr>										
+		{% endfor %}						
+	</table>
+	{% if vehicles.has_other_pages %}
+	  <ul class="pagination pull-right">
+	    {% if vehicles.has_previous %}
+	      <li><a href="?page={{ vehicles.previous_page_number }}">&laquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&laquo;</span></li>
+	    {% endif %}
+	    <li class="active"><span>{{ vehicles.number }} of {{ vehicles.paginator.num_pages }}<span class="sr-only">(current)</span></span></li> 
+	    {% if vehicles.has_next %}
+	      <li><a href="?page={{ vehicles.next_page_number }}">&raquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&raquo;</span></li>
+	    {% endif %}
+	  </ul>
+	{% endif %}
+      </form>
+      </div> 
+
+
+
+
+			</div>
+		</div>
+	</div>
+{% endblock %}

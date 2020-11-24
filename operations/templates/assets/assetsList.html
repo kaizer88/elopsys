@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+
+{% block javascript %}
+	<script>
+  		$(function() {
+  			$(".auto-complete-branch").autocomplete({
+				source: "{% url 'assets:get_assetbranch' %}",
+	    		minLength: 2});
+
+  			$(".auto-complete-serial").autocomplete({
+				source: "{% url 'assets:get_serial' %}",
+	    		minLength: 2});
+  		});
+
+	</script>
+
+{% endblock %}
+
+{% block content%}
+	<div class="panel panel-primary transparency">
+		<div class="panel-heading">
+		 	<b>{{title}}</b>
+		</div>
+		<div class="panel-body">
+			<form method="GET" action="">
+			<div class="row">
+					<div class="col-md-2">{{filter_form.branch}}</div>
+					<div class="col-md-2">{{filter_form.category}}</div>
+					<div class="col-md-2">{{filter_form.serial}}</div>
+					<div class="col-md-2">{{filter_form.start_date}}</div>
+					<div class="col-md-2">{{filter_form.end_date}}</div>
+					<div class="col-md-2"><input class="btn btn-warning" id="filter_tf" name="filter_tf" type="submit" value="Search"/></div>
+				 </div>
+														
+				<p><table class="table table-hover ">							
+					<tr>								
+						<th class="col-hidden">Asset Tag</th>
+						<th>Description</th>
+						<th class="col-hidden col-hidden-2">Model</th>																
+						<th class="col-hidden">Serial</th>
+						<th class="col-hidden col-hidden-2">Category</th>
+						<th>Branch</th>
+						<th class="col-hidden col-hidden-2">Department</th>
+						<th></th>
+					</tr>								
+					{% for item in assets_list %}
+						<tr>
+							<td class="col-hidden">{{ item.tag }}</td>
+							<td>{{ item.description }} </td>
+							<td class="col-hidden col-hidden-2">{{ item.model }}</td>
+							<td class="col-hidden">{{ item.serial }}</td>
+							<td class="col-hidden col-hidden-2">{{ item.category|title }}</td>
+							<td>{{ item.branch }}</td>
+							<td class="col-hidden col-hidden-2">{{ item.department }}</td>																																		
+							<td><a href="{% url 'assets:view_asset' item.id %}"><i class="fa fa-building-o" aria-hidden="true"></i></a></td>
+							
+						</tr>										
+					{% endfor %}						
+				</table>
+				{% if assets_list.has_other_pages %}
+				  <ul class="pagination pull-right">
+				    {% if assets_list.has_previous %}
+				      <li><a href="?page={{ assets_list.previous_page_number }}">&laquo;</a></li>
+				    {% else %}
+				      <li class="disabled"><span>&laquo;</span></li>
+				    {% endif %}
+				     <li class="active"><span>{{  assets_list.number }} of {{assets_list.paginator.num_pages}}<span class="sr-only">(current)</span></span></li> 
+				    {% if assets_list.has_next %}
+				      <li><a href="?page={{ assets_list.next_page_number }}">&raquo;</a></li>
+				    {% else %}
+				      <li class="disabled"><span>&raquo;</span></li>
+				    {% endif %}
+				  </ul>
+				{% endif %}</p>
+			</form>									
+		</div>
+
+	</div>
+{% endblock %}

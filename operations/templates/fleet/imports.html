@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% load crispy_forms_tags %}
+{% load bootstrap3 %}
+
+
+{% block javascript %}
+
+
+
+<script>
+  $(function() {
+  $("#id_fuel_card").autocomplete({
+  source: "{% url 'fleet:get_fuel_card' %}",
+  minLength: 2});
+
+  $("#id_driver").autocomplete({
+  source: "{% url 'fleet:get_employee' %}",
+  minLength: 2});
+
+  $('select').select2();
+  });
+
+</script>
+
+
+{% endblock %}
+
+
+{% block content %}	
+<div class="panel panel-primary transparency col-sm-6 col-sm-offset-3">
+  <div class="panel-heading">
+    <h2>{{ title }}</h2>
+  </div>
+  <div class="row panel-body">
+    <form method="POST" action="" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+       <div id="uploads" class="col-sm-6">         
+          <h4>File Uploads</h4>
+          <input style="display:none" id="save" type="submit" value="Save "/>
+          <div class="clear_left new_upload">
+            <div class='btn btn-primary' onclick="$(this).parents('.new_upload').find('.hidden_content').toggle(); return false">Upload File</div>
+            <div class="hidden_content" style="display:none">
+              {%  bootstrap_form upload_file_form %} 
+
+               <input class="btn btn-warning" id="upload" name="upload" type="submit" value="Save Upload"/>                                
+            </div>
+        </div>
+
+      <table class ="table table-hover ">
+        <tr>
+          <th><h4>Uploaded Files</h4></th>    
+        </tr>
+        {% for item in uploads %}
+        <tr>
+          <td><a href= "{{ item.file.url }}" target="top"> {{ item.file_name }}</a> </td>                               
+        </tr>
+        {% endfor %}
+      </table>
+        </div> 
+        <div class="col-sm-6">
+          <input type="radio" name="designations" id="designations" value="designations"> Designations<br>
+          <input type="radio" name="employees_update" id="employees_update" value="employees_update"> Employees Updates<br/>
+          <input type="radio" name="mk_Sl_drivers" id="mk_Sl_drivers" value="mk_Sl_drivers"> Marketing And Sales Emps<br/>
+          <input type="radio" name="update_commission" id="update_commission" value="update_commission"> Update Commission Code<br/>
+          <input type="radio" name="employees" id="employees" value="employees"> Employees
+          <select name="designation" id="designation">
+            <option value="4">Regional Manager</option>
+            <option value="5">Regional Sales Manager</option>
+            <option value="6">District Manager</option>
+            <option value="7">Executive Agents</option>
+            <option value="8">Assistant District Manager</option>
+            <option value="16">Regional Admin Manager</option>
+            <option value="24">Agent</option>
+            <option value="25">Branch Manager</option>
+            <option value="26">Sales Manager</option>
+            <option value="22">Admin Staff</option>
+          </select><br>
+          <input type="radio" name="employee_contact" id="employee_contact" value="employee_contact"> Employee Contact<br>
+          <hr/>
+          <input type="radio" name="regions" id="regions" value="regions"> Regions<br>
+          <input type="radio" name="branches" id="branches" value="branches"> Branches
+          <br>
+          <input type="radio" name="departments" id="departments" value="departments"> Departments<br>
+          <input type="radio" name="floors" id="floors" value="floors"> Floors<br>
+          <input type="radio" name="sections" id="sections" value="sections"> Sections<br>
+          <input type="radio" name="meters" id="meters" value="meters"> Meter Numbers<br>
+          <input type="radio" name="mobiles" id="mobiles" value="mobiles"> Mobile Numbers<br>
+          <hr/>
+          <input type="radio" name="fuel_cards" id="fuel_cards" value="fuel_cards"> Fuel Cards<br>
+          <input type="radio" name="vehicles" id="vehicles" value="vehicles"> Vehicles<br>
+          <input type="radio" name="vehicle_allocations" id="vehicle_allocations" value="vehicle_allocations"> Vehicle Allocations<br>
+          <input type="radio" name="update_current_driver" id="update_current_driver" value="update_current_driver"> Vehicles Current Driver Upd<br>
+          <input type="radio" name="update_fuel_card_allocation" id="update_fuel_card_allocation" value="update_fuel_card_allocation"> Fuel Card Allocation Upd<br>
+          <input type="radio" name="fuel_usage" id="fuel_usage" value="fuel_usage"> Fuel Usage<br>
+          <input type="radio" name="service_bookings" id="service_bookings" value="service_bookings"> Vehicle Sevice<br>
+          <input type="radio" name="vehicle_incidences" id="vehicle_incidences" value="vehicle_incidences"> Vehicle Incidences<br/> 
+          <input type="radio" name="vehicle_inspections" id="vehicle_inspections" value="vehicle_inspections"> Vehicle Mileage Logs<br/>
+          <input type="radio" name="vehicle_maintenance" id="vehicle_maintenance" value="vehicle_maintenance"> Vehicle Maintenance<br/>
+          <input type="radio" name="vehicle_calims" id="vehicle_calims" value="vehicle_calims"> Vehicle Insurance Claims<br/>
+          <input type="radio" name="traffic_fines" id="traffic_fines" value="traffic_fines"> Vehicle Traffic Fines<br/>
+        </div>     
+
+    </form>
+  </div>
+</div>
+{% endblock %}

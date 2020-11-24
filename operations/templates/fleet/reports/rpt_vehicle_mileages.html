@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block javascript %}
+{% load humanize %}
+<script>
+  $(function() {
+    $(".auto-complete-vehicle").autocomplete({
+    source: "{% url 'fleet:get_vehicle' %}",
+    minLength: 2});
+
+    $(".auto-complete-driver").autocomplete({
+    source: "{% url 'fleet:get_employee' %}",
+    minLength: 2}); 
+
+    $(".auto-complete-region").autocomplete({
+    source: "{% url 'fleet:get_region' %}",
+    minLength: 2});
+  });
+
+</script>
+
+
+{% endblock %}
+
+{% block content%}
+<div class="transparency panel-body">
+<form method="POST" action=""> 
+{% csrf_token %}
+<h1>{{title}}</h1>  
+  <table class="table table-hover  ">              
+    <tr>
+      <th>{{filter_form.region}}</th>
+      <th>{{filter_form.vehicle}}</th>
+      <th>{{filter_form.start_date}}</th>
+      <th>{{filter_form.end_date}}</th>
+      <th><input class="btn btn-warning" id="filter_logs" name="filter_logs" type="submit" value="Search"/>
+          <a class="btn btn-warning" href="{% url 'fleet:rpt_vehicle_mileages' %}" type="submit">Refresh</a>
+          <input class="btn btn-warning" id="report" name="report" type="submit" value="Export CSV"/></th>
+          </tr>
+        </table>
+  {% for licence_plate, values in tran_dict.items %}				
+  <h4>{{ values.make }} {{ licence_plate }}</h4>
+
+  <table class="table table-hover table-striped">							     
+    <tr>				
+      <th>Log date</th>				
+      <th style="width: 18%">Driver</th>
+      <th>Region</th>
+      <th>Starting KM</th>
+      <th>Current KM</th>
+      <th>Mileage</th>				
+      <th>Fuel OB</th>
+      <th>Fuel Used</th>
+      <th>Fuel CB</th>
+      <th>Status </th>
+      
+    </tr>
+    
+    {% for val in values.transactions %}
+    <tr>
+      <td>{{ val.log_date }}</td>					
+      <td>{{ val.driver }}</td>
+      <td>{{ val.region }}</td>
+      <td>{{ val.starting_km|floatformat:2|intcomma }} </td>
+      <td>{{ val.current_km|floatformat:2|intcomma }}</td>
+      <td>{{ val.mileage|floatformat:2|intcomma }} </td>					
+      <td>{{ val.fuel_ob|floatformat:2|intcomma }} </td>
+      <td>{{ val.fuel_used|floatformat:2|intcomma }}</td>
+      <td>{{ val.fuel_cb|floatformat:2|intcomma }} </td>
+      <td>{{ val.status }} </td>
+    </tr>
+    {% endfor %}
+    
+    <tr style="background-color: #808080;">
+      <th>Totals</th>
+      <th></th>
+      <th></th> 
+      <th></th>
+      <th></th>
+      <th>{{ values.totals.mileage|floatformat:2|intcomma }}</th>
+      <th></th>				
+      <th>{{ values.totals.fuel_used|floatformat:2|intcomma }}</th>
+      <th></th>
+      <th></th>
+    </tr>
+    
+  </table>
+  {% endfor %}
+  </form>
+</div>
+{% endblock %}

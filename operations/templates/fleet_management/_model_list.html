@@ -1,0 +1,43 @@
+{% load el_pagination_tags %}
+<table id="makes" class="table table-hover ">
+  <tr>
+    <th>Make Name</th>
+    <th>Model Name</th>
+  </tr>
+
+  {% paginate vehicle_models %}
+  {% for model in vehicle_models %}
+
+  <tr> 
+    <td>
+      <a href="{% url 'fleetmanagement:edit_vehicle_make' model.make.id %}" 
+         data-toggle="" 
+         data-toggle="tooltip" 
+         data-placement="right" 
+         title="Edit Vehicle Make">
+         <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+        {{ model.make.make_name }}
+      </a>
+    </td>
+    <td>
+      <a href="{% url 'fleetmanagement:edit_vehicle_model' model.make.id model.id %}" 
+         data-toggle="" 
+         data-toggle="tooltip" 
+         data-placement="right" 
+         title="Edit Vehicle Make">
+         <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+        {{ model.model_name }}
+      </a>
+    </td>    
+  </tr>
+  {% endfor %}
+  <tr>
+    <td colspan='7' style="text-align: center">
+    <div class="center">
+      <div class="pagination">
+        {% show_pages %}
+      </div>
+    </div>
+    </td>
+  </tr>
+</table>

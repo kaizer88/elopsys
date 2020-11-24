@@ -1,0 +1,42 @@
+{% load staticfiles %}
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/custom.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>    
+<script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-multiselect.min.js' %}"></script>
+
+<script src="{% static 'js/moment.min.js' %}"></script>
+<script src="{% static 'js/morris.min.js' %}"></script>
+<script src="{% static 'js/raphael.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-submenu.min.js' %}"></script>
+<script src="{% static 'js/dj-reverse.js' %}"></script>
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+<script>
+$(function() {
+  $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+    localStorage.setItem('lastTab', $(this).attr('href'));
+  });
+  var lastTab = localStorage.getItem('lastTab');
+  if (lastTab) {
+    $('[href="' + lastTab + '"]').tab('show');
+  }
+});
+</script>
+
+<script src="{% static 'js/vehicle_panel.js' %}"></script>
+
+
+
+
+

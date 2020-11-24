@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% load bootstrap4 %}
+{% load humanize %}
+{% block javascript %}
+
+<script src="{% static 'js/stock_items.js' %}"></script>
+
+{% endblock %}
+
+{% block content%}
+
+<div class="panel panel-primary transparency">
+  <div class="panel-heading">
+    {% if stock_item %}
+    <b>Edit Stock Item Transaction</b>
+    {% else %}
+    <b>Add Stock Item Transaction:</b>
+    {% endif %}
+  </div>
+  
+  <div class="panel-body">
+    
+    <form method="POST" class="form-2" novalidate enctype="multipart/form-data">      
+      <input type="hidden" name="next" value="{{ request.META.HTTP_REFERER }}">
+      <input type="hidden" name="stock_item" value="{{stock_item_form.stock_item.value}}" />
+      <input type="hidden" name="opening_stock" value="{{stock_item_form.opening_stock.value}}" />
+      <input type="hidden" name="transaction_type" value="{{stock_item_form.transaction_type.value}}" />
+      {% csrf_token %}
+      
+      <div id="edit_stock_item_tab_content" class="tab-content">
+        <div class="tab-pane fade active in" id="details">
+          <br>
+          <div class='col-md-6'>
+            {% bootstrap_field stock_item_form.stock_item %}
+            {% bootstrap_field stock_item_form.transaction_type %} 
+            <div id="reference">{% bootstrap_field stock_item_form.reference %}</div>            
+            {% bootstrap_field stock_item_form.transaction_date %}            
+            {% bootstrap_field stock_item_form.opening_stock%}
+            {% bootstrap_field stock_item_form.quantity %}   
+          </div>
+          <div class='col-md-6'>
+            <div id="supplier">{% bootstrap_field stock_item_form.supplier %}</div>
+            <div id="district">{% bootstrap_field stock_item_form.district %}</div>
+            {% bootstrap_field stock_item_form.comment %}          
+          </div>
+
+      </div>
+
+      <div class="btn-group-horizontal col-lg-12">
+        <div class='pull-right'>
+          <button type="submit" name="save" class="btn btn-primary">
+            <i class='fa fa-floppy-o'></i> Save
+          </button> 
+          <button type="submit" name="cancel" class="btn btn-primary">
+            <i class='fa fa-undo'></i> Cancel
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
